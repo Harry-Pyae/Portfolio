@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="BloodCare">
+  <defs><linearGradient id="bcg" x1="8" y1="4" x2="56" y2="60" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#ef4560"/><stop offset="1" stop-color="#ad112a"/></linearGradient></defs>
+  <rect width="64" height="64" rx="16" fill="url(#bcg)"/>
+  <path d="M32 12.5c-5.6 7.9-11.6 13.7-11.6 20.6a11.6 11.6 0 0 0 23.2 0C43.6 26.2 37.6 20.4 32 12.5Z" fill="#fff"/>
+  <path d="M32 29v9.5M27.25 33.75h9.5" stroke="#d91f3a" stroke-width="3.25" stroke-linecap="round"/>
+</svg>

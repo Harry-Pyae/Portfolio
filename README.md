@@ -20,7 +20,7 @@ npm run preview   # serve dist/ locally
 
 - **Portrait:** put a photo in `public/` (e.g. `public/harry.jpg`) and set `portrait: 'harry.jpg'`.
 - **Contact:** fill `href` (`mailto:` or `https://`) and `text`. Empty entries show as "not listed yet". There is deliberately no contact form. A copy-email button appears once a real `mailto:` address exists.
-- **Projects:** `tagline` is the one sentence shown on overview cards; `summary`, `stack`, the four detail fields and links appear in the project view. Empty links show as "not available yet"; detail fields set to `null` show as "to be documented". Categories become branch groups in the tree (empty categories are hidden).
+- **Projects:** eight real projects with screenshots, logos and short reels in `public/projects/<id>/` (`1.jpg`…, `icon.*`, `reel.mp4`). `tagline` is the one sentence shown on overview cards; `summary`, `stack`, the four detail fields and links appear in the project view. Empty links show as "not available yet"; detail fields set to `null` show as "to be documented". Categories become branch groups in the tree (empty categories are hidden).
 - The page `<title>` and meta description live in `index.html`.
 
 ## Structure
@@ -68,3 +68,17 @@ Cards ride a looping track measured in "slots". The visible column is the first 
 
 - The page background lives on `<html>` only; the fixed sky (`z-index: -1`) paints above it and below all content.
 - Stars are painted once per resize into two canvases that drift at different rates while scrolling (parallax; off for reduced motion, paused motion and small screens). Nebula clouds appear only behind the hero carousel.
+
+## Project reels (Remotion)
+
+Each project has a 12-second reel (`public/projects/<id>/reel.mp4`) played in its details view: the real app, recorded with Playwright, flown through on a 3D screen with a title hit and end card. No narration.
+
+```bash
+cd video
+npm install
+npm run studio                      # edit scenes visually in Remotion Studio
+npx remotion render src/index.ts bloodcare out/bloodcare.mp4 --codec=h264 --crf=28 --scale=0.75
+```
+
+- `video/src/Root.tsx` registers one composition per project (title, meta line, accent colour, logo, and the recording window to use); `video/src/ProjectReel.tsx` holds the scenes, built from named `Interactive` elements with inline `interpolate()` animations so they stay editable in Studio.
+- Source footage (`video/public/mp4`, `shots`, `logos`) is kept locally and not committed; copy a render to `public/projects/<id>/reel.mp4` to update the site.

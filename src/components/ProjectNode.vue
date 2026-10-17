@@ -25,7 +25,9 @@ defineEmits(['open'])
       <span class="title">{{ project.title }}</span>
       <span :id="`${idPrefix}-${project.id}-desc`" class="desc">
         {{ project.tagline || project.summary }}
-        <span v-if="project.status !== 'Completed'" class="status">{{ project.status }}</span>
+        <span v-if="project.status !== 'Completed' || project.year" class="status">
+          {{ project.status === 'Completed' ? project.year : project.status }}
+        </span>
       </span>
     </span>
     <svg class="arrow" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">

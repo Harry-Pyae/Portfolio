@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch, nextTick } from 'vue'
-import { openProject, closeProject } from '../state.js'
+import { openProject, closeProject, motionOn } from '../state.js'
 import { profile } from '../content/profile.js'
 import ProjectArt from './ProjectArt.vue'
 
@@ -8,11 +8,16 @@ import ProjectArt from './ProjectArt.vue'
 // We restore focus to the opener ourselves for consistency across browsers.
 const dlg = ref(null)
 const shown = ref(null) // kept while the dialog fades out
+const media = ref(null) // 'video' or a screenshot path shown in the media stage
+const vid = ref(null)
 let opener = null
 
 watch(openProject, async (p) => {
   const d = dlg.value
-  if (p) shown.value = p
+  if (p) {
+    shown.value = p
+    media.value = p.video ? 'video' : (p.gallery?.[0] ?? null)
+  }
   if (p && !d.open) {
     opener = document.activeElement
     await nextTick()
@@ -21,6 +26,7 @@ watch(openProject, async (p) => {
 })
 
 function onClose() {
+  vid.value?.pause()
   closeProject()
   opener?.focus?.({ preventScroll: true })
   opener = null
@@ -44,10 +50,39 @@ const details = [
           <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
         </svg>
       </button>
-      <ProjectArt :project="shown" :alt="`${shown.title} preview`" class="art" />
+      <!-- Media stage: the project reel (autoplays muted only while motion is on) and screenshots. -->
+      <div v-if="media" class="stage">
+        <video
+          v-if="media === 'video'"
+          ref="vid"
+          :key="shown.id"
+          :src="shown.video"
+          :poster="shown.image"
+          :autoplay="motionOn"
+          muted
+          loop
+          playsinline
+          controls
+          preload="metadata"
+          :aria-label="`${shown.title} project reel`"
+        ></video>
+        <img v-else :src="media" :alt="`${shown.title} screenshot ${shown.gallery.indexOf(media) + 1}`" />
+      </div>
+      <ProjectArt v-else :project="shown" :alt="`${shown.title} preview`" class="art" />
+      <div v-if="media && (shown.gallery?.length ?? 0) + (shown.video ? 1 : 0) > 1" class="thumbs" role="group" aria-label="Project media">
+        <button v-if="shown.video" type="button" :aria-pressed="media === 'video'" @click="media = 'video'">
+          <img :src="shown.image" alt="" />
+          <span class="play" aria-hidden="true">▶</span>
+          <span class="sr-only">Project reel</span>
+        </button>
+        <button v-for="(g, i) in shown.gallery" :key="g" type="button" :aria-pressed="media === g" @click="media = g">
+          <img :src="g" alt="" loading="lazy" />
+          <span class="sr-only">Screenshot {{ i + 1 }}</span>
+        </button>
+      </div>
       <div class="body">
         <p class="meta">
-          <span>{{ shown.category }}</span>
+          <span>{{ shown.category }}<template v-if="shown.year"> · {{ shown.year }}</template></span>
           <span class="badge" :data-status="shown.status">{{ shown.status }}</span>
         </p>
         <h2 id="modal-title">{{ shown.title }}</h2>
@@ -82,7 +117,7 @@ const details = [
 
 <style scoped>
 .modal {
-  width: min(760px, calc(100% - 32px));
+  width: min(880px, calc(100% - 32px));
   max-height: calc(100dvh - 48px);
   padding: 0;
   border: 1px solid var(--line-strong);
@@ -139,6 +174,60 @@ const details = [
 }
 .art {
   height: 170px;
+}
+.stage {
+  aspect-ratio: 16 / 9;
+  border-bottom: 1px solid var(--line);
+  background: #000;
+}
+.stage video,
+.stage img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.thumbs {
+  display: flex;
+  gap: 8px;
+  padding: 12px clamp(20px, 4vw, 40px) 0;
+  overflow-x: auto;
+}
+.thumbs button {
+  position: relative;
+  flex: none;
+  width: 96px;
+  aspect-ratio: 16 / 10;
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--surface-2);
+  cursor: pointer;
+  opacity: 0.7;
+  transition:
+    opacity 0.25s var(--ease),
+    border-color 0.25s var(--ease);
+}
+.thumbs button:hover,
+.thumbs button[aria-pressed='true'] {
+  border-color: var(--accent);
+  opacity: 1;
+}
+.thumbs img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 18px;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8);
 }
 .body {
   padding: 26px clamp(20px, 4vw, 40px) 36px;

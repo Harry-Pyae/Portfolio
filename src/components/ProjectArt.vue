@@ -8,10 +8,11 @@ const props = defineProps({
 const tilt = ([...props.project.id].reduce((n, c) => n + c.charCodeAt(0), 0) % 40) - 20
 </script>
 
-<!-- Screenshot when supplied, otherwise a solid panel with a single orbit line and a small warm "planet". -->
+<!-- Glyph: the project's logo when it has one. Banner: its cover screenshot. Otherwise a solid panel
+     with a single orbit line and a small warm "planet". -->
 <template>
   <div class="art" :class="{ glyph }">
-    <img v-if="project.image" :src="project.image" :alt="alt" loading="lazy" />
+    <img v-if="glyph ? project.icon : project.image" :src="glyph ? project.icon : project.image" :alt="alt" loading="lazy" />
     <span v-else class="ring" :style="{ transform: `rotate(${glyph ? tilt * 4 : tilt}deg)` }" aria-hidden="true">
       <span class="planet"></span>
     </span>
@@ -65,5 +66,9 @@ img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+.glyph img {
+  padding: 5px;
+  object-fit: contain;
 }
 </style>
