@@ -227,6 +227,10 @@ let raf = 0
 let last = 0
 const written = new Map()
 const ease = (e) => e * e * (3 - 2 * e)
+// The orbit's own tree: a parent bough around the ring and a branch out to every card, drawn in two
+// SVG layers (behind the core / in front of it) from the same phi and card positions as the cards.
+const boughLayers = {} // 'rear' | 'front' → svg element
+let bough = null // cached path elements per layer, gathered in measure()
 
 function measure() {
   const el = stage.value
@@ -238,6 +242,13 @@ function measure() {
   const rx = Math.max(40, W / 2 - (cw / 2) * 1.02 - 6)
   const ry = Math.max(10, Math.min(H / 2 - ch / 2 - 6, rx * 0.66))
   geo = { W, H, cx: W / 2, cy: H / 2, rx, ry, cw, ch, colH: Math.max(0, H - ch - 12) }
+  bough = {}
+  for (const k of ['rear', 'front']) {
+    const svg = boughLayers[k]
+    if (!svg) continue
+    const q = (sel) => [...svg.querySelectorAll(sel)]
+    bough[k] = { svg, strands: q('.strand'), base: q('.b-base'), line: q('.b-line'), twig: q('.o-twig') }
+  }
   render()
 }
 function morphTo(target, ms) {
@@ -301,6 +312,7 @@ function render() {
   const { cx, cy, rx, ry, cw, ch, colH } = geo
   const n = all.length
   const e = ease(Math.max(0, Math.min(1, m)))
+  const st = []
   for (let i = 0; i < n; i++) {
     const el = cards[i]
     if (!el) continue
@@ -328,6 +340,90 @@ function render() {
     const prev = written.get(el) ?? {}
     for (const k in next) if (prev[k] !== next[k]) el.style[k] = prev[k] = next[k]
     written.set(el, prev)
+    st[i] = { a, x, y, z, w }
+  }
+  renderBoughs(st, Math.min(1, m * 1.4) * e)
+}
+
+// ---------- the orbit's tree ----------
+const TAU = Math.PI * 2
+const f1 = (v) => v.toFixed(1)
+const setD = (el, d) => el && el.__d !== d && el.setAttribute('d', (el.__d = d))
+// A point on the parent bough: inside the cards' ring, gently irregular, its bumps travelling with phi
+// so they keep their place relative to the cards. depth > 0 = in front of the core.
+function ringPt(t, fine) {
+  const { cx, cy, rx, ry } = geo
+  const u = t - phi
+  const k = 0.8 + 0.05 * Math.sin(3 * u + 1.3) + 0.03 * Math.sin(5 * u + 0.4) + (fine ? 0.035 * Math.sin(2 * u + 2.1) : 0)
+  return [cx + rx * k * Math.cos(t), cy + ry * k * Math.sin(t), Math.sin(t)]
+}
+// One strand of the parent bough, split into the halves behind and in front of the core.
+function strandPaths(fine) {
+  const out = { rear: '', front: '' }
+  let prev = null
+  for (let j = 0; j <= 72; j++) {
+    const [x, y, z] = ringPt((j / 72) * TAU, fine)
+    const side = z >= 0 ? 'front' : 'rear'
+    // where the strand changes side, the half it leaves runs on to this point, so the halves meet
+    if (prev && prev !== side) out[prev] += `L${f1(x)} ${f1(y)}`
+    out[side] += `${prev === side ? 'L' : 'M'}${f1(x)} ${f1(y)}`
+    prev = side
+  }
+  return out
+}
+function renderBoughs(st, fade) {
+  if (!bough?.rear || !bough?.front) return
+  const narrow = geo.W < 600
+  for (const k of ['rear', 'front']) {
+    const v = ((k === 'rear' ? 0.6 : 1) * fade).toFixed(3)
+    if (bough[k].svg.__o !== v) bough[k].svg.style.opacity = bough[k].svg.__o = v
+  }
+  const main = strandPaths(false)
+  const fine = narrow ? { rear: '', front: '' } : strandPaths(true)
+  for (const k of ['rear', 'front']) {
+    setD(bough[k].strands[0], main[k])
+    setD(bough[k].strands[1], fine[k])
+  }
+  for (let i = 0; i < st.length; i++) {
+    const c = st[i]
+    if (!c) continue
+    // leaves the bough a little behind its card; the inspected card's branch swings round to the
+    // front of the ring, so it stays short while the card rests at the centre
+    const home = Math.PI / 2 + TAU * Math.round((c.a - Math.PI / 2) / TAU)
+    const ts = (c.a - 0.42) * (1 - c.w) + home * c.w
+    const [sx, sy] = ringPt(ts, false)
+    const tx = -geo.rx * Math.sin(ts)
+    const ty = geo.ry * Math.cos(ts)
+    const tl = Math.hypot(tx, ty) || 1
+    const L = Math.hypot(c.x - sx, c.y - sy) || 1
+    const bend = (i % 2 ? 1 : -1) * L * 0.12 // gentle asymmetry, never a straight spoke
+    const c1x = sx + (tx / tl) * L * 0.45
+    const c1y = sy + (ty / tl) * L * 0.45
+    const c2x = c.x + (sx - c.x) * 0.4 + ((sy - c.y) / L) * bend
+    const c2y = c.y + (sy - c.y) * 0.4 - ((sx - c.x) / L) * bend
+    const d = `M${f1(sx)} ${f1(sy)}C${f1(c1x)} ${f1(c1y)} ${f1(c2x)} ${f1(c2y)} ${f1(c.x)} ${f1(c.y)}`
+    // a small tapering twig off the middle of some branches
+    let twig = ''
+    if (!narrow && i % 3 !== 1 && L > 40) {
+      const t = 0.55
+      const mt = 1 - t
+      const bx = mt * mt * mt * sx + 3 * mt * mt * t * c1x + 3 * mt * t * t * c2x + t * t * t * c.x
+      const by = mt * mt * mt * sy + 3 * mt * mt * t * c1y + 3 * mt * t * t * c2y + t * t * t * c.y
+      const nx = -(c.y - sy) / L
+      const ny = (c.x - sx) / L
+      const sg = i % 2 ? 1 : -1
+      const len = 10 + (i % 4) * 3
+      twig = `M${f1(bx)} ${f1(by)}q${f1(sg * nx * len * 0.6)} ${f1(sg * ny * len * 0.6 - 4)} ${f1(sg * nx * len)} ${f1(sg * ny * len - 9)}`
+    }
+    // drawn in its card's layer: behind the core when the card is, in front when it is
+    const on = c.w > 0.5 || c.z > 0 ? 'front' : 'rear'
+    const off = on === 'front' ? 'rear' : 'front'
+    for (const part of ['base', 'line']) {
+      setD(bough[on][part][i], d)
+      setD(bough[off][part][i], '')
+    }
+    setD(bough[on].twig[i], twig)
+    setD(bough[off].twig[i], '')
   }
 }
 const holdOn = () => ((hold = true), kick())
@@ -392,6 +488,16 @@ watch([motionOn, prefersReduced], kick)
         <div v-for="(u, i) in wisps" :key="i" class="wisp anim" :class="`cw${i}`" :style="{ backgroundImage: `url(${u})` }"></div>
         <span class="glow"></span>
       </div>
+      <!-- The orbit's own tree, behind the core and in front of it; its geometry is written per frame. -->
+      <svg v-for="k in ['rear', 'front']" :key="k" :ref="(el) => (boughLayers[k] = el)" class="boughs" :class="k" aria-hidden="true">
+        <path class="strand" />
+        <path class="strand fine" />
+        <g v-for="p in all" :key="p.id">
+          <path class="b-base" pathLength="1" />
+          <path class="b-line" />
+          <path class="o-twig" pathLength="1" />
+        </g>
+      </svg>
       <ul class="ring">
         <li v-for="(p, i) in all" :key="p.id" :ref="(el) => (cards[i] = el)" class="o-card">
           <button
@@ -451,6 +557,7 @@ watch([motionOn, prefersReduced], kick)
             <img v-else :src="media" :alt="`${shown.title} screenshot ${shown.gallery.indexOf(media) + 1}`" />
           </div>
           <ProjectArt v-else :project="shown" :alt="`${shown.title} preview`" class="banner" />
+          <p v-if="shown.videoNote" class="media-note">{{ shown.videoNote }}</p>
           <div v-if="media && (shown.gallery?.length ?? 0) + (shown.video ? 1 : 0) > 1" class="thumbs" role="group" aria-label="Project media">
             <button v-if="shown.video" type="button" :aria-pressed="media === 'video'" @click="media = 'video'">
               <img :src="shown.image" alt="" />
@@ -528,6 +635,13 @@ watch([motionOn, prefersReduced], kick)
               </ul>
             </template>
 
+            <p v-if="shown.limitation" class="limit">
+              <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
+                <circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.3" />
+                <path d="M8 7.2v4M8 4.9v.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              </svg>
+              <span>{{ shown.limitation }}</span>
+            </p>
             <div v-if="shown.links?.demo || shown.links?.github" class="links">
               <a v-if="shown.links.demo" class="btn btn--primary" :href="shown.links.demo" target="_blank" rel="noopener noreferrer">
                 Live demo<span class="sr-only"> (opens in a new tab)</span>
@@ -571,6 +685,52 @@ watch([motionOn, prefersReduced], kick)
 }
 
 /* ---------- orbit stage ---------- */
+/* The orbit's tree: restrained strokes in the trunk colour, under the cards they connect. */
+.boughs {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  opacity: 0;
+}
+.boughs.rear {
+  z-index: 9; /* under every card behind the core, and under the core's light */
+}
+.boughs.front {
+  z-index: 29; /* over the core's light, under every card in front of it */
+}
+.boughs path {
+  fill: none;
+  stroke: var(--glow-trunk);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.boughs .strand {
+  stroke-width: 1.5px;
+  opacity: 0.42;
+}
+.boughs .strand.fine {
+  stroke-width: 0.8px;
+  opacity: 0.28;
+}
+.boughs .b-line {
+  stroke: var(--glow-branch);
+  stroke-width: 1.1px;
+  opacity: 0.5;
+}
+.boughs .b-base {
+  stroke: var(--glow-branch);
+  stroke-width: 2.6px;
+  stroke-dasharray: 0.32 1; /* thicker where it leaves the bough: a tapering branch */
+  opacity: 0.35;
+}
+.boughs .o-twig {
+  stroke: var(--glow-branch);
+  stroke-width: 0.9px;
+  opacity: 0.38;
+}
 .stage {
   position: relative;
   grid-column: 1;
@@ -851,6 +1011,26 @@ watch([motionOn, prefersReduced], kick)
 }
 
 /* ---------- case study content ---------- */
+.media-note {
+  margin: 8px clamp(20px, 4vw, 40px) 0;
+  color: var(--ink-3);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.limit {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 24px 0 -12px;
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.limit svg {
+  flex: none;
+  margin-top: 3px;
+  color: var(--glow-spark);
+}
 .banner {
   height: 170px;
 }

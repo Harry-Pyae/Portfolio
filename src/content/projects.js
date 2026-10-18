@@ -23,6 +23,8 @@ export const featured = ['bloodcare', 'internshipjp', 'clarifile', 'flavourwave'
 //   context       scope, team or time constraints when known, or the project's place in the journey
 //   image         poster / cover screenshot; gallery: screenshots; icon: small logo (optional)
 //   video         walkthrough reel rendered from video/ with Remotion
+//   videoNote     optional one-line disclosure beside the media (sample data, presentation copy, screenshots)
+//   limitation    optional note shown beside the links (e.g. a live demo with a broken feature)
 //   links         only real URLs; leave '' to hide a link
 //   status        optional development status, shown on cards and in details (e.g. 'In development')
 //   suite         id of the suite an app belongs to (see `suites`)
@@ -87,7 +89,8 @@ export const projects = [
     year: 2023,
     icon: 'projects/flavourwave/icon.png',
     image: 'projects/flavourwave/1.jpg',
-    gallery: shots('flavourwave', 4),
+    gallery: ['projects/flavourwave/1.jpg', 'projects/flavourwave/3.jpg', 'projects/flavourwave/4.jpg'], // 2.jpg (a map pin with coordinates and a blurred teammate avatar) left out
+    videoNote: 'Composed from the repository’s own screenshots, not a recording of the running app.',
     video: 'projects/flavourwave/reel.mp4',
     tagline: 'A drinks storefront with Stripe pre-orders and a delivery-tracking back office.',
     problem: 'Connect a consumer storefront to the operations behind it, from pre-order and payment to production, stock and delivery.',
@@ -111,6 +114,8 @@ export const projects = [
     icon: null,
     image: 'projects/clickwise/2.jpg',
     gallery: shots('clickwise', 5),
+    videoNote: 'Detection screenshots show the app’s demo mode with sample results.',
+    limitation: 'Live text detection is currently unavailable: the deployed app calls a Groq model that is no longer offered. Masking and the quiz still work.',
     video: 'projects/clickwise/reel.mp4',
     tagline: 'Detect AI-generated text, images and audio, with scores that explain themselves.',
     problem: 'People need a clear read on whether text, images or audio were AI-generated, not a single opaque percentage.',
@@ -180,6 +185,7 @@ export const projects = [
     icon: 'projects/mymedia/icon.png',
     image: 'projects/mymedia/1.jpg',
     gallery: shots('mymedia', 3),
+    videoNote: 'Walkthrough uses sample categories and posts.',
     video: 'projects/mymedia/reel.mp4',
     tagline: 'A news and media admin with categories, posts and trending stats.',
     problem: 'Separate content management from reading: a dashboard for editors and a public API for a single-page client.',
@@ -203,6 +209,7 @@ export const projects = [
     icon: null,
     image: 'projects/pizza/1.jpg',
     gallery: shots('pizza', 5),
+    videoNote: 'Walkthrough uses a sample menu with generated pizza images.',
     video: 'projects/pizza/reel.mp4',
     tagline: 'Browse pizzas, fill a cart and order, with an admin to run the shop.',
     problem: 'Serve customers and shop admins from one app, and keep the cart and ordering responsive without full page reloads.',
@@ -276,6 +283,7 @@ export const projects = [
     icon: null,
     image: 'projects/fhcp/1.jpg',
     gallery: shots('fhcp', 4),
+    videoNote: 'Presentation copy: the original film and series images are replaced with generated artwork.',
     video: 'projects/fhcp/reel.mp4',
     tagline: 'My first HTML and CSS page: a one-page fan site for the series Supernatural.',
     highlights: [
@@ -296,6 +304,7 @@ export const projects = [
     icon: 'projects/cinemagichub/icon.png',
     image: 'projects/cinemagichub/1.jpg',
     gallery: shots('cinemagichub', 4),
+    videoNote: 'Presentation copy: the original film images are replaced with generated artwork.',
     video: 'projects/cinemagichub/reel.mp4',
     tagline: 'An early movie-themed landing page with dropdown menus and hover effects.',
     highlights: [

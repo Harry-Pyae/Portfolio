@@ -28,6 +28,8 @@
   --lane-w: clamp(96px, 10vw, 140px); /* column the page trunk runs through (About, Skills) */
   --spine-inset: 36px; /* content inset beside the side spine on small screens */
   --maxw: 1240px;
+  --section-gap: clamp(112px, 11vw, 168px); /* rhythm between major sections */
+  --sub-gap: clamp(96px, 9vw, 136px); /* between subsections (Skills, Beyond the Code) */
 }
 
 /* Ember: the charcoal + gold appearance (navbar toggle). Same tokens, so every component, the tree
@@ -152,7 +154,7 @@ h2 {
 .section {
   max-width: var(--maxw);
   margin: 0 auto;
-  padding: clamp(150px, 17vw, 240px) var(--gutter) 0; /* generous breathing room between sections */
+  padding: var(--section-gap) var(--gutter) 0; /* the same breathing room between every major section */
   scroll-margin-top: 84px; /* clears the sticky navbar */
 }
 .section-head {

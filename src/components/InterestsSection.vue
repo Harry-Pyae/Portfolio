@@ -39,7 +39,7 @@ const ICONS = {
   display: grid;
   grid-template-columns: minmax(0, 0.8fr) var(--lane-w) minmax(0, 1.5fr);
   align-items: start;
-  margin-top: clamp(130px, 14vw, 190px);
+  margin-top: var(--sub-gap);
 }
 .intro h3 {
   font-size: clamp(22px, 2.4vw, 28px);

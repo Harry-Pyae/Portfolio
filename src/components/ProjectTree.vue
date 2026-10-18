@@ -12,8 +12,8 @@ import ProjectNode from './ProjectNode.vue'
 // trunk through its label) left or right, -1..1 of the shift range; LABEL_GAP is the space above its label.
 // Per card in tree order: REACH is its distance from the trunk (px), GAP its vertical offset from the
 // card above (px; negative tucks it alongside).
-const SHIFT = [-0.55, 0.7, -0.85, 0.45]
-const LABEL_GAP = [8, 150, 128, 156]
+const SHIFT = [-0.5, 0.65, -0.8, 0.45]
+const LABEL_GAP = [8, 116, 100, 124]
 const REACH = [64, 104, 52, 118, 88, 58, 72, 96]
 const GAP = [0, -6, 0, -40, 0, 14, 0, -22]
 
@@ -129,7 +129,7 @@ onBeforeUnmount(() => {
 }
 .group {
   /* the group (and the trunk through its label) sits a little left or right of centre */
-  --shift-px: calc(var(--shift, 0) * min(6vw, 84px));
+  --shift-px: calc(var(--shift, 0) * min(4vw, 56px));
   position: relative;
   left: var(--shift-px);
   display: flex;

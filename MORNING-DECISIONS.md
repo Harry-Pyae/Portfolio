@@ -5,7 +5,7 @@ the file), and I'll apply the changes.
 
 ## Content and wording
 
-1. **About copy.** It is new first-person copy built only from the facts in `four-pj.md` (`profile.about`). It keeps your earlier point about moving from hand-written code to AI-assisted tools without implying libraries are worse. Keep it?
+1. **About copy.** It is new first-person copy built only from the facts in your brief (`profile.about`). It keeps your earlier point about moving from hand-written code to AI-assisted tools without implying libraries are worse. Keep it?
 2. **Hero intro.** It now reads: "I build web applications with Vue.js on the front end and Laravel and PHP behind it, from my own projects to hackathon prototypes." I dropped "high-performance", which no project data supports. Keep it?
 3. **Milestones:** CodeLab Full-Stack Web Developer, ITPEC IT Passport (described as covering IT fundamentals, management and strategy), hackathon participation certificates (I labelled the Cursor one "Myanmar AI Hackathon 2026", the event Chat to Ledger was built for), and "Received multiple development offers". Correct?
 4. **BloodCare contribution:** "Own project idea; product design and full-stack build across the Vue front end and the Laravel API." Correct?
@@ -19,10 +19,10 @@ the file), and I'll apply the changes.
 
 ## Media
 
-7. **ClickWise:** the live site's text detection was failing (the Groq model `qwen/qwen3.6-27b` is unavailable to the deployed key). The reel shows the live masking tool and quiz, and the detection screenshots come from the app's demo mode (sample results, no longer captioned). Fix the deployed model so the detection results can be re-recorded, or keep it as is?
-8. **FlavourWave map screenshot:** it shows a picked map location's coordinates; the teammate avatar is pixelated. Keep it or remove it?
-9. **Sample content in recordings:** the MyMedia reel uses sample categories and posts, and the Pizza reel a sample menu with generated pizza images. As you asked, there are no captions under the videos, so this isn't stated on the page. OK?
-10. **FHCP and CineMagicHub** are shown from presentation copies, with their third-party film/series imagery replaced by generated "SAMPLE POSTER" art (the posters themselves say so; the video captions are gone as you asked). Your original repositories are unchanged. OK, or would you rather show no screenshots for them?
+7. **ClickWise:** the live site's text detection fails (the Groq model `qwen/qwen3.6-27b` is no longer offered). The project view now says so right beside the Live demo link, and the showcase says it under its Live demo button; LinkedIn advice moved ClickWise out of "feature first" until it's fixed. Fix the deployed model, or keep it framed as a prototype?
+8. **FlavourWave map screenshot:** removed from both sites' galleries (a map pin with coordinates and a pixelated teammate avatar). The FlavourWave reel and showcase walkthrough still include that image briefly; re-rendering them without it needs a short render run. Do that, or keep as is?
+9. **Sample content in recordings:** a single quiet line beside the media now says so (MyMedia: sample categories and posts; Pizza: sample menu with generated pizza images). OK?
+10. **FHCP and CineMagicHub** are shown from presentation copies, with their third-party film/series imagery replaced by generated "SAMPLE POSTER" art; a quiet line beside the media says so. Your original repositories are unchanged. OK, or would you rather show no screenshots for them?
 11. **FHCP shows no year,** since only the May 2022 GitHub push date is known. Show "2022"?
 
 ## Structure
@@ -41,3 +41,7 @@ the file), and I'll apply the changes.
 17. **Music licensing:** both tracks carry content credentials saying they were created with Google generative AI. You confirmed you may publish them, so they are in the repo. A chatbot's reply isn't the service's terms; check the music tool's terms page once if the site is ever used commercially.
 18. **Soundtrack excerpts:** each project's excerpt was chosen by analysing the music (sections, beats, loudness), not by listening. Give a few projects a listen; any boundary can be moved in `src/content/audioCues.js`.
 19. **Phone memory:** the project excerpts come from decoding the inspection track once (about 55 MB of memory). Fine for modern phones; if you'd rather keep low-end phones light, the excerpts can stream instead, with slightly less exact loops.
+
+## Showcase
+
+20. **Link the two sites:** the showcase is live at https://harry-project-showcase.vercel.app (e.g. /projects/blood-donation). Should each project's view in the portfolio get a "Full case study" link to its showcase page? (Not added yet.)

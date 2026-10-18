@@ -166,8 +166,8 @@ function measure() {
   if (appEls.length) push(suiteX, Math.max(...appEls.map((li) => off(li, page)[1] + li.offsetHeight)) + 40)
   // About, Skills and Beyond the Code: the trunk runs down each lane, and where the column beside it opens
   // up (below the portrait, below the general tools, below the interests heading) it drifts out into that
-  // space and back, rather than running straight down beside empty room. Each swing gets at least ~1.3×
-  // its sideways shift in height, so the strands bend instead of folding.
+  // space a little and back, rather than running ruler-straight. The drift is restrained (at most 120px,
+  // and at least 5× its sideways shift in height), so the trunk curves softly instead of zigzagging.
   const WANDER = {
     about: { side: -1, from: '#about .identity' },
     skills: { side: 1, from: '#about .sky-group.general' },
@@ -184,12 +184,12 @@ function measure() {
       const y0 = Math.max(lane.y, open.y + open.h + 24)
       const rest = bottom - y0
       // a short lane can't fit a gentle swing (the strands would curl), so it stays straight
-      const amp = Math.min(Math.abs(open.x + open.w / 2 - cx) * 0.75, rest / 4)
-      if (rest > 360 && amp > 40) {
+      const amp = Math.min(Math.abs(open.x + open.w / 2 - cx) * 0.4, rest / 5, 120)
+      if (rest > 360 && amp > 30) {
+        // one soft, slightly lopsided bulge into the open column and back
         const dx = WANDER[name].side * amp
         push(cx, y0)
-        push(cx + dx, y0 + rest * 0.4)
-        push(cx + dx * 0.6, y0 + rest * 0.62)
+        push(cx + dx, y0 + rest * 0.45)
       }
     }
     push(cx, bottom)
@@ -253,6 +253,16 @@ function measure() {
   // Hierarchy by width: section and group limbs are thick where they leave the trunk, project and
   // skill-group branches thinner; every branch tapers to its port. Twigs are sparse and tapering.
   const main = strands[0].pts
+  // Free-ended decoration (twigs, rootlets) sways gently around the point where it attaches, so it
+  // never detaches; each piece gets its own slow period and phase. Connected branches never move.
+  const sway = (d, x, y, seed) => ({
+    d,
+    style: {
+      transformOrigin: `${f1(x)}px ${f1(y)}px`,
+      animationDuration: `${(6 + rand(seed + 71) * 4).toFixed(2)}s`,
+      animationDelay: `${(-rand(seed + 83) * 10).toFixed(2)}s`,
+    },
+  })
   const onTrunk = (y) => main.reduce((b, p) => (Math.abs(p[1] - y) < Math.abs(b[1] - y) ? p : b))
   const branch = (S, P, w0, seed) => {
     const a = [S[0], S[1]]
@@ -268,7 +278,7 @@ function measure() {
       const [x, y] = bez(a, c1, c2, b, 0.35 + rand(seed + 41) * 0.25)
       const s = Math.sign(dx) || 1
       const len = 12 + rand(seed + 53) * 20
-      twig = ribbon([x, y], [x + s * len * 0.2, y - len * 0.5], [x + s * len * 0.6, y - len * 0.85], [x + s * len, y - len * 0.9], 1.5, 0.2, 8)
+      twig = sway(ribbon([x, y], [x + s * len * 0.2, y - len * 0.5], [x + s * len * 0.6, y - len * 0.85], [x + s * len, y - len * 0.9], 1.5, 0.2, 8), x, y, seed)
     }
     return { d: cubic(a, c1, c2, b), r: ribbon(a, c1, c2, b, w0, 1), twig }
   }
@@ -335,7 +345,7 @@ function measure() {
       const k1 = [px + T[0] * len * 0.3, py + T[1] * len * 0.3]
       const k2 = [px + dir[0] * len * 0.65, bottom(py + dir[1] * len * 0.72) - 6]
       const w = wf(t) * 0.72
-      rootlets.push(ribbon([px, py], k1, k2, e, w, 0.18, 14))
+      rootlets.push(sway(ribbon([px, py], k1, k2, e, w, 0.18, 14), px, py, seed + j * 7))
       if (len > 80) {
         // one fine rootlet off the child
         const u = 0.45 + rand(seed + j * 17) * 0.25
@@ -345,7 +355,7 @@ function measure() {
         if (d2[1] < 0.25) d2 = [d2[0], 0.45]
         const l2 = len * (0.3 + rand(seed + j * 23) * 0.15)
         const e2 = [clampX(qx + d2[0] * l2), bottom(qy + d2[1] * l2)]
-        rootlets.push(ribbon([qx, qy], [qx + (qtx / ql) * l2 * 0.3, qy + (qty / ql) * l2 * 0.3], [qx + d2[0] * l2 * 0.7, qy + d2[1] * l2 * 0.7], e2, w * (1 - u) * 0.8, 0.1, 8))
+        rootlets.push(sway(ribbon([qx, qy], [qx + (qtx / ql) * l2 * 0.3, qy + (qty / ql) * l2 * 0.3], [qx + d2[0] * l2 * 0.7, qy + d2[1] * l2 * 0.7], e2, w * (1 - u) * 0.8, 0.1, 8), qx, qy, seed + j * 11))
       }
     })
   }
@@ -439,7 +449,7 @@ watch(heroExit, schedule)
       <!-- Roots: each continues a strand at the strand's own opacity; the halo and glint of the two main
            strands fade out along the first stretch, so there is no seam at the split. -->
       <g class="roots" :class="{ 'roots-lit': rootsLit }">
-        <path v-for="(d, i) in geo.rootlets" :key="`o${i}`" class="rootlet" :d="d" />
+        <path v-for="(r, i) in geo.rootlets" :key="`o${i}`" class="rootlet sway anim" :d="r.d" :style="r.style" />
         <template v-for="(r, i) in geo.roots" :key="`r${i}`">
           <g class="root-g" :class="{ lit: r.id && (litProject === r.id || pulseIn === r.id) }" :data-root="r.id || null">
             <template v-if="r.halo">
@@ -457,7 +467,7 @@ watch(heroExit, schedule)
       <g class="sec-branches">
         <g v-for="(b, i) in geo.sbranches" :key="i">
           <path class="sb" :d="b.r" />
-          <path v-if="b.twig" class="sb-twig" :d="b.twig" />
+          <path v-if="b.twig" class="sb-twig sway anim" :d="b.twig.d" :style="b.twig.style" />
         </g>
       </g>
 
@@ -471,7 +481,7 @@ watch(heroExit, schedule)
       >
         <path class="b-halo" :d="b.d" />
         <path class="b-main" :d="b.r" />
-        <path v-if="b.twig" class="b-twig" :d="b.twig" />
+        <path v-if="b.twig" class="b-twig sway anim" :d="b.twig.d" :style="b.twig.style" />
         <path class="b-grow" :d="b.d" pathLength="1" />
         <path class="b-pulse" :d="b.d" pathLength="1" />
       </g>
@@ -485,7 +495,7 @@ watch(heroExit, schedule)
       >
         <path class="b-halo" :d="b.d" />
         <path class="b-main" :d="b.r" />
-        <path v-if="b.twig" class="b-twig" :d="b.twig" />
+        <path v-if="b.twig" class="b-twig sway anim" :d="b.twig.d" :style="b.twig.style" />
         <path class="b-pulse" :d="b.d" pathLength="1" />
       </g>
     </svg>
@@ -653,6 +663,25 @@ watch(heroExit, schedule)
 .b-twig {
   fill: var(--glow-branch);
   opacity: 0.4;
+}
+/* Slow, low-amplitude sway of free-ended twigs and rootlets around their attachment point (origin set
+   per piece). Paused with the motion control / reduced motion (.anim); off on small screens. */
+.sway {
+  transform-box: view-box;
+  animation: twig-sway 8s ease-in-out infinite alternate;
+}
+@keyframes twig-sway {
+  from {
+    transform: rotate(-2.2deg);
+  }
+  to {
+    transform: rotate(2.2deg);
+  }
+}
+@media (max-width: 860px) {
+  .sway {
+    animation: none;
+  }
 }
 
 /* Project branches: dim at rest; hover/focus lights the whole path and sends one pulse to the card,

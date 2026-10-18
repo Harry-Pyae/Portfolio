@@ -41,4 +41,5 @@ Written from your account: a 2022 personal app (Vue, Laravel, Axios, MySQL), two
 - [ ] **LinkedIn:** no URL yet, so it is hidden.
 - [ ] **Portrait:** `portrait` is `null`, so the hero shows the "H" monogram. Put a photo in `public/` and set `portrait: 'harry.jpg'`.
 - [ ] **GitHub:** shown as `github.com/Harry-Pyae`, taken from your repositories. Change it if you prefer another profile link.
-- [ ] **Interests:** the chess, story-driven games and cappuccino lines are your starting copy from `four-pj.md`; edit them in `profile.interests`.
+- [ ] **Interests:** the chess, story-driven games and cappuccino lines are the starting copy from your brief; edit them in `profile.interests`.
+- [ ] **Main portfolio URL:** once this portfolio is deployed, set `person.portfolio` in the showcase's `src/data/projects.js` (its footer shows "coming soon" until then). The showcase itself is live at https://harry-project-showcase.vercel.app.

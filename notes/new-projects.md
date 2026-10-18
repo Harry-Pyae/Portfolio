@@ -167,7 +167,7 @@ Built in the scratchpad (`pres/fhcp`, `pres/cmh`); the original repositories are
 ## Facts searched for but not found
 
 - **Pagination story:** no account of a "manual API pagination challenge" exists in the user's messages in any of
-  the 8 local Claude sessions, in `redesign.md`, `design-fix.md`, `four-pj.md` or `profile.js`. In the public code,
+  the 8 local Claude sessions, in the design briefs (since deleted) or `profile.js`. In the public code,
   BloodCare (Laravel `->paginate()`, 17 uses) and InternshipJP (Spring `Pageable`/`PageRequest`, a shared React
   `Pagination.jsx`) both use framework pagination, not a hand-written one; MyMedia, Pizza, ChatLedger, ClickWise and
   AstroCare have no API pagination code. One pagination-related bug is documented: BloodCare `STATUS.md` (around
@@ -180,4 +180,4 @@ Built in the scratchpad (`pres/fhcp`, `pres/cmh`); the original repositories are
   name or result. No finalist or winning result is recorded anywhere.
 - **Development offers:** only the user's own wording ("multiple development offers"); no employers or details
   (and none should be invented).
-- **Interests (chess, games, cappuccino):** only the starting copy in `four-pj.md`.
+- **Interests (chess, games, cappuccino):** only the starting copy in the brief (since deleted).
