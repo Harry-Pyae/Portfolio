@@ -21,7 +21,6 @@ export type RecFrame = { f: string; t: number }
 export type ReelProps = {
   title: string
   meta: string // e.g. "Hackathon · 2026"
-  accent: string
   logo?: string // file in public/logos
   // Sharp walkthrough recording: JPEG frames + index.json in public/<dir> (see scratchpad hq.mjs).
   // from / to trim it (seconds); frames are filled in by calculateMetadata in Root.tsx.
@@ -36,10 +35,13 @@ const SCREEN_FROM = 34
 const SCREEN_FRAMES = 400 // the recording plays across this window (about 1.5x real time)
 const END_FROM = 420
 
+// The site's restrained cyan, shared by every reel (no per-project brand colours or gradients).
+export const ACCENT = '#50d9e8'
+
 export const ProjectReel: React.FC<ReelProps> = (props) => {
   return (
     <AbsoluteFill style={{ backgroundColor: '#040b18', fontFamily }}>
-      <Starfield accent={props.accent} />
+      <Starfield />
       <Track name="Scenes">
         <TitleHit name="Title" durationInFrames={SCREEN_FROM + 2} {...props} />
         <ScreenFlight name="Walkthrough" from={SCREEN_FROM} durationInFrames={SCREEN_FRAMES} {...props} />
@@ -57,7 +59,7 @@ const STARS = Array.from({ length: 90 }, (_, i) => ({
   o: 0.25 + random(`o${i}`) * 0.6,
 }))
 
-const Starfield: React.FC<{ accent: string }> = ({ accent }) => {
+const Starfield: React.FC = () => {
   const frame = useCurrentFrame()
   return (
     <AbsoluteFill>
@@ -78,19 +80,6 @@ const Starfield: React.FC<{ accent: string }> = ({ accent }) => {
         ))}
       </Interactive.Div>
       <Interactive.Div
-        name="Accent glow"
-        style={{
-          position: 'absolute',
-          left: 340,
-          top: 60,
-          width: 600,
-          height: 600,
-          borderRadius: '50%',
-          background: `radial-gradient(closest-side, ${accent}55, transparent)`,
-          opacity: interpolate(frame, [0, 40, REEL_FRAMES], [0, 0.8, 0.5]),
-        }}
-      />
-      <Interactive.Div
         name="Orbit ring"
         style={{
           position: 'absolute',
@@ -99,34 +88,21 @@ const Starfield: React.FC<{ accent: string }> = ({ accent }) => {
           width: 900,
           height: 900,
           borderRadius: '50%',
-          border: `1px solid ${accent}40`,
+          border: `1px solid ${ACCENT}30`,
           rotate: interpolate(frame, [0, REEL_FRAMES], ['0deg', '30deg']),
         }}
       >
-        <div style={{ position: 'absolute', left: 445, top: -5, width: 10, height: 10, borderRadius: '50%', background: accent, boxShadow: `0 0 18px ${accent}` }} />
+        <div style={{ position: 'absolute', left: 445, top: -5, width: 10, height: 10, borderRadius: '50%', background: ACCENT, opacity: 0.7 }} />
       </Interactive.Div>
     </AbsoluteFill>
   )
 }
 
 /* ---------------------------------------------------------------- scene 1 */
-const TitleHitInner: React.FC<ReelProps> = ({ title, meta, accent }) => {
+const TitleHitInner: React.FC<ReelProps> = ({ title, meta }) => {
     const frame = useCurrentFrame()
     return (
       <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center' }}>
-        <Interactive.Div
-          name="Light streak"
-          style={{
-            position: 'absolute',
-            top: 358,
-            left: 0,
-            width: 1280,
-            height: 2,
-            opacity: 0.6,
-            background: `linear-gradient(90deg, transparent, ${accent}, transparent)`,
-            translate: interpolate(frame, [0, 24], ['-1300px 0px', '1300px 0px'], { easing: Easing.out(Easing.cubic), extrapolateRight: 'clamp' }),
-          }}
-        />
         <Interactive.Div
           name="Title"
           style={{
@@ -135,7 +111,7 @@ const TitleHitInner: React.FC<ReelProps> = ({ title, meta, accent }) => {
             fontWeight: 700,
             letterSpacing: '-0.04em',
             textAlign: 'center',
-            textShadow: `0 0 30px ${accent}55`,
+            
             scale: interpolate(frame, [2, 24], [1.12, 1], { easing: Easing.out(Easing.cubic), extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }),
             opacity: interpolate(frame, [2, 12, 24, 34], [0, 1, 1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }),
             filter: `blur(${interpolate(frame, [2, 18], [6, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })}px)`,
@@ -149,7 +125,7 @@ const TitleHitInner: React.FC<ReelProps> = ({ title, meta, accent }) => {
           style={{
             position: 'absolute',
             top: 450,
-            color: accent,
+            color: ACCENT,
             fontSize: 24,
             fontWeight: 500,
             letterSpacing: '0.08em',
@@ -165,7 +141,7 @@ const TitleHitInner: React.FC<ReelProps> = ({ title, meta, accent }) => {
 const TitleHit = Interactive.create({ Component: TitleHitInner, layout: 'absolute-fill', componentName: 'TitleHit' })
 
 /* ---------------------------------------------------------------- scene 2 */
-const ScreenFlightInner: React.FC<ReelProps> = ({ accent, rec, shots }) => {
+const ScreenFlightInner: React.FC<ReelProps> = ({ rec, shots }) => {
     const frame = useCurrentFrame()
     const { fps } = useVideoConfig()
     // Gentle 3D only on entry and exit; face-on, near full size and steady while the app is on screen.
@@ -186,8 +162,8 @@ const ScreenFlightInner: React.FC<ReelProps> = ({ accent, rec, shots }) => {
             height: 675,
             borderRadius: 18,
             overflow: 'hidden',
-            border: `1px solid ${accent}99`,
-            boxShadow: `0 40px 120px -30px rgba(0,0,0,0.9), 0 0 60px -10px ${accent}88`,
+            border: `1px solid ${ACCENT}55`,
+            boxShadow: '0 40px 120px -30px rgba(0,0,0,0.9)',
             background: '#0b1220',
             opacity: interpolate(frame, [0, 12, E - 18, E], [0, 1, 1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }),
             transform: `translate(${tx}px, ${ty}px) rotateX(${rx}deg) rotateY(${ry}deg) scale(${sc})`,
@@ -198,20 +174,6 @@ const ScreenFlightInner: React.FC<ReelProps> = ({ accent, rec, shots }) => {
           ) : (
             <StillsSequence shots={shots ?? []} />
           )}
-          {/* one faint light sweep across the glass while it settles */}
-          <Interactive.Div
-            name="Sheen"
-            style={{
-              position: 'absolute',
-              top: -200,
-              left: 0,
-              width: 260,
-              height: 1100,
-              rotate: '20deg',
-              background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)',
-              translate: interpolate(frame, [20, 70], ['-500px 0px', '1500px 0px'], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }),
-            }}
-          />
         </Interactive.Div>
       </AbsoluteFill>
     )
@@ -220,8 +182,10 @@ const ScreenFlight = Interactive.create({ Component: ScreenFlightInner, layout: 
 
 // Plays a frame recording: each composition frame shows the latest captured frame at that moment,
 // so static stretches cost nothing and the browser's own crisp pixels go straight into the render.
-const RecordedFrames: React.FC<{ rec: NonNullable<ReelProps['rec']>; rate: number }> = ({ rec, rate }) => {
-  const frame = useCurrentFrame()
+// `at` shows a specific frame of the sequence instead of the current one (used for cross-fades).
+export const RecordedFrames: React.FC<{ rec: NonNullable<ReelProps['rec']>; rate: number; at?: number }> = ({ rec, rate, at }) => {
+  const current = useCurrentFrame()
+  const frame = at ?? current
   const { fps } = useVideoConfig()
   const frames = rec.frames ?? []
   const t = (rec.from ?? 0) + (frame / fps) * rate
@@ -233,7 +197,7 @@ const RecordedFrames: React.FC<{ rec: NonNullable<ReelProps['rec']>; rate: numbe
     else hi = mid - 1
   }
   if (!frames.length) return null
-  return <Img src={staticFile(`${rec.dir}/${frames[lo].f}`)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+  return <Img src={staticFile(`${rec.dir}/${frames[lo].f}`)} style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#040b18' }} />
 }
 
 // Screenshots crossfading slowly, each easing in slightly (used when there is no recording).
@@ -268,7 +232,7 @@ const Still: React.FC<{ src: string }> = ({ src }) => {
 }
 
 /* ---------------------------------------------------------------- scene 3 */
-const EndCardInner: React.FC<ReelProps> = ({ title, meta, accent, logo }) => {
+const EndCardInner: React.FC<ReelProps> = ({ title, meta, logo }) => {
     const frame = useCurrentFrame()
     return (
       <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'column', gap: 18 }}>
@@ -279,7 +243,7 @@ const EndCardInner: React.FC<ReelProps> = ({ title, meta, accent, logo }) => {
             width: 220,
             height: 220,
             borderRadius: '50%',
-            border: `1px solid ${accent}`,
+            border: `1px solid ${ACCENT}`,
             scale: interpolate(frame, [0, 36], [0.6, 1.8], { easing: Easing.out(Easing.cubic), extrapolateRight: 'clamp' }),
             opacity: interpolate(frame, [0, 8, 36], [0, 0.45, 0], { extrapolateRight: 'clamp' }),
           }}
@@ -314,7 +278,7 @@ const EndCardInner: React.FC<ReelProps> = ({ title, meta, accent, logo }) => {
         <Interactive.Div
           name="End meta"
           style={{
-            color: accent,
+            color: ACCENT,
             fontSize: 22,
             fontWeight: 500,
             letterSpacing: '0.08em',

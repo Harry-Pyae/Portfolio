@@ -71,7 +71,7 @@ The assignments follow only what is verified about each project:
 
 Several projects share a region where that region gave the best seam; no project is given a story.
 
-Fades are 0.8 s (two beats) on rhythmic excerpts and 1.5 s on the ambient intro. `crossfadeSeconds` is 1.2 s (three beats).
+Fades are 2.6 s on rhythmic excerpts and 3 s on the ambient intro, and `crossfadeSeconds` is 2.6 s: after listening, the author found shorter fades too abrupt, so the music now drifts in. Volumes were lowered by about a quarter (main 0.29, inspect 0.41) for the same reason.
 
 ## Limitations
 

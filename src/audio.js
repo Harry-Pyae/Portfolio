@@ -134,7 +134,7 @@ function apply() {
   fadeOutVoices()
   const id = dest
   if (id && cues[id] && buffer) {
-    startVoice(id, ctx.currentTime + 0.02)
+    startVoice(id, ctx.currentTime + 0.5) // a beat later, so the main track has begun to recede
     fade(mainGain.gain, 0, X)
     pauseTimer = setTimeout(() => dest && mainEl.pause(), X * 1000 + 80) // keeps its playback position
     return

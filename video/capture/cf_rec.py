@@ -15,7 +15,7 @@ sys.path.insert(0, os.getcwd())
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont, QFontDatabase
 from PySide6.QtTest import QTest
-from PySide6.QtWidgets import QAbstractButton, QApplication
+from PySide6.QtWidgets import QAbstractButton, QApplication, QLineEdit
 
 from qtrec import Rec
 
@@ -62,28 +62,44 @@ def main(frames):
         r = Rec(w, frames)
         w.show_view(ALL)
         r.start()
-        r.wait(1.6)
+        r.mark("A made-up library, classified offline (no network calls)")
+        r.wait(2.2)
         w.show_view(DECIDE)
-        r.wait(1.8)
+        r.mark("When it isn't sure, it asks instead of guessing")
+        r.wait(2.2)
         first = w.waiting_docs[0]["id"] if w.waiting_docs else None
         if first:
             w.show_details(first)
-            r.wait(2.2)
-        press("File in", r, 2.0)
+            r.mark("Each suggestion explains itself: similar documents and shared terms")
+            r.wait(2.6)
+        r.mark("Filing works on a hash-verified copy; the original never changes")
+        press("File in", r, 2.2)
         w.close_details()
         r.wait(0.8)
+        name = next((e for e in w.findChildren(QLineEdit) if e.isVisible() and "name" in e.placeholderText().lower()), None)
+        if name:
+            r.mark("Documents that share a new subject become a new category")
+            QTest.mouseClick(name, Qt.LeftButton)
+            for ch in "Photography":
+                QTest.keyClick(name, ch)
+                r.wait(0.07)
+            r.wait(0.6)
+            press("Create", r, 2.2)
         w.show_view(AUTO)
-        r.wait(1.4)
+        r.mark("Files automatically only when one category is clearly ahead")
+        r.wait(1.8)
         filed = [i.doc_id for i in w.auto_page.items] if hasattr(w.auto_page, "items") else []
         if filed:
             w.show_details(filed[0])
             r.wait(2.4)
-            press("Looks right", r, 1.8)
+            r.mark("Every confirmation teaches it")
+            press("Looks right", r, 2.2)
             w.close_details()
             r.wait(0.6)
         cat = next(c["id"] for c in w.org.catalog.categories() if c["name"] == "Recipes")
         w.show_view("category", cat)
-        r.wait(2.0)
+        r.mark("Browse by category")
+        r.wait(2.4)
         r.done()
         w.close()
         w.org.catalog.close()

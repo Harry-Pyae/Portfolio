@@ -14,6 +14,7 @@ export async function record(dir, fn, opts = {}) {
   p.on('pageerror', (e) => console.log('pageerror:', e.message.slice(0, 160)))
   const cdp = await ctx.newCDPSession(p)
   const index = []
+  const marks = [] // caption cues: { t, text } on the edited timeline
   let paused = true
   let skipped = 0 // seconds removed from the timeline so far
   let pausedAt = 0
@@ -56,6 +57,10 @@ export async function record(dir, fn, opts = {}) {
       await p.waitForTimeout(300)
       await rec.start()
     },
+    // caption for what happens next (shown as a lower third in the Walkthrough video)
+    mark(text) {
+      marks.push({ t: +(t0 == null ? 0 : now() - t0 - skipped).toFixed(3), text })
+    },
     wait: (ms) => p.waitForTimeout(ms),
     // smooth, human-paced scroll
     async glide(dy, ms = 1400) {
@@ -80,7 +85,7 @@ export async function record(dir, fn, opts = {}) {
     }
     await cdp.send('Page.stopScreencast').catch(() => {})
     const end = index.length ? index[index.length - 1].t : 0
-    fs.writeFileSync(`${dir}/index.json`, JSON.stringify({ duration: +(end + 0.5).toFixed(3), frames: index }))
+    fs.writeFileSync(`${dir}/index.json`, JSON.stringify({ duration: +(end + 0.5).toFixed(3), frames: index, marks }))
     console.log(`recorded ${index.length} frames, ${end.toFixed(1)} s → ${dir}`)
     await ctx.close()
     await b.close()

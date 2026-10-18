@@ -21,6 +21,7 @@ class Rec:
         self.frames, self.t, self.last, self.on = [], 0.0, None, False
         self.pool = ThreadPoolExecutor(8)      # scaling + JPEG encoding off the UI thread (encoding is ~5x a grab)
         self.pending = []
+        self.marks = []                        # caption cues: {t, text} on the edited timeline
 
     def _grab(self):
         img = self.w.grab().toImage()
@@ -47,6 +48,11 @@ class Rec:
         self.last, self.on = time.monotonic(), True
         QApplication.processEvents()
         self._grab()
+
+    def mark(self, text):
+        """Caption for what happens next (a lower third in the Walkthrough video)."""
+        self._tick()
+        self.marks.append({"t": round(self.t, 3), "text": text})
 
     def stop(self):
         self._tick()
@@ -83,5 +89,5 @@ class Rec:
         self.stop()
         self._grab()
         self.pool.shutdown(wait=True)
-        (self.out / "index.json").write_text(json.dumps({"duration": round(self.t + 0.5, 3), "frames": self.frames}))
+        (self.out / "index.json").write_text(json.dumps({"duration": round(self.t + 0.5, 3), "frames": self.frames, "marks": self.marks}))
         print(f"recorded {len(self.frames)} frames, {self.t:.1f} s -> {self.out}")

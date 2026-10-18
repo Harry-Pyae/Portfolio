@@ -19,10 +19,10 @@ the file), and I'll apply the changes.
 
 ## Media
 
-7. **ClickWise:** the live site's text detection was failing (the Groq model `qwen/qwen3.6-27b` is unavailable to the deployed key). The reel shows the live masking tool and quiz, and the detection screenshots are labelled as the app's demo-mode sample results. Fix the deployed model so the detection results can be re-recorded, or keep it as is?
+7. **ClickWise:** the live site's text detection was failing (the Groq model `qwen/qwen3.6-27b` is unavailable to the deployed key). The reel shows the live masking tool and quiz, and the detection screenshots come from the app's demo mode (sample results, no longer captioned). Fix the deployed model so the detection results can be re-recorded, or keep it as is?
 8. **FlavourWave map screenshot:** it shows a picked map location's coordinates; the teammate avatar is pixelated. Keep it or remove it?
-9. **Sample content in recordings:** the MyMedia reel uses sample categories and posts, and the Pizza reel a sample menu with generated pizza images. Both are labelled in the captions. OK?
-10. **FHCP and CineMagicHub** are shown from labelled presentation copies, with their third-party film/series imagery replaced by generated "SAMPLE POSTER" art. Your original repositories are unchanged. OK, or would you rather show no screenshots for them?
+9. **Sample content in recordings:** the MyMedia reel uses sample categories and posts, and the Pizza reel a sample menu with generated pizza images. As you asked, there are no captions under the videos, so this isn't stated on the page. OK?
+10. **FHCP and CineMagicHub** are shown from presentation copies, with their third-party film/series imagery replaced by generated "SAMPLE POSTER" art (the posters themselves say so; the video captions are gone as you asked). Your original repositories are unchanged. OK, or would you rather show no screenshots for them?
 11. **FHCP shows no year,** since only the May 2022 GitHub push date is known. Show "2022"?
 
 ## Structure

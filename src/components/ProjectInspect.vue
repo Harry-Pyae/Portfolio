@@ -35,7 +35,6 @@ const phase = ref('closed') // 'enter' | 'open' | 'leave' | 'closed'
 const simple = ref(false) // reduced motion or paused motion: plain fades, no travel
 const media = ref(null)
 const vid = ref(null)
-const now = ref(0)
 const autoplay = ref(false)
 const wisps = useWisps(['cyan', 'blue', 'green'])
 let opener = null
@@ -43,28 +42,13 @@ let ghost = null
 let timer = 0
 
 // ---------- case study content (unchanged from the former details dialog) ----------
-const chapters = computed(() => [
-  ['Title', 0],
-  [shown.value?.walkthrough ?? 'Recorded app', 1.13],
-  ['End card', 14],
-])
-const current = computed(() => chapters.value.findLastIndex(([, t]) => now.value >= t - 0.05))
-const clock = (t) => `0:${String(Math.floor(t)).padStart(2, '0')}`
 const canPreview = () => motionOn.value && !prefersReduced.value && matchMedia('(hover: hover) and (pointer: fine)').matches
 const apps = computed(() => (shown.value?.apps ? appsOf(shown.value) : null))
 const parentSuite = computed(() => suites.find((x) => x.id === shown.value?.suite))
 const storyHere = computed(() => story.published && story.project && story.project === shown.value?.id)
-function seek(t) {
-  const v = vid.value
-  if (!v) return
-  v.currentTime = t
-  now.value = t
-  v.play().catch(() => {})
-}
 function load(p) {
   shown.value = p
   media.value = p.video ? 'video' : (p.gallery?.[0] ?? null)
-  now.value = 0
   autoplay.value = canPreview()
 }
 
@@ -463,25 +447,10 @@ watch([motionOn, prefersReduced], kick)
               controls
               preload="none"
               :aria-label="`${shown.title} walkthrough video`"
-              @timeupdate="now = $event.target.currentTime"
             ></video>
             <img v-else :src="media" :alt="`${shown.title} screenshot ${shown.gallery.indexOf(media) + 1}`" />
           </div>
           <ProjectArt v-else :project="shown" :alt="`${shown.title} preview`" class="banner" />
-          <div v-if="media === 'video'" class="player">
-            <div class="chapters" role="group" aria-label="Video chapters">
-              <button v-for="([name, t], i) in chapters" :key="name" type="button" :aria-current="current === i ? 'true' : null" @click="seek(t)">
-                {{ name }} <span class="time">{{ clock(t) }}</span>
-              </button>
-              <button type="button" class="replay" @click="seek(0)">
-                <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
-                  <path d="M3.5 8a4.5 4.5 0 104.5-4.5H5M5 1.5l-2 2 2 2" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-                Replay
-              </button>
-            </div>
-            <p v-if="shown.videoNote" class="note">{{ shown.videoNote }}</p>
-          </div>
           <div v-if="media && (shown.gallery?.length ?? 0) + (shown.video ? 1 : 0) > 1" class="thumbs" role="group" aria-label="Project media">
             <button v-if="shown.video" type="button" :aria-pressed="media === 'video'" @click="media = 'video'">
               <img :src="shown.image" alt="" />
@@ -897,47 +866,10 @@ watch([motionOn, prefersReduced], kick)
   height: 100%;
   object-fit: contain;
 }
-.player {
-  padding: 12px clamp(20px, 4vw, 40px) 0;
-}
-.chapters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.chapters button {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 36px;
-  padding: 6px 12px;
-  border: 1px solid var(--line-strong);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--bg) 55%, var(--surface));
-  color: var(--ink-2);
-  font: 500 13px/1.2 var(--font-body);
-  cursor: pointer;
-  transition:
-    border-color 0.25s var(--ease),
-    color 0.25s var(--ease);
-}
-.chapters button:hover,
-.chapters button[aria-current='true'] {
-  border-color: var(--accent);
-  color: var(--ink);
-}
-.chapters .time {
-  color: var(--ink-3);
-  font-variant-numeric: tabular-nums;
-}
-.chapters .replay {
-  margin-left: auto;
-}
-.note {
-  margin: 8px 0 0;
-  color: var(--ink-3);
-  font-size: 13px;
-  line-height: 1.5;
+/* No time readout in the video's own controls: the reels are short. */
+.media video::-webkit-media-controls-current-time-display,
+.media video::-webkit-media-controls-time-remaining-display {
+  display: none;
 }
 .thumbs {
   display: flex;

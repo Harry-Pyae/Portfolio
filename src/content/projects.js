@@ -22,17 +22,11 @@ export const featured = ['bloodcare', 'internshipjp', 'clarifile', 'flavourwave'
 //   contribution  only where documented (omit otherwise; nothing is shown)
 //   context       scope, team or time constraints when known, or the project's place in the journey
 //   image         poster / cover screenshot; gallery: screenshots; icon: small logo (optional)
-//   video         walkthrough reel rendered from video/ with Remotion; videoNote: caption under it;
-//                 walkthrough: name of its middle chapter when it isn't a screen recording
+//   video         walkthrough reel rendered from video/ with Remotion
 //   links         only real URLs; leave '' to hide a link
 //   status        optional development status, shown on cards and in details (e.g. 'In development')
 //   suite         id of the suite an app belongs to (see `suites`)
 const shots = (id, n) => Array.from({ length: n }, (_, i) => `projects/${id}/${i + 1}.jpg`)
-const RECORDED = 'Recorded from the running app, sped up slightly. The title and end cards are motion graphics.'
-const LIVE = 'Recorded on the live site, sped up slightly. The title and end cards are motion graphics.'
-const DESKTOP = 'Recorded from the running desktop app with made-up documents, sped up slightly. The title and end cards are motion graphics.'
-const PRESENTATION =
-  'Recorded from a presentation copy of the page: the original third-party images are replaced with generated artwork. The title and end cards are motion graphics.'
 
 export const projects = [
   {
@@ -44,7 +38,6 @@ export const projects = [
     image: 'projects/bloodcare/2.jpg',
     gallery: shots('bloodcare', 5),
     video: 'projects/bloodcare/reel.mp4',
-    videoNote: RECORDED,
     tagline: 'Blood donation cards, stock and hospital requests, traceable end to end by QR.',
     problem:
       'A national blood service needs donors, staff, the laboratory and hospitals in one system, with every unit of blood traceable from donation to transfusion.',
@@ -70,7 +63,6 @@ export const projects = [
     image: 'projects/internshipjp/1.jpg',
     gallery: shots('internshipjp', 5),
     video: 'projects/internshipjp/reel.mp4',
-    videoNote: RECORDED,
     tagline: 'Internships matched on verified skills, in English and Myanmar.',
     problem:
       'Matching students to internships only works if employers can trust the skills shown and every score explains itself, for a bilingual audience.',
@@ -97,8 +89,6 @@ export const projects = [
     image: 'projects/flavourwave/1.jpg',
     gallery: shots('flavourwave', 4),
     video: 'projects/flavourwave/reel.mp4',
-    videoNote: "Built from the project's own screenshots. The title and end cards are motion graphics.",
-    walkthrough: 'Screenshots', // chapter name in the player (default: 'Recorded app')
     tagline: 'A drinks storefront with Stripe pre-orders and a delivery-tracking back office.',
     problem: 'Connect a consumer storefront to the operations behind it, from pre-order and payment to production, stock and delivery.',
     solution:
@@ -122,8 +112,6 @@ export const projects = [
     image: 'projects/clickwise/2.jpg',
     gallery: shots('clickwise', 5),
     video: 'projects/clickwise/reel.mp4',
-    videoNote:
-      "Recorded on the live site (masking and the quiz), sped up slightly. Text detection on the live site was failing at recording time, so the detection screenshots come from the app's built-in demo mode and show sample scores. The title and end cards are motion graphics.",
     tagline: 'Detect AI-generated text, images and audio, with scores that explain themselves.',
     problem: 'People need a clear read on whether text, images or audio were AI-generated, not a single opaque percentage.',
     solution:
@@ -147,7 +135,6 @@ export const projects = [
     image: 'projects/astrocare/2.jpg',
     gallery: shots('astrocare', 4),
     video: 'projects/astrocare/reel.mp4',
-    videoNote: LIVE,
     tagline: 'Astronaut health trends measured against each crew member’s own baseline.',
     problem: 'Surface meaningful health changes for crew without alarming them or pretending to diagnose, even when data is missing or stale.',
     solution:
@@ -171,7 +158,6 @@ export const projects = [
     image: 'projects/chatledger/2.jpg',
     gallery: shots('chatledger', 2),
     video: 'projects/chatledger/reel.mp4',
-    videoNote: LIVE,
     tagline: 'Turns messy Messenger and Viber sales chats into a clean order book.',
     problem: 'Small Myanmar businesses take orders in informal, mixed Burmese and English chats that are hard to turn into a reliable record of sales and unpaid amounts.',
     solution:
@@ -195,7 +181,6 @@ export const projects = [
     image: 'projects/mymedia/1.jpg',
     gallery: shots('mymedia', 3),
     video: 'projects/mymedia/reel.mp4',
-    videoNote: `${RECORDED} The categories and posts are sample content added for the recording.`,
     tagline: 'A news and media admin with categories, posts and trending stats.',
     problem: 'Separate content management from reading: a dashboard for editors and a public API for a single-page client.',
     solution:
@@ -219,7 +204,6 @@ export const projects = [
     image: 'projects/pizza/1.jpg',
     gallery: shots('pizza', 5),
     video: 'projects/pizza/reel.mp4',
-    videoNote: `${RECORDED} The menu and its pizza images are sample content added for the recording.`,
     tagline: 'Browse pizzas, fill a cart and order, with an admin to run the shop.',
     problem: 'Serve customers and shop admins from one app, and keep the cart and ordering responsive without full page reloads.',
     solution:
@@ -244,7 +228,6 @@ export const projects = [
     image: 'projects/classifile/1.jpg',
     gallery: shots('classifile', 4),
     video: 'projects/classifile/reel.mp4',
-    videoNote: DESKTOP,
     tagline: 'Sorts documents by their content: files a copy when sure, asks when not, and learns from the answers.',
     problem:
       'Sorting folders of mixed documents takes time, and an automatic sorter only helps if it knows when to ask and never loses or alters the originals.',
@@ -271,7 +254,6 @@ export const projects = [
     image: 'projects/summarease/1.jpg',
     gallery: shots('summarease', 4),
     video: 'projects/summarease/reel.mp4',
-    videoNote: DESKTOP,
     tagline: 'Summarizes a document at the level of detail you choose, with every line linked to its source.',
     problem: 'A long document needs a quick read you can trust, so every line of a summary should lead back to where it came from.',
     solution:
@@ -295,8 +277,6 @@ export const projects = [
     image: 'projects/fhcp/1.jpg',
     gallery: shots('fhcp', 4),
     video: 'projects/fhcp/reel.mp4',
-    videoNote: PRESENTATION,
-    walkthrough: 'Recorded page',
     tagline: 'My first HTML and CSS page: a one-page fan site for the series Supernatural.',
     highlights: [
       'Hand-written HTML and CSS, no JavaScript',
@@ -317,8 +297,6 @@ export const projects = [
     image: 'projects/cinemagichub/1.jpg',
     gallery: shots('cinemagichub', 4),
     video: 'projects/cinemagichub/reel.mp4',
-    videoNote: PRESENTATION,
-    walkthrough: 'Recorded page',
     tagline: 'An early movie-themed landing page with dropdown menus and hover effects.',
     highlights: [
       'Bootstrap 4 navbar with Movies and Guest dropdowns',

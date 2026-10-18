@@ -26,7 +26,7 @@ npm run preview   # serve dist/ locally
   - `featured`: the project or suite ids shown in the hero spiral, in order (seven by default). Every project is also on the page, in the order of the `projects` array within each group.
   - `suites`: a suite (ClariFile) groups related apps; it is not a project itself. `apps` lists its app ids, `status` its development status, `integration` how the apps relate as currently planned. Its card opens an overview that leads to each app; an app names its suite with `suite`.
   - `story`: the "Getting pagination right" engineering story (`year`, `label`, `title`, `teaser`, short `parts`, an illustrative `code` sample). With `project: null` it is a fixed card in About whose full text opens in an overlay; set `project` to an id to show it inside that project instead.
-  - Each project: `tagline` (the one sentence on cards), `problem` and `solution` (one or two sentences each), `highlights` (a few verified features), `contribution` (only where documented; leave `null` to hide the section), `context` (team, scope or time constraints when known, or the project's place in your journey), `stack`, `year`, `links` (`demo`, `github`; leave `''` to hide), `image` (cover and video poster), `gallery` (screenshots), `icon` (optional logo), `video` (walkthrough reel), `videoNote` (caption under the reel), `walkthrough` (chapter name when the reel is not a screen recording) and `status` (optional development status, shown on cards and in details).
+  - Each project: `tagline` (the one sentence on cards), `problem` and `solution` (one or two sentences each), `highlights` (a few verified features), `contribution` (only where documented; leave `null` to hide the section), `context` (team, scope or time constraints when known, or the project's place in your journey), `stack`, `year`, `links` (`demo`, `github`; leave `''` to hide), `image` (cover and video poster), `gallery` (screenshots), `icon` (optional logo), `video` (walkthrough reel) and `status` (optional development status, shown on cards and in details).
   - Media lives in `public/projects/<id>/` (`1.jpg`…, `icon.*`, `reel.mp4`). Anything still to confirm is listed in `AUTHOR-CHECKLIST.md`, never shown as a placeholder on the page.
 - The page `<title>` and meta description live in `index.html`.
 
@@ -51,7 +51,7 @@ src/
     BeganSection.vue     Where it began: the earliest projects, set among the footer roots
     InterestsSection.vue Beyond the Code: interests with small line drawings (not interactive)
     ProjectNode.vue      compact project card: one button with symbol, title, sentence (+ category in the hero), connection point
-    ProjectInspect.vue   in-page project inspection: the selected project glowing at the centre, the others orbiting it; case study (reel with chapters, screenshots, problem/solution, highlights, links); #/project/<id> history entries
+    ProjectInspect.vue   in-page project inspection: the selected project glowing at the centre, the others orbiting it; case study (reel, screenshots, problem/solution, highlights, links); #/project/<id> history entries
     SoundControls.vue    soundtrack play/pause, mute and "Enable soundtrack", shared by the navbar and the inspection scene
     ProjectArt.vue       screenshot, or a placeholder / small glyph with an orbit line
     AboutSection.vue     identity in an orbital frame, first-person narrative, milestones branch
@@ -86,7 +86,7 @@ Cards ride a looping track measured in "slots". The visible column is the first 
 
 Each project has a 16-second reel (`public/projects/<id>/reel.mp4`) in its inspection scene: a short title card, the recorded app (FlavourWave: its own screenshots) on a gently tilted screen, and an end card. No narration.
 
-The player in the inspection scene loads the reel only when the project is opened (`preload="none"`, screenshot poster). It uses the browser's own controls (play/pause, seeking, fullscreen) plus Replay and three chapter buttons (Title, Recorded app, End card); the caption under it says which parts are recorded and which are motion graphics. A muted preview starts on its own only with motion on, no reduced-motion preference and a mouse-style pointer. Chapter times live in `ProjectInspect.vue` and must match the frames in `video/src/ProjectReel.tsx`.
+The player in the inspection scene loads the reel only when the project is opened (`preload="none"`, screenshot poster). It uses the browser's own controls (play/pause, seeking, fullscreen) and nothing else: no Replay button, chapter list, time readout or caption, so the top of each project is just the video and its screenshots. A muted preview starts on its own only with motion on, no reduced-motion preference and a mouse-style pointer.
 
 ```bash
 cd video

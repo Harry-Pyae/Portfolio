@@ -94,7 +94,17 @@ def main(frames, shots):
     def level(name):
         w.level.setCurrentIndex(["brief", "key", "detailed", "comprehensive"].index(name))
 
+    def summarize(name, caption, after=2.0):
+        level(name)
+        r.mark(caption)
+        r.wait(0.8)
+        QTest.mouseClick(w.summarize_button, Qt.LeftButton)
+        r.wait(0.4)
+        r.hold(lambda: until(lambda: w.sum_job is None))
+        r.wait(after)
+
     r.start()
+    r.mark("Two panes: the source document and its summary")
     r.wait(1.0)
     r.hold(lambda: (w.open_file(doc), until(lambda: w.read_job is None)))
     r.wait(1.2)
@@ -103,32 +113,26 @@ def main(frames, shots):
     r.wait(0.5)
     r.scroll(bar, 0, 1.0)
     snap(4)                                      # the document read, no summary yet
-    level("key")
-    r.wait(0.8)
-    QTest.mouseClick(w.summarize_button, Qt.LeftButton)
-    r.wait(0.4)
-    r.hold(lambda: until(lambda: w.sum_job is None))
-    r.wait(2.0)
+    summarize("brief", "Brief: the shortest level")
+    summarize("key", "Key points: every line copied from the document, never rewritten", 2.2)
     snap(1)                                      # key points, each line linked to its page
     late = [l.unit for l in getattr(w.summary, "lines", []) if getattr(l, "unit", None) is not None]
     print("summary lines:", len(late))
+    r.mark("Following a line's page link scrolls the source to that page")
     w.follow(QUrl(f"#u{late[-2] if len(late) > 1 else 0}"), "summary")   # what a click on a line's page link runs
-    r.wait(2.0)
+    r.wait(2.4)
     snap(2)
-    level("detailed")
-    r.wait(0.8)
-    QTest.mouseClick(w.summarize_button, Qt.LeftButton)
-    r.wait(0.4)
-    r.hold(lambda: until(lambda: w.sum_job is None))
-    r.wait(1.4)
+    summarize("detailed", "Detailed: more of the document, still source-linked", 1.4)
     sbar = w.summary_view.verticalScrollBar()
     if sbar.maximum():
         r.scroll(sbar, sbar.maximum(), 1.8)
     r.wait(0.6)
-    final = w.export_to(str(tmp / "Community garden handbook - Detailed summary.pdf"))
+    summarize("comprehensive", "Comprehensive: the fullest level", 1.6)
+    r.mark("Export to PDF or Word; an export never overwrites a file")
+    final = w.export_to(str(tmp / "Community garden handbook - Comprehensive summary.pdf"))
     print("exported:", Path(final).name if final else None, Path(final).stat().st_size if final else 0)
-    r.wait(2.0)
-    snap(3)                                      # detailed summary, export notice
+    r.wait(2.4)
+    snap(3)                                      # comprehensive summary, export notice
     r.done()
     w.close()
 
