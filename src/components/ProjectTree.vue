@@ -56,7 +56,6 @@ onBeforeUnmount(() => {
     <div class="section-head">
       <p class="eyebrow">Work</p>
       <h2 id="projects-title">Projects</h2>
-      <p class="section-lede">Every project grows from the same trunk. Open a card for the stack, scope and links.</p>
     </div>
 
     <div class="tree">
@@ -99,9 +98,6 @@ onBeforeUnmount(() => {
 .section-head > * {
   width: fit-content;
   max-width: 100%;
-}
-.section-lede {
-  max-width: 46ch;
 }
 
 /* ---------- layout: alternating sides of a central trunk; a side spine on small screens ---------- */

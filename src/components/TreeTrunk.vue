@@ -139,7 +139,16 @@ function measure() {
     // (a wide trunk on a tight curve would fold back on itself).
     push(wps[0].x, wps[0].y + Math.min(60, (head.y - wps[0].y) * 0.35))
     push(ax, head.y - 18)
-  } else push(Math.max(ax, headRight + 40 + rhoMid), head.y + head.h)
+  } else if (headRight + 40 + rhoMid > ax) {
+    // The heading reaches the trunk line: pass beside it, with enough height for the sideways shift
+    // that the strands bend gently instead of folding at the join, settling before the first label.
+    const x = headRight + 40 + rhoMid
+    const roomy = wps[0].y + 1.6 * Math.abs(x - wps[0].x)
+    push(x, Math.max(head.y + head.h, Math.min(roomy, (labels[0]?.y ?? Infinity) - 30)))
+  } else {
+    // Otherwise a short straight run out of the hero, then one swing to the first group label.
+    push(wps[0].x, wps[0].y + 40, hx.rho)
+  }
   if (labels.length) push(ax, labels[0].y)
   if (ports.length) push(ax, Math.max(...ports.map((p) => p.y)) + 70)
   // Current explorations: the suite node sits on the trunk (desktop); on small screens it branches off the spine.

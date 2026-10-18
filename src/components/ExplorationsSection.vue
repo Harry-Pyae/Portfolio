@@ -21,7 +21,6 @@ watch(shown, (v) => v && (exploreShown.value = true), { immediate: true })
     <div class="section-head">
       <p class="eyebrow rv" style="--d: 0">Now</p>
       <h2 id="explore-title" class="rv" style="--d: 0">Current explorations</h2>
-      <p class="section-lede rv" style="--d: 1">Desktop document tools I’m building in Python, grouped as the ClariFile suite.</p>
     </div>
 
     <div class="suite">

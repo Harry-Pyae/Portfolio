@@ -17,7 +17,6 @@ const ICONS = {
   <section class="interests" aria-labelledby="interests-title">
     <div class="intro rv" style="--d: 8">
       <h3 id="interests-title">Beyond the Code</h3>
-      <p>A few things I enjoy when I’m not building.</p>
     </div>
     <div class="lane" data-lane="interests" aria-hidden="true"></div>
     <div class="list-wrap rv" style="--d: 9">
@@ -44,11 +43,6 @@ const ICONS = {
 }
 .intro h3 {
   font-size: clamp(22px, 2.4vw, 28px);
-}
-.intro p {
-  margin: 10px 0 0;
-  color: var(--ink-2);
-  font-size: 15.5px;
 }
 .lane {
   align-self: stretch;
