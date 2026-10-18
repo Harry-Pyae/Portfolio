@@ -1,32 +1,22 @@
-import { ref, watch, onMounted } from 'vue'
-import { theme } from './state.js'
+import { ref, onMounted } from 'vue'
 
 // Nebula wisps behind the hero carousel: fractal noise shaped by two overlapping blurred ellipses (irregular, never a smooth
 // blob), rendered ONCE per tint into a small canvas and upscaled by CSS. Only their transform and
-// opacity ever animate. Textures are cached per theme.
+// opacity ever animate. Textures are cached per tint.
 const lowPower = (navigator.hardwareConcurrency || 8) <= 4 || matchMedia('(max-width: 640px)').matches
 const SIZE = lowPower ? 128 : 200
 
-// theme → tint name → [rgb, noise seed]. Components ask for roles; each theme supplies its colours.
+// tint name → [rgb, noise seed]: one muted teal family, so the nebula reads as a single quiet atmosphere
 const TINTS = {
-  nebula: {
-    // one muted teal family, so the nebula reads as a single quiet atmosphere rather than a colour blend
-    cyan: [[70, 165, 182], 3],
-    blue: [[44, 118, 150], 10],
-    green: [[58, 140, 156], 24],
-  },
-  ember: {
-    cyan: [[217, 173, 74], 3], // gold
-    blue: [[227, 198, 126], 10], // pale gold
-    green: [[227, 198, 126], 24],
-  },
+  cyan: [[70, 165, 182], 3],
+  blue: [[44, 118, 150], 10],
+  green: [[58, 140, 156], 24],
 }
 
 const cache = new Map()
 const texture = (name) => {
-  const key = `${theme.value}:${name}`
-  if (!cache.has(key)) cache.set(key, render(...TINTS[theme.value][name]))
-  return cache.get(key)
+  if (!cache.has(name)) cache.set(name, render(...TINTS[name]))
+  return cache.get(name)
 }
 
 // Components ask for the tints they need; generation happens during idle time, never on first paint.
@@ -37,7 +27,6 @@ export function useWisps(names) {
     const later = window.requestIdleCallback ?? ((cb) => setTimeout(cb, 300))
     later(load, { timeout: 1500 })
   })
-  watch(theme, load) // retint on theme switch (each theme's textures are cached after first use)
   return urls
 }
 

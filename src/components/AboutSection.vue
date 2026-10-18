@@ -347,9 +347,7 @@ const { classes, reveal } = useSection(root)
 }
 .sc-year {
   color: var(--accent);
-  font: 500 11.5px/1.4 var(--font-mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font: 500 12.5px/1.4 var(--font-mono);
 }
 .sc-title {
   color: var(--ink);

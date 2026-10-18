@@ -112,7 +112,7 @@ defineEmits(['open'])
   min-width: 0;
 }
 .title {
-  padding-right: 18px; /* room for the corner arrow */
+  padding-right: 22px; /* room for the corner arrow */
   font: 600 16.5px/1.25 var(--font-head);
   letter-spacing: -0.01em;
 }
@@ -128,9 +128,7 @@ defineEmits(['open'])
   gap: 7px;
   margin-top: 4px;
   color: var(--ink-3);
-  font: 500 11px/1.3 var(--font-mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font: 500 12px/1.3 var(--font-mono);
 }
 .label::before {
   content: '';

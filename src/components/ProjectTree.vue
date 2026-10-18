@@ -144,9 +144,8 @@ onBeforeUnmount(() => {
   background: var(--surface);
   box-shadow: 0 0 0 6px var(--bg); /* a clear ring of space where the trunk passes behind the label */
   color: var(--ink);
-  font: 500 13px/1.2 var(--font-mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font: 600 15px/1.2 var(--font-head);
+  letter-spacing: -0.005em;
 }
 .group:first-child .group-label {
   margin-top: 8px;

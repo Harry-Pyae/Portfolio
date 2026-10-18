@@ -1,6 +1,6 @@
 # Harry · Portfolio
 
-Dark portfolio built as one continuous cosmic tree: the hero's spiral of light (with the project carousel orbiting it) continues down the page as a twisting trunk, branches out to the projects, the ClariFile suite, About, Skills and Contact, and opens into roots in the footer, where the earliest projects sit. The look is a calm deep-space telemetry interface: navy-slate surfaces, one warm amber accent for selected controls, active navigation and the points where branches meet content, a restrained teal tree, monospace metadata labels, and a quiet starfield. The navbar's **Ember** toggle (remembered per visitor) switches to charcoal with a gold tree. Vue 3 + Vite, frontend only. Builds to static files that can be hosted anywhere (GitHub Pages, Netlify, Vercel, any web server or sub-path).
+Dark portfolio built as one continuous cosmic tree: the hero's spiral of light (with the project carousel orbiting it) continues down the page as a twisting trunk, branches out to the projects, the ClariFile suite, About, Skills and Contact, and opens into roots in the footer, where the earliest projects sit. The look is a calm deep-space telemetry interface: navy-slate surfaces, one warm amber accent for selected controls, active navigation and the points where branches meet content, a cool teal tree and orbit, Inter throughout with monospace only for small metadata, and a quiet starfield. There is one permanent palette (no theme switch). Vue 3 + Vite, frontend only. Builds to static files that can be hosted anywhere (GitHub Pages, Netlify, Vercel, any web server or sub-path).
 
 ```bash
 npm install
@@ -17,7 +17,7 @@ npm run preview   # serve dist/ locally
 | Projects, suites, their groups and order, which seven entries appear in the hero spiral, and the engineering story | `src/content/projects.js` |
 | Soundtrack: the two tracks, their volumes, the crossfade, and each project's excerpt (start, end, fades, volume) | `src/content/audioCues.js` (method in `notes/soundtrack.md`) |
 | Carousel speed, orbit width, depth, trunk shape (radius, turns, strands), halo strength, hover zoom | `src/content/motion.js` |
-| Colours and fonts (Space Grotesk headings, Inter body, system monospace for metadata; control and card radii) | semantic tokens at the top of `src/style.css` (`--accent`, `--glow-trunk`, `--glow-branch`, `--glow-spark`, `--glow-pale`); the Ember appearance overrides the same tokens under `:root[data-theme='ember']` |
+| Colours and fonts (Inter for headings and body, system monospace for small metadata; control and card radii) | semantic tokens at the top of `src/style.css` (`--accent`, `--glow-trunk`, `--glow-branch`, `--glow-spark`, `--glow-pale`) |
 
 - **Portrait:** put a photo in `public/` (e.g. `public/harry.jpg`) and set `portrait: 'harry.jpg'`.
 - **Contact:** fill `href` (`mailto:` or `https://`) and `text`. Entries without an `href` are hidden. There is deliberately no contact form.
@@ -38,7 +38,7 @@ src/
   state.js              shared UI state: motion on/off, reduced motion, theme, open project, hero visibility
   audio.js              the one soundtrack controller: main track, project excerpts (sample-accurate loops), crossfades, mute
   tree.js               shared tree model: fibres, hero exit (join geometry), flow timing, lit project
-  wisps.js              textured nebula behind the carousel, generated once per theme and cached
+  wisps.js              textured nebula behind the carousel, generated once and cached
   reveal.js             one-time section entrances + off-screen pause
   components/
     SkyBackdrop.vue      fixed sky: two star layers with scroll parallax, a few twinkles and dust
@@ -105,4 +105,4 @@ npm run render -- bloodcare pizza   # or just some
 
 Selecting a project opens an inspection scene over the page without leaving it: the portfolio stays mounted underneath (scroll position, carousel phase, tree), and each project gets a `#/project/<id>` history entry, so Back/Forward and direct links work. The selected project rests at the centre, glowing; the other projects orbit it slowly (right, across the front, left, behind, back to the right). Previous/Next (buttons or arrow keys) switch projects; Escape or Return goes back. With reduced motion or the motion control paused, transitions become simple fades.
 
-The soundtrack is handled by `src/audio.js`: `Architecture of Stillness` plays while browsing (its position is kept while a project is open), and each project plays its own excerpt of `Across the Glass Horizon`, looped and crossfaded. If the browser blocks autoplay, an "Enable soundtrack" control appears; play/pause and mute are remembered. Audio and visual motion are separate controls. The excerpt boundaries in `audioCues.js` were chosen by signal analysis (see `notes/soundtrack.md`) and are worth a listen to fine-tune.
+The soundtrack is handled by `src/audio.js`: `Architecture of Stillness` plays while browsing (its position is kept while a project is open), and each project plays its own excerpt of `Across the Glass Horizon`, looped and crossfaded. If the browser blocks autoplay, an "Enable Music" control appears; play/pause and mute are remembered. Audio and visual motion are separate controls. The excerpt boundaries in `audioCues.js` were chosen by signal analysis (see `notes/soundtrack.md`) and are worth a listen to fine-tune.

@@ -212,9 +212,7 @@ const clusterIndex = groups.map((g) => g.clusters.map(() => n++))
   border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
   border-radius: 4px;
   color: var(--accent);
-  font: 500 11px/1.2 var(--font-mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font: 600 12.5px/1.2 var(--font-body);
 }
 .clusters {
   display: grid;

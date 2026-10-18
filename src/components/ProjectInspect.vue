@@ -212,7 +212,12 @@ const cards = []
 let geo = null
 let phi = 0
 let speed = 0
-let hold = false // hover / focus inside the orbit
+// Only a card the mouse is moving over, or a card reached by keyboard, holds the orbit (so it can be
+// clicked or read); empty stage space, mouse clicks and the centred card never stop it. A card drifting
+// under a resting mouse sends no pointermove, and a hold without movement lapses after 3 s, so the orbit
+// can never stay stuck.
+const hold = { hover: false, focus: false }
+let holdTimer = 0
 let m = 0 // 0 = the hero's vertical column, 1 = the orbit
 let mFrom = 0
 let mTo = 0
@@ -262,6 +267,8 @@ function morphTo(target, ms) {
   kick()
 }
 function centreOn(id, ms) {
+  clearTimeout(holdTimer)
+  hold.hover = false
   cFrom = centre.slice()
   all.forEach((p, i) => (cTo[i] = p.id === id ? 1 : 0))
   cStart = performance.now()
@@ -274,7 +281,7 @@ function frame(t) {
   const dt = last ? Math.min(t - last, 50) / 1000 : 0
   last = t
   let busy = false
-  const turning = phase.value !== 'closed' && !hold && motionOn.value && !prefersReduced.value
+  const turning = phase.value !== 'closed' && !hold.hover && !hold.focus && motionOn.value && !prefersReduced.value
   // eases out when held or paused, back in afterwards; slows down while the scene recedes
   const target = turning ? (phase.value === 'leave' ? 0.3 : 1) : 0
   speed += (target - speed) * Math.min(1, dt * 3)
@@ -296,13 +303,16 @@ function frame(t) {
     busy = true
   }
   render()
-  if (busy) kick()
+  if (busy) schedule()
 }
+// Wake the loop from outside. Only a loop that was idle restarts its clock (first frame dt = 0, no time
+// jump); the loop itself reschedules with schedule(), so a stopped orbit can always speed up again.
 function kick() {
-  if (!raf && phase.value !== 'closed' && !document.hidden) {
-    if (!speed && m === mTo && centre.every((v, i) => v === cTo[i])) last = 0
-    raf = requestAnimationFrame(frame)
-  }
+  if (!raf && !speed && m === mTo && centre.every((v, i) => v === cTo[i])) last = 0
+  schedule()
+}
+function schedule() {
+  if (!raf && phase.value !== 'closed' && !document.hidden) raf = requestAnimationFrame(frame)
 }
 function stop() {
   cancelAnimationFrame(raf)
@@ -428,8 +438,19 @@ function renderBoughs(st, fade) {
     setD(bough[off].twig[i], '')
   }
 }
-const holdOn = () => ((hold = true), kick())
-const holdOff = () => ((hold = false), kick())
+function onCardMove(e, p) {
+  if (e.pointerType !== 'mouse' || shown.value?.id === p.id) return
+  clearTimeout(holdTimer)
+  holdTimer = setTimeout(onCardLeave, 3000)
+  if (!hold.hover) ((hold.hover = true), kick())
+}
+function onCardLeave() {
+  clearTimeout(holdTimer)
+  hold.hover = false
+  kick()
+}
+const onFocusIn = (e) => ((hold.focus = e.target.matches(':focus-visible')), kick())
+const onFocusOut = () => ((hold.focus = false), kick())
 
 // ---------- input ----------
 function onCancel(e) {
@@ -466,6 +487,7 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
   stop()
+  clearTimeout(holdTimer)
   ro.disconnect()
   removeEventListener('popstate', fromLocation)
   document.removeEventListener('visibilitychange', onVisibility)
@@ -485,7 +507,7 @@ watch([motionOn, prefersReduced], kick)
     @pointerdown="onPointer"
   >
     <!-- The orbit: every project around a nebula core. Decorative motion; each card is a real button. -->
-    <section ref="stage" class="stage" aria-label="Other projects" @pointerenter="holdOn" @pointerleave="holdOff" @focusin="holdOn" @focusout="holdOff">
+    <section ref="stage" class="stage" aria-label="Other projects" @focusin="onFocusIn" @focusout="onFocusOut">
       <div class="core" aria-hidden="true">
         <div v-for="(u, i) in wisps" :key="i" class="wisp anim" :class="`cw${i}`" :style="{ backgroundImage: `url(${u})` }"></div>
         <span class="glow"></span>
@@ -501,7 +523,7 @@ watch([motionOn, prefersReduced], kick)
         </g>
       </svg>
       <ul class="ring">
-        <li v-for="(p, i) in all" :key="p.id" :ref="(el) => (cards[i] = el)" class="o-card">
+        <li v-for="(p, i) in all" :key="p.id" :ref="(el) => (cards[i] = el)" class="o-card" @pointermove="onCardMove($event, p)" @pointerleave="onCardLeave">
           <button
             type="button"
             class="o-node"
@@ -805,9 +827,7 @@ watch([motionOn, prefersReduced], kick)
 .o-label {
   overflow: hidden;
   color: var(--ink-3);
-  font: 500 10.5px/1.4 var(--font-mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font: 500 11.5px/1.4 var(--font-mono);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1131,9 +1151,7 @@ watch([motionOn, prefersReduced], kick)
 .meta {
   margin: 0 0 12px;
   color: var(--ink-3);
-  font: 500 12px/1.6 var(--font-mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font: 500 13px/1.6 var(--font-mono);
 }
 h2 {
   font-size: clamp(30px, 5vw, 40px);
@@ -1164,9 +1182,7 @@ h2 {
 dt {
   margin-bottom: 8px;
   color: var(--accent-muted);
-  font: 500 11.5px/1.3 var(--font-mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font: 600 13.5px/1.3 var(--font-body);
 }
 dd {
   margin: 0;

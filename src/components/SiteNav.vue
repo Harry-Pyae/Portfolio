@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { profile } from '../content/profile.js'
-import { motionOn, toggleMotion, theme, toggleTheme } from '../state.js'
+import { motionOn, toggleMotion } from '../state.js'
 import SoundControls from './SoundControls.vue'
 import { sound } from '../audio.js'
 
@@ -34,7 +34,7 @@ onMounted(() => {
 })
 onBeforeUnmount(() => io?.disconnect())
 
-// Small screens: the appearance, motion and soundtrack controls sit behind one settings button.
+// Small screens: the music and motion controls sit behind one settings button.
 const menu = ref(false)
 const menuBtn = ref(null)
 const tools = ref(null)
@@ -73,7 +73,7 @@ onBeforeUnmount(() => {
         ref="menuBtn"
         class="menu-btn"
         type="button"
-        aria-label="Appearance, motion and soundtrack"
+        aria-label="Music and motion settings"
         aria-controls="nav-tools"
         :aria-expanded="menu"
         @click="menu = !menu"
@@ -88,25 +88,12 @@ onBeforeUnmount(() => {
       </button>
       <div id="nav-tools" ref="tools" class="tools" :class="{ open: menu }">
         <SoundControls />
-        <!-- Ember: on = charcoal with a gold tree, off = navy with the teal tree. The swatch shows the
-             tree colour in use. -->
-        <button
-          class="theme"
-          type="button"
-          :aria-pressed="theme === 'ember'"
-          aria-label="Ember appearance"
-          :title="theme === 'ember' ? 'Ember appearance: on' : 'Ember appearance: off'"
-          @click="toggleTheme"
-        >
-          <span class="swatch" aria-hidden="true"></span>
-          <span class="tool-text" aria-hidden="true">Ember</span>
-        </button>
         <button class="motion" type="button" :aria-pressed="!motionOn" :aria-label="motionOn ? 'Pause motion' : 'Resume motion'" @click="toggleMotion">
           <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true">
             <path v-if="motionOn" d="M6 4h3v12H6zM11 4h3v12h-3z" fill="currentColor" />
             <path v-else d="M6 4l10 6-10 6z" fill="currentColor" />
           </svg>
-          <span class="tool-text" aria-hidden="true">{{ motionOn ? 'Pause' : 'Play' }}</span>
+          <span class="tool-text" aria-hidden="true">{{ motionOn ? 'Pause' : 'Resume' }}</span>
         </button>
       </div>
     </nav>
@@ -126,9 +113,9 @@ onBeforeUnmount(() => {
   position: relative; /* anchors the small-screen settings panel */
   display: flex;
   align-items: center;
-  gap: clamp(8px, 2.5vw, 28px);
+  gap: clamp(8px, 2vw, 24px);
   max-width: var(--maxw);
-  height: 56px;
+  height: 60px;
   margin: 0 auto;
   padding: 0 10px 0 12px;
   border: 1px solid var(--line-strong);
@@ -157,7 +144,7 @@ onBeforeUnmount(() => {
 }
 .brand-name {
   font: 600 16px/1 var(--font-head);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
 }
 .links {
   display: flex;
@@ -169,9 +156,9 @@ onBeforeUnmount(() => {
 .links a {
   position: relative;
   display: block;
-  padding: 12px 10px;
+  padding: 12px;
   color: var(--ink-2);
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 500;
   text-decoration: none;
   transition: color 0.25s var(--ease);
@@ -203,9 +190,13 @@ onBeforeUnmount(() => {
   opacity: 1;
   transform: none;
 }
+/* the controls sit apart from the links, behind a fine divider */
 .tools {
   display: flex;
+  align-items: center;
   gap: 6px;
+  padding-left: clamp(8px, 1.4vw, 16px);
+  border-left: 1px solid var(--line);
 }
 .tools button {
   display: inline-flex;
@@ -219,9 +210,7 @@ onBeforeUnmount(() => {
   border-radius: var(--r-ctl);
   background: color-mix(in srgb, var(--bg) 55%, var(--surface));
   color: var(--ink-2);
-  font: 500 12px/1 var(--font-mono);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font: 500 13.5px/1 var(--font-body);
   cursor: pointer;
   transition:
     color 0.25s var(--ease),
@@ -229,18 +218,12 @@ onBeforeUnmount(() => {
 }
 .tools button:hover {
   color: var(--ink);
-  border-color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
 }
-/* Pressed controls (Ember on, motion paused) carry the amber edge; the swatch is the tree's colour. */
+/* motion paused: the control carries the amber edge */
 .tools button[aria-pressed='true'] {
   border-color: color-mix(in srgb, var(--accent) 60%, transparent);
   color: var(--accent);
-}
-.swatch {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--glow-trunk);
 }
 .menu-btn {
   display: none;
@@ -297,6 +280,7 @@ onBeforeUnmount(() => {
     right: 0;
     display: none;
     flex-direction: column;
+    border-left: 1px solid var(--line-strong);
     align-items: stretch;
     gap: 6px;
     min-width: 200px;

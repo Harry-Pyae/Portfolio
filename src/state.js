@@ -18,32 +18,6 @@ watchEffect(() => document.documentElement.classList.toggle('motion-off', !motio
 
 export const heroVisible = ref(true)
 
-// Two dark appearances: 'nebula' (navy + cyan, default) and 'ember' (charcoal + gold). Remembered per
-// visitor; storage may be unavailable, so every access is guarded.
-const THEMES = ['nebula', 'ember']
-const THEME_COLOR = { nebula: '#030712', ember: '#0e0f12' }
-const stored = (() => {
-  try {
-    const t = localStorage.getItem('portfolio-theme')
-    return t === 'charcoal' ? 'ember' : t // earlier name of the ember appearance
-  } catch {
-    return null
-  }
-})()
-export const theme = ref(THEMES.includes(stored) ? stored : 'nebula')
-export function toggleTheme() {
-  theme.value = theme.value === 'nebula' ? 'ember' : 'nebula'
-  try {
-    localStorage.setItem('portfolio-theme', theme.value)
-  } catch {
-    /* not persisted: the toggle still works for this visit */
-  }
-}
-watchEffect(() => {
-  document.documentElement.dataset.theme = theme.value
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', THEME_COLOR[theme.value])
-})
-
 export const openProject = ref(null)
 export const showProject = (p) => (openProject.value = p)
 export const closeProject = () => (openProject.value = null)

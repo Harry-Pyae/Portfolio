@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
-import { theme, motionOn } from '../state.js'
+import { motionOn } from '../state.js'
 
 // Fixed sky behind the whole page: two star layers painted once per resize into canvases, which
 // drift at different rates as the page scrolls (depth through parallax), plus a few twinkling stars
@@ -46,7 +46,6 @@ function paint(c, w, h, seed, count, bright) {
   const ctx = c.getContext('2d')
   ctx.scale(dpr, dpr)
   const rand = rng(seed)
-  const warm = theme.value === 'ember'
   // Irregular density: a soft diagonal band of extra stars, sparse elsewhere; no tiling.
   for (let n = 0, tries = 0; n < count && tries < count * 6; tries++) {
     const x = rand() * w
@@ -58,7 +57,7 @@ function paint(c, w, h, seed, count, bright) {
     const big = bright && rand() < 0.15
     const r = big ? 0.8 + rand() * 0.5 : (bright ? 0.5 : 0.3) + rand() * 0.45
     const tone = rand()
-    const rgb = warm ? (tone < 0.92 ? '255,255,255' : '255,244,194') : tone < 0.9 ? '214,226,240' : tone < 0.97 ? '160,205,220' : '245,215,140'
+    const rgb = tone < 0.9 ? '214,226,240' : tone < 0.97 ? '160,205,220' : '245,215,140'
     ctx.fillStyle = `rgba(${rgb},${(big ? 0.55 : (bright ? 0.25 : 0.12) + rand() * 0.3).toFixed(2)})`
     ctx.beginPath()
     ctx.arc(x, y, r, 0, Math.PI * 2)
@@ -128,7 +127,6 @@ onBeforeUnmount(() => {
   removeEventListener('resize', onResize)
   ro.disconnect()
 })
-watch(theme, draw)
 watch(motionOn, update)
 </script>
 

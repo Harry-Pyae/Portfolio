@@ -1,6 +1,7 @@
 /* Dark-only theme. There is intentionally no light theme or system-theme detection. */
-/* Deep-space telemetry: navy-slate surfaces, one warm amber signature, and a restrained teal for the
-   tree and orbit. Contrast (WCAG): ink 17:1, ink-2 8.9:1, ink-3 ≥ 5.5:1, accent ≥ 10:1 on every surface. */
+/* One permanent palette: navy-slate space, a cool teal tree and orbit, and warm amber for the
+   meaningful highlights (monogram, selected controls, active navigation, the points where branches
+   meet content). Contrast (WCAG): ink 17:1, ink-2 8.9:1, ink-3 ≥ 5.5:1, accent ≥ 10:1 on every surface. */
 :root {
   color-scheme: dark;
   /* surfaces */
@@ -25,9 +26,11 @@
   --glow-spark: #f5c451;
   --glow-pale: #d3e4ec;
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
-  --font-head: 'Space Grotesk', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* one typeface throughout: headings differ by size, weight and tracking; monospace only for small
+     technical metadata (statuses, years) */
   --font-body: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: ui-monospace, 'Cascadia Mono', 'SF Mono', Consolas, 'Liberation Mono', monospace; /* metadata */
+  --font-head: var(--font-body);
+  --font-mono: ui-monospace, 'Cascadia Mono', 'SF Mono', Consolas, 'Liberation Mono', monospace;
   --r-ctl: 8px; /* every control */
   --r-card: 10px; /* cards and panels */
   --gutter: clamp(16px, 4vw, 48px);
@@ -36,28 +39,6 @@
   --maxw: 1240px;
   --section-gap: clamp(112px, 11vw, 168px); /* rhythm between major sections */
   --sub-gap: clamp(96px, 9vw, 136px); /* between subsections (Skills, Beyond the Code) */
-}
-
-/* Ember: charcoal with a gold tree (navbar toggle). Same tokens, so every component, the tree and its
-   light follow automatically. */
-:root[data-theme='ember'] {
-  --bg: #0e0f12;
-  --surface: #16171b;
-  --surface-2: #1d1f24;
-  --atmos: #1d1f24;
-  --line: #26282e;
-  --line-strong: #35383f;
-  --ink: #f2f1ec;
-  --ink-2: #b6b8be;
-  --ink-3: #91949b;
-  --accent: #f5c451;
-  --accent-hover: #f8d47d;
-  --accent-muted: #c89b3c;
-  --on-accent: #1a1203;
-  --glow-trunk: #d9ad4a;
-  --glow-branch: #e3c67e;
-  --glow-spark: #f8d47d;
-  --glow-pale: #f6e7bf;
 }
 
 *,
@@ -156,7 +137,7 @@ h4 {
 h2 {
   font-size: clamp(30px, 3.6vw, 42px);
   line-height: 1.12;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
 }
 
 .section {
@@ -180,9 +161,8 @@ h2 {
   gap: 10px;
   margin: 0 0 14px;
   color: var(--accent);
-  font: 500 12px/1.2 var(--font-mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font: 600 13px/1.2 var(--font-body);
+  letter-spacing: 0.01em;
 }
 /* a short calibration tick before every section label */
 .eyebrow::before {

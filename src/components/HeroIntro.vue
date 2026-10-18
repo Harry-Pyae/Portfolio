@@ -62,8 +62,8 @@ import { profile } from '../content/profile.js'
 }
 .name {
   color: var(--ink);
-  font: 700 clamp(60px, 7.6vw, 104px) / 0.95 var(--font-head);
-  letter-spacing: -0.04em;
+  font: 700 clamp(60px, 7.6vw, 104px) / 1 var(--font-head);
+  letter-spacing: -0.045em;
 }
 .title {
   margin: 20px 0 0;

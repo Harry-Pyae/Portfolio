@@ -7,13 +7,13 @@ import { sound, toggleSound, toggleMute, playSound } from '../audio.js'
 <template>
   <div v-if="sound.state !== 'idle' && sound.state !== 'unavailable'" class="sound" role="group" aria-label="Soundtrack">
     <!-- Autoplay was refused: one discreet control, never retried on our own. -->
-    <button v-if="sound.state === 'blocked'" type="button" class="enable" aria-label="Enable soundtrack" @click="playSound">
+    <button v-if="sound.state === 'blocked'" type="button" class="enable" aria-label="Enable music" @click="playSound">
       <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
         <path d="M7 14.5V5l9-2v9.5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round" />
         <circle cx="5" cy="14.5" r="2" fill="currentColor" />
         <circle cx="14" cy="12.5" r="2" fill="currentColor" />
       </svg>
-      <span class="label">Enable soundtrack</span>
+      <span class="label">Enable Music</span>
     </button>
     <template v-else>
       <button
@@ -66,9 +66,7 @@ button {
   border-radius: var(--r-ctl);
   background: color-mix(in srgb, var(--bg) 55%, var(--surface));
   color: var(--ink-2);
-  font: 500 12px/1 var(--font-mono);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font: 500 13.5px/1 var(--font-body);
   white-space: nowrap;
   cursor: pointer;
   transition:
@@ -77,7 +75,7 @@ button {
 }
 button:hover {
   color: var(--ink);
-  border-color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
 }
 .enable {
   /* the primary-button language: dark tinted fill, amber edge, no bright block */
