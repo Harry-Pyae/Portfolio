@@ -1,6 +1,6 @@
 # Harry — Portfolio
 
-Dark portfolio built as one continuous cosmic tree: the hero's spiral of light (with the project carousel orbiting it) continues down the page as a twisting trunk, branches out to the projects, About, Skills and Contact, and opens into roots in the footer. Two dark themes can be compared from the navbar: **Nebula** (blue/cyan, default) and **Charcoal** (charcoal + yellow). Vue 3 + Vite, frontend only. Builds to static files that can be hosted anywhere (GitHub Pages, Netlify, Vercel, any web server or sub-path).
+Dark portfolio built as one continuous cosmic tree: the hero's spiral of light (with the project carousel orbiting it) continues down the page as a twisting trunk, branches out to the projects, the ClariFile suite, About, Skills and Contact, and opens into roots in the footer, where the earliest projects sit. Two dark appearances, switched from the navbar and remembered per visitor: **Nebula** (deep navy, cyan strands, green branches, sparse gold light; default) and **Ember** (charcoal + gold). Vue 3 + Vite, frontend only. Builds to static files that can be hosted anywhere (GitHub Pages, Netlify, Vercel, any web server or sub-path).
 
 ```bash
 npm install
@@ -13,14 +13,20 @@ npm run preview   # serve dist/ locally
 
 | What | Where |
 | --- | --- |
-| Name, title, intro, About paragraphs, focus statements, status, skills, contact links, portrait | `src/content/profile.js` |
-| Projects and categories | `src/content/projects.js` |
+| Name, title, intro, About paragraphs, milestones, skills (core, general, currently exploring), interests (Beyond the Code), contact lede and links, portrait | `src/content/profile.js` |
+| Projects, suites, their groups and order, which seven entries appear in the hero spiral, and the (unpublished) engineering story | `src/content/projects.js` |
 | Carousel speed, orbit width, depth, trunk shape (radius, turns, strands), halo strength, hover zoom | `src/content/motion.js` |
-| Colours and fonts (Space Grotesk headings, Inter body) | semantic tokens at the top of `src/style.css` (`--accent`, `--glow-trunk`, `--glow-branch`, `--glow-spark`, `--glow-pale`); the Charcoal theme overrides the same tokens under `:root[data-theme='charcoal']` |
+| Colours and fonts (Space Grotesk headings, Inter body) | semantic tokens at the top of `src/style.css` (`--accent`, `--glow-trunk`, `--glow-branch`, `--glow-spark`, `--glow-pale`); the Ember appearance overrides the same tokens under `:root[data-theme='ember']` |
 
 - **Portrait:** put a photo in `public/` (e.g. `public/harry.jpg`) and set `portrait: 'harry.jpg'`.
-- **Contact:** fill `href` (`mailto:` or `https://`) and `text`. Empty entries show as "not listed yet". There is deliberately no contact form. A copy-email button appears once a real `mailto:` address exists.
-- **Projects:** eight real projects with screenshots, logos and short reels in `public/projects/<id>/` (`1.jpg`…, `icon.*`, `reel.mp4`). `tagline` is the one sentence shown on overview cards; `summary`, `stack`, the four detail fields and links appear in the project view. Empty links show as "not available yet"; detail fields set to `null` show as "to be documented". Categories become branch groups in the tree (empty categories are hidden).
+- **Contact:** fill `href` (`mailto:` or `https://`) and `text`. Entries without an `href` are hidden. There is deliberately no contact form. A copy-email button appears once a real `mailto:` address exists.
+- **Projects** (`src/content/projects.js`):
+  - `categories`: the groups in display order (Recent Personal Projects, Major Hackathon Projects, Smaller Hackathon Projects, Earlier Work, then Current explorations and Where it began). Groups without `section` are branches of the project tree; `section: 'explorations'` and `section: 'roots'` place a group in its own part of the page. `quiet: true` gives a group a smaller, calmer branch; `label` is the short category shown on hero cards.
+  - `featured`: the project or suite ids shown in the hero spiral, in order (seven by default). Every project is also on the page, in the order of the `projects` array within each group.
+  - `suites`: a suite (ClariFile) groups related apps; it is not a project itself. `apps` lists its app ids, `status` its development status, `integration` how the apps relate as currently planned. Its card opens an overview that leads to each app; an app names its suite with `suite`.
+  - `story`: the "Getting pagination right" engineering story. It stays unpublished (`published: false`) until every part is verified; see `AUTHOR-CHECKLIST.md`.
+  - Each project: `tagline` (the one sentence on cards), `problem` and `solution` (one or two sentences each), `highlights` (a few verified features), `contribution` (only where documented; leave `null` to hide the section), `context` (team, scope or time constraints when known, or the project's place in your journey), `stack`, `year`, `links` (`demo`, `github`; leave `''` to hide), `image` (cover and video poster), `gallery` (screenshots), `icon` (optional logo), `video` (walkthrough reel), `videoNote` (caption under the reel), `walkthrough` (chapter name when the reel is not a screen recording) and `status` (optional development status, shown on cards and in details).
+  - Media lives in `public/projects/<id>/` (`1.jpg`…, `icon.*`, `reel.mp4`). Anything still to confirm is listed in `AUTHOR-CHECKLIST.md`, never shown as a placeholder on the page.
 - The page `<title>` and meta description live in `index.html`.
 
 ## Structure
@@ -31,7 +37,7 @@ src/
   state.js              shared UI state: motion on/off, reduced motion, theme, open project, hero visibility
   tree.js               shared tree model: fibres, hero exit (join geometry), flow timing, lit project
   wisps.js              textured nebula behind the carousel, generated once per theme and cached
-  reveal.js             section entrance + off-screen pause (About, Contact)
+  reveal.js             one-time section entrances + off-screen pause
   components/
     SkyBackdrop.vue      fixed sky: two star layers with scroll parallax, a few twinkles and dust
     SiteNav.vue          inset sticky navbar: active-section indicator, theme toggle, motion toggle
@@ -39,11 +45,14 @@ src/
     SpiralShowcase.vue   carousel + upper tree (the single requestAnimationFrame loop), side arrows
     TreeTrunk.vue        the continuous trunk below the hero, all branches, footer roots
     ProjectTree.vue      branching project layout (static cards)
-    ProjectNode.vue      compact project card: one button with symbol, title, sentence, status, connection point
-    ProjectModal.vue     project details (native <dialog>)
+    ExplorationsSection.vue  Current explorations: the ClariFile suite node, its two apps, a static "Planned integration" connector
+    BeganSection.vue     Where it began: the earliest projects, set among the footer roots
+    InterestsSection.vue Beyond the Code: interests with small line drawings (not interactive)
+    ProjectNode.vue      compact project card: one button with symbol, title, sentence (+ category in the hero), connection point
+    ProjectModal.vue     project case study (native <dialog>): reel player with chapters, screenshots, problem/solution, highlights, links; suite overview
     ProjectArt.vue       screenshot, or a placeholder / small glyph with an orbit line
-    AboutSection.vue     identity in an orbital frame, narrative, focus statements, status beacon
-    SkillsConstellation.vue  skills as small constellations
+    AboutSection.vue     identity in an orbital frame, first-person narrative, milestones branch
+    SkillsConstellation.vue  skills as small constellations, plus Currently exploring
     ContactSection.vue   contact with the tree's beacon node; honest unavailable states
 ```
 
@@ -59,8 +68,9 @@ Cards ride a looping track measured in "slots". The visible column is the first 
 ## How the continuous tree works
 
 - The hero draws the upper tree: fibres splay into a canopy at the top, pinch into a waist, and settle to the trunk radius at the bottom of the stage. It publishes its exit (positions, twist phase and rate, radius, flow phase) in `tree.js`.
-- `TreeTrunk` continues those exact fibres below the hero, around a centreline through waypoints measured from layout anchors: beside the Projects heading → the Projects trunk line → the About lane → the Skills lane → the Contact beacon → the footer roots. Waypoints are joined by cubic curves with vertical tangents, so the curve is continuous in position and direction; the radius eases between waypoints.
-- Branches start on the main strand and end on ports (`.port` on project cards, `.tree-port` elsewhere). All positions use layout offsets, which ignore hover and entrance transforms. Geometry is rebuilt only when the page resizes, the hero changes, or fonts load.
+- `TreeTrunk` continues those exact fibres below the hero, around a centreline through waypoints measured from layout anchors: beside the Projects heading → the Projects trunk line → through the ClariFile suite node → the About, Skills and Beyond the Code lanes → the Contact beacon → down the centre of Where it began → the roots. Waypoints are joined by cubic curves with vertical tangents, so the curve is continuous in position and direction; the radius eases between waypoints.
+- Branches start on the main strand and end on ports (`.port` on project cards, `.tree-port` elsewhere). They are tapered filled shapes, so width carries the hierarchy: About and Contact limbs and each project group's limbs are thickest where they leave the trunk (project branches grow out from beneath their group's label), skill-group branches are thinner, and a few short twigs taper to nothing. Earlier Projects get a thinner, dimmer branch.
+- Roots: in Where it began the trunk loosens (its radius widens) and each strand splits off at a staggered depth, on its front side, continuing as a primary root with the strand's own position, direction, colour and width, so there is no seam. Primaries thicken briefly, then taper through parent-to-child forks into fine rootlets; two reach the earliest-project cards, the rest go deep, diagonal or out toward the page edges. Light runs from the trunk outward and down each root once, one root after another, the first time the section comes into view; hovering an earliest-project card lights its root. All positions use layout offsets, which ignore hover and entrance transforms. Geometry is rebuilt only when the page resizes, the hero changes, or fonts load.
 - Light dashes flow up the main strands in px units on one shared timeline, so the pattern runs unbroken across the hero/page join. Branch particles, pulses and twinkles pause with the motion toggle, reduced motion, or when their section is off-screen.
 - On screens ≤ 860px the trunk becomes a spine beside the content; sections inset their content to keep that lane clear.
 
@@ -71,14 +81,18 @@ Cards ride a looping track measured in "slots". The visible column is the first 
 
 ## Project reels (Remotion)
 
-Each project has a 12-second reel (`public/projects/<id>/reel.mp4`) played in its details view: the real app, recorded with Playwright, flown through on a 3D screen with a title hit and end card. No narration.
+Each project has a 16-second reel (`public/projects/<id>/reel.mp4`) in its details view: a short title card, the recorded app (FlavourWave: its own screenshots) on a gently tilted screen, and an end card. No narration.
+
+The player in the details view loads the reel only when the dialog shows it (`preload="none"`, screenshot poster). It uses the browser's own controls (play/pause, seeking, fullscreen) plus Replay and three chapter buttons (Title, Recorded app, End card); the caption under it says which parts are recorded and which are motion graphics. A muted preview starts on its own only with motion on, no reduced-motion preference and a mouse-style pointer. Chapter times live in `ProjectModal.vue` and must match the frames in `video/src/ProjectReel.tsx`.
 
 ```bash
 cd video
 npm install
 npm run studio                      # edit scenes visually in Remotion Studio
-npx remotion render src/index.ts bloodcare out/bloodcare.mp4 --codec=h264 --crf=28 --scale=0.75
+npm run render                      # every reel, straight into public/projects/<id>/reel.mp4
+npm run render -- bloodcare pizza   # or just some
 ```
 
 - `video/src/Root.tsx` registers one composition per project (title, meta line, accent colour, logo, and the recording window to use); `video/src/ProjectReel.tsx` holds the scenes, built from named `Interactive` elements with inline `interpolate()` animations so they stay editable in Studio.
-- Source footage (`video/public/mp4`, `shots`, `logos`) is kept locally and not committed; copy a render to `public/projects/<id>/reel.mp4` to update the site.
+- Walkthroughs are sharp frame recordings of the real apps (`video/public/hq/<id>/`: 1920×1080 JPEG frames + `index.json`), played frame-accurately by the composition; FlavourWave uses screenshots (`video/public/shots`). `video/public/` is not committed and the frame folders are deleted after rendering to save space. `video/capture/` holds the scripts that recorded them, so any reel can be re-recorded and re-rendered.
+- Reels render at 1920×1080 (H.264, CRF 23), 2–6.5 MB each.

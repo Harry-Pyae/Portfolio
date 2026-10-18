@@ -5,7 +5,6 @@ import {
   Easing,
   Img,
   Interactive,
-  OffthreadVideo,
   Sequence,
   Track,
   interpolate,
@@ -17,26 +16,34 @@ import {
 
 const { fontFamily } = loadFont('normal', { weights: ['500', '700'] })
 
+export type RecFrame = { f: string; t: number }
+
 export type ReelProps = {
   title: string
   meta: string // e.g. "Hackathon · 2026"
   accent: string
   logo?: string // file in public/logos
-  clip?: { src: string; from: number; to: number } // seconds in the recording
-  shots?: string[] // stills used instead of a clip
+  // Sharp walkthrough recording: JPEG frames + index.json in public/<dir> (see scratchpad hq.mjs).
+  // from / to trim it (seconds); frames are filled in by calculateMetadata in Root.tsx.
+  rec?: { dir: string; from?: number; to?: number; frames?: RecFrame[]; duration?: number }
+  shots?: string[] // screenshots used when there is no recording
 }
 
-// 12 s at 30 fps: title hit → screen flight → end card. No narration, pure motion.
-export const REEL_FRAMES = 360
+// 16 s at 30 fps: title → recorded walkthrough → end card. No narration. The site's player labels
+// these as chapters (CHAPTERS in src/components/ProjectModal.vue), so keep both in sync.
+export const REEL_FRAMES = 480
+const SCREEN_FROM = 34
+const SCREEN_FRAMES = 400 // the recording plays across this window (about 1.5x real time)
+const END_FROM = 420
 
 export const ProjectReel: React.FC<ReelProps> = (props) => {
   return (
     <AbsoluteFill style={{ backgroundColor: '#040b18', fontFamily }}>
       <Starfield accent={props.accent} />
       <Track name="Scenes">
-        <TitleHit name="Title hit" durationInFrames={52} {...props} />
-        <ScreenFlight name="Screen flight" from={36} durationInFrames={270} {...props} />
-        <EndCard name="End card" from={292} durationInFrames={68} {...props} />
+        <TitleHit name="Title" durationInFrames={SCREEN_FROM + 2} {...props} />
+        <ScreenFlight name="Walkthrough" from={SCREEN_FROM} durationInFrames={SCREEN_FRAMES} {...props} />
+        <EndCard name="End card" from={END_FROM} durationInFrames={REEL_FRAMES - END_FROM} {...props} />
       </Track>
     </AbsoluteFill>
   )
@@ -60,7 +67,7 @@ const Starfield: React.FC<{ accent: string }> = ({ accent }) => {
         style={{
           position: 'absolute',
           inset: 0,
-          scale: interpolate(frame, [0, 360], [1, 1.12]),
+          scale: interpolate(frame, [0, REEL_FRAMES], [1, 1.08]),
         }}
       >
         {STARS.map((s, i) => (
@@ -80,7 +87,7 @@ const Starfield: React.FC<{ accent: string }> = ({ accent }) => {
           height: 600,
           borderRadius: '50%',
           background: `radial-gradient(closest-side, ${accent}55, transparent)`,
-          opacity: interpolate(frame, [0, 40, 360], [0, 0.9, 0.6]),
+          opacity: interpolate(frame, [0, 40, REEL_FRAMES], [0, 0.8, 0.5]),
         }}
       />
       <Interactive.Div
@@ -93,7 +100,7 @@ const Starfield: React.FC<{ accent: string }> = ({ accent }) => {
           height: 900,
           borderRadius: '50%',
           border: `1px solid ${accent}40`,
-          rotate: interpolate(frame, [0, 360], ['0deg', '40deg']),
+          rotate: interpolate(frame, [0, REEL_FRAMES], ['0deg', '30deg']),
         }}
       >
         <div style={{ position: 'absolute', left: 445, top: -5, width: 10, height: 10, borderRadius: '50%', background: accent, boxShadow: `0 0 18px ${accent}` }} />
@@ -114,9 +121,10 @@ const TitleHitInner: React.FC<ReelProps> = ({ title, meta, accent }) => {
             top: 358,
             left: 0,
             width: 1280,
-            height: 4,
-            background: `linear-gradient(90deg, transparent, ${accent}, #ffffff, ${accent}, transparent)`,
-            translate: interpolate(frame, [0, 18], ['-1300px 0px', '1300px 0px'], { easing: Easing.out(Easing.cubic), extrapolateRight: 'clamp' }),
+            height: 2,
+            opacity: 0.6,
+            background: `linear-gradient(90deg, transparent, ${accent}, transparent)`,
+            translate: interpolate(frame, [0, 24], ['-1300px 0px', '1300px 0px'], { easing: Easing.out(Easing.cubic), extrapolateRight: 'clamp' }),
           }}
         />
         <Interactive.Div
@@ -127,11 +135,11 @@ const TitleHitInner: React.FC<ReelProps> = ({ title, meta, accent }) => {
             fontWeight: 700,
             letterSpacing: '-0.04em',
             textAlign: 'center',
-            textShadow: `0 0 40px ${accent}88`,
-            scale: interpolate(frame, [4, 22], [1.7, 1], { easing: Easing.out(Easing.exp), extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }),
-            opacity: interpolate(frame, [4, 12, 38, 50], [0, 1, 1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }),
-            filter: `blur(${interpolate(frame, [4, 20], [14, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })}px)`,
-            translate: interpolate(frame, [38, 50], ['0px 0px', '0px -60px'], { easing: Easing.in(Easing.cubic), extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }),
+            textShadow: `0 0 30px ${accent}55`,
+            scale: interpolate(frame, [2, 24], [1.12, 1], { easing: Easing.out(Easing.cubic), extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }),
+            opacity: interpolate(frame, [2, 12, 24, 34], [0, 1, 1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }),
+            filter: `blur(${interpolate(frame, [2, 18], [6, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })}px)`,
+            translate: interpolate(frame, [24, 34], ['0px 0px', '0px -30px'], { easing: Easing.in(Easing.cubic), extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }),
           }}
         >
           {title}
@@ -146,7 +154,7 @@ const TitleHitInner: React.FC<ReelProps> = ({ title, meta, accent }) => {
             fontWeight: 500,
             letterSpacing: '0.08em',
             textTransform: 'uppercase',
-            opacity: interpolate(frame, [16, 24, 38, 46], [0, 1, 1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }),
+            opacity: interpolate(frame, [10, 16, 24, 32], [0, 1, 1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }),
           }}
         >
           {meta}
@@ -157,44 +165,40 @@ const TitleHitInner: React.FC<ReelProps> = ({ title, meta, accent }) => {
 const TitleHit = Interactive.create({ Component: TitleHitInner, layout: 'absolute-fill', componentName: 'TitleHit' })
 
 /* ---------------------------------------------------------------- scene 2 */
-const ScreenFlightInner: React.FC<ReelProps> = ({ accent, clip, shots }) => {
+const ScreenFlightInner: React.FC<ReelProps> = ({ accent, rec, shots }) => {
     const frame = useCurrentFrame()
     const { fps } = useVideoConfig()
-    // 3D camera path: fly in tilted → settle face-on → punch in on the action → bank away
-    const ry = interpolate(frame, [0, 34, 120, 150, 200, 236, 270], [-38, -9, 5, 0, -6, -6, 28], { easing: Easing.inOut(Easing.cubic) })
-    const rx = interpolate(frame, [0, 34, 150, 236, 270], [20, 7, 3, 4, 10], { easing: Easing.inOut(Easing.cubic) })
-    const sc = interpolate(frame, [0, 34, 120, 140, 172, 200, 236, 270], [0.5, 0.8, 0.85, 1.18, 1.18, 0.86, 0.86, 0.55], { easing: Easing.inOut(Easing.cubic) })
-    const tx = interpolate(frame, [236, 270], [0, -420], { easing: Easing.in(Easing.cubic), extrapolateLeft: 'clamp' })
-    const ty = interpolate(frame, [0, 34], [160, 0], { easing: Easing.out(Easing.cubic), extrapolateRight: 'clamp' })
-    const clipFrames = 270
+    // Gentle 3D only on entry and exit; face-on, near full size and steady while the app is on screen.
+    const E = SCREEN_FRAMES
+    const c = { easing: Easing.inOut(Easing.cubic), extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const
+    const ry = interpolate(frame, [0, 40, E - 40, E], [-16, 0, 0, 12], c)
+    const rx = interpolate(frame, [0, 40, E - 40, E], [9, 0, 0, 5], c)
+    const sc = interpolate(frame, [0, 40, E - 40, E], [0.84, 0.97, 1, 0.84], c)
+    const tx = interpolate(frame, [E - 40, E], [0, -140], { easing: Easing.in(Easing.cubic), extrapolateLeft: 'clamp' })
+    const ty = interpolate(frame, [0, 40], [70, 0], { easing: Easing.out(Easing.cubic), extrapolateRight: 'clamp' })
+    const clipFrames = E
     return (
       <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', perspective: 1600 }}>
         <Interactive.Div
           name="Screen"
           style={{
-            width: 1120,
-            height: 630,
+            width: 1200,
+            height: 675,
             borderRadius: 18,
             overflow: 'hidden',
             border: `1px solid ${accent}99`,
             boxShadow: `0 40px 120px -30px rgba(0,0,0,0.9), 0 0 60px -10px ${accent}88`,
             background: '#0b1220',
-            opacity: interpolate(frame, [0, 10, 252, 270], [0, 1, 1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }),
+            opacity: interpolate(frame, [0, 12, E - 18, E], [0, 1, 1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }),
             transform: `translate(${tx}px, ${ty}px) rotateX(${rx}deg) rotateY(${ry}deg) scale(${sc})`,
           }}
         >
-          {clip ? (
-            <OffthreadVideo
-              src={staticFile(clip.src)}
-              trimBefore={Math.round(clip.from * fps)}
-              playbackRate={(clip.to - clip.from) / (clipFrames / fps)}
-              muted
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
+          {rec?.frames ? (
+            <RecordedFrames rec={rec} rate={Math.min(1.6, Math.max(0.85, ((rec.to ?? rec.duration ?? 0) - (rec.from ?? 0)) / (clipFrames / fps)))} />
           ) : (
             <StillsSequence shots={shots ?? []} />
           )}
-          {/* light sweep across the glass */}
+          {/* one faint light sweep across the glass while it settles */}
           <Interactive.Div
             name="Sheen"
             style={{
@@ -204,8 +208,8 @@ const ScreenFlightInner: React.FC<ReelProps> = ({ accent, clip, shots }) => {
               width: 260,
               height: 1100,
               rotate: '20deg',
-              background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent)',
-              translate: interpolate(frame, [30, 70, 196, 228], ['-500px 0px', '1500px 0px', '-500px 0px', '1500px 0px'], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }),
+              background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)',
+              translate: interpolate(frame, [20, 70], ['-500px 0px', '1500px 0px'], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }),
             }}
           />
         </Interactive.Div>
@@ -214,13 +218,31 @@ const ScreenFlightInner: React.FC<ReelProps> = ({ accent, clip, shots }) => {
   }
 const ScreenFlight = Interactive.create({ Component: ScreenFlightInner, layout: 'absolute-fill', componentName: 'ScreenFlight' })
 
-// Stills cut on the beat, each pushing in slightly (used when there is no recording).
+// Plays a frame recording: each composition frame shows the latest captured frame at that moment,
+// so static stretches cost nothing and the browser's own crisp pixels go straight into the render.
+const RecordedFrames: React.FC<{ rec: NonNullable<ReelProps['rec']>; rate: number }> = ({ rec, rate }) => {
+  const frame = useCurrentFrame()
+  const { fps } = useVideoConfig()
+  const frames = rec.frames ?? []
+  const t = (rec.from ?? 0) + (frame / fps) * rate
+  let lo = 0
+  let hi = frames.length - 1
+  while (lo < hi) {
+    const mid = (lo + hi + 1) >> 1
+    if (frames[mid].t <= t) lo = mid
+    else hi = mid - 1
+  }
+  if (!frames.length) return null
+  return <Img src={staticFile(`${rec.dir}/${frames[lo].f}`)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+}
+
+// Screenshots crossfading slowly, each easing in slightly (used when there is no recording).
 const StillsSequence: React.FC<{ shots: string[] }> = ({ shots }) => {
-  const per = Math.floor(270 / Math.max(1, shots.length))
+  const per = Math.floor(SCREEN_FRAMES / Math.max(1, shots.length))
   return (
     <AbsoluteFill>
       {shots.map((s, i) => (
-        <Sequence key={s} from={i * per} durationInFrames={per + 8} layout="absolute-fill">
+        <Sequence key={s} from={i * per} durationInFrames={per + 14} layout="absolute-fill">
           <Still src={s} />
         </Sequence>
       ))}
@@ -238,8 +260,8 @@ const Still: React.FC<{ src: string }> = ({ src }) => {
         height: '100%',
         objectFit: 'cover',
         objectPosition: 'top',
-        opacity: interpolate(frame, [0, 8], [0, 1], { extrapolateRight: 'clamp' }),
-        scale: interpolate(frame, [0, 60], [1.08, 1], { easing: Easing.out(Easing.cubic), extrapolateRight: 'clamp' }),
+        opacity: interpolate(frame, [0, 14], [0, 1], { extrapolateRight: 'clamp' }),
+        scale: interpolate(frame, [0, 90], [1.03, 1], { easing: Easing.out(Easing.cubic), extrapolateRight: 'clamp' }),
       }}
     />
   )
@@ -257,9 +279,9 @@ const EndCardInner: React.FC<ReelProps> = ({ title, meta, accent, logo }) => {
             width: 220,
             height: 220,
             borderRadius: '50%',
-            border: `2px solid ${accent}`,
-            scale: interpolate(frame, [0, 30], [0.2, 2.6], { easing: Easing.out(Easing.cubic), extrapolateRight: 'clamp' }),
-            opacity: interpolate(frame, [0, 6, 30], [0, 0.8, 0], { extrapolateRight: 'clamp' }),
+            border: `1px solid ${accent}`,
+            scale: interpolate(frame, [0, 36], [0.6, 1.8], { easing: Easing.out(Easing.cubic), extrapolateRight: 'clamp' }),
+            opacity: interpolate(frame, [0, 8, 36], [0, 0.45, 0], { extrapolateRight: 'clamp' }),
           }}
         />
         {logo ? (
@@ -271,7 +293,7 @@ const EndCardInner: React.FC<ReelProps> = ({ title, meta, accent, logo }) => {
               height: 96,
               objectFit: 'contain',
               borderRadius: 22,
-              scale: interpolate(frame, [0, 16], [0.4, 1], { easing: Easing.out(Easing.back(1.6)), extrapolateRight: 'clamp' }),
+              scale: interpolate(frame, [0, 18], [0.85, 1], { easing: Easing.out(Easing.cubic), extrapolateRight: 'clamp' }),
               opacity: interpolate(frame, [0, 8], [0, 1], { extrapolateRight: 'clamp' }),
             }}
           />

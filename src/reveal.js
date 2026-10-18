@@ -22,5 +22,5 @@ export function useSection(el) {
   })
   onBeforeUnmount(() => io?.disconnect())
   const classes = () => ({ 'reveal-ready': ready.value, 'is-revealed': shown.value, 'is-offscreen': !visible.value })
-  return { classes, reveal: () => (shown.value = true) } // reveal: e.g. on keyboard focus
+  return { classes, shown, reveal: () => (shown.value = true) } // reveal: e.g. on keyboard focus
 }

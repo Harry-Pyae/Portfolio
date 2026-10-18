@@ -1,188 +1,371 @@
-// Display order of the category groups in the project tree. Empty categories are hidden.
-export const categories = ['Personal Full-Stack Projects', 'Hackathon Prototypes', 'Frontend Projects']
+// Everything about the projects lives in this file: grouping, order, the hero selection and each case study.
 
-// status: 'Planned' | 'In progress' | 'Completed' (overview cards show the year instead when Completed)
-// tagline: one concise sentence for the overview cards (summary is shown in the details view).
-// icon: small logo for the card glyph; image: cover screenshot; gallery: screenshots for the details
-// view; video: short reel (rendered from video/ with Remotion). All paths are relative to /public.
-// challenge / contribution / solution / lessons: null renders as "not documented yet".
-// links: leave '' when there is nothing to link — the UI shows it as unavailable.
+// Project groups, in display order. Groups without `section` are branches of the main project tree;
+// `section` places a group in its own part of the page ('explorations' = Current explorations,
+// 'roots' = Where it began, drawn into the footer roots). `quiet` draws a smaller, calmer branch.
+// `label` is the short category shown on hero cards.
+export const categories = [
+  { name: 'Recent Personal Projects', label: 'Personal project' },
+  { name: 'Major Hackathon Projects', label: 'Major hackathon' },
+  { name: 'Smaller Hackathon Projects', label: 'Smaller hackathon' },
+  { name: 'Earlier Work', label: 'Earlier work', quiet: true },
+  { name: 'Current explorations', label: 'In development', section: 'explorations' },
+  { name: 'Where it began', label: 'Earliest work', section: 'roots', quiet: true },
+]
+
+// Projects (or suites) shown in the hero spiral, in carousel order. Every project is also on the page.
+export const featured = ['bloodcare', 'internshipjp', 'clarifile', 'flavourwave', 'clickwise', 'astrocare', 'chatledger']
+
+// Fields (paths are relative to /public):
+//   tagline       one sentence for cards; problem / solution: one or two sentences each
+//   highlights    a few verified features or implementation details
+//   contribution  only where documented (omit otherwise; nothing is shown)
+//   context       scope, team or time constraints when known, or the project's place in the journey
+//   image         poster / cover screenshot; gallery: screenshots; icon: small logo (optional)
+//   video         walkthrough reel rendered from video/ with Remotion; videoNote: caption under it;
+//                 walkthrough: name of its middle chapter when it isn't a screen recording
+//   links         only real URLs; leave '' to hide a link
+//   status        optional development status, shown on cards and in details (e.g. 'In development')
+//   suite         id of the suite an app belongs to (see `suites`)
 const shots = (id, n) => Array.from({ length: n }, (_, i) => `projects/${id}/${i + 1}.jpg`)
+const RECORDED = 'Recorded from the running app, sped up slightly. The title and end cards are motion graphics.'
+const LIVE = 'Recorded on the live site, sped up slightly. The title and end cards are motion graphics.'
+const DESKTOP = 'Recorded from the running desktop app with made-up documents, sped up slightly. The title and end cards are motion graphics.'
+const PRESENTATION =
+  'Recorded from a presentation copy of the page: the original third-party images are replaced with generated artwork. The title and end cards are motion graphics.'
 
 export const projects = [
   {
     id: 'bloodcare',
     title: 'BloodCare',
-    category: 'Personal Full-Stack Projects',
-    status: 'Completed',
+    category: 'Recent Personal Projects',
     year: 2026,
     icon: 'projects/bloodcare/icon.svg',
     image: 'projects/bloodcare/2.jpg',
     gallery: shots('bloodcare', 5),
     video: 'projects/bloodcare/reel.mp4',
+    videoNote: RECORDED,
     tagline: 'Blood donation cards, stock and hospital requests, traceable end to end by QR.',
-    summary:
-      'A blood donation card management system for a national blood service. Donors register and book online; staff run donations, cards and stock; the laboratory screens and processes units; hospitals request blood and report what happened to it. Every card and unit label carries a QR code that opens its live record.',
-    stack: ['Vue 3', 'Vuetify', 'Laravel 13', 'PHP 8.4', 'MySQL 8.4', 'Docker', 'vue-i18n'],
-    challenge:
-      'Model the whole donation chain (donor, staff, laboratory and hospital) with separate workspaces and permissions, while keeping every unit of blood traceable from donation to transfusion.',
-    contribution: 'Own project idea; product design and full-stack build across the Vue front end and the Laravel API.',
+    problem:
+      'A national blood service needs donors, staff, the laboratory and hospitals in one system, with every unit of blood traceable from donation to transfusion.',
     solution:
-      'A headless Laravel API with session auth and TOTP two-factor sign-in, and a Vue 3 + Vuetify app with a public donor site plus staff, laboratory and hospital workspaces. Blood requests are allocated first-expiry-first-out, adverse reactions are reported through haemovigilance, and reports export to CSV with a full audit history. English and Myanmar, light and dark themes, Docker for local setup.',
-    lessons: null,
+      'A Laravel API with a Vue 3 + Vuetify app: a public donor site plus separate staff, laboratory and hospital workspaces. Every card and unit label carries a QR code that opens its live record.',
+    highlights: [
+      'Session auth with TOTP two-factor sign-in and role-based workspaces',
+      'Blood requests allocated first-expiry-first-out, with haemovigilance reporting',
+      'Live inventory by blood group, donation cards and CSV reports with a full audit history',
+      'English and Myanmar, light and dark themes, Docker for local setup',
+    ],
+    contribution: 'Own project idea; product design and full-stack build across the Vue front end and the Laravel API.',
+    context: null,
+    stack: ['Vue 3', 'Vuetify', 'Laravel 13', 'PHP 8.4', 'MySQL 8.4', 'Docker', 'vue-i18n'],
     links: { demo: '', github: 'https://github.com/Harry-Pyae/blood-donation-card-system' },
   },
   {
     id: 'internshipjp',
     title: 'InternshipJP',
-    category: 'Personal Full-Stack Projects',
-    status: 'Completed',
+    category: 'Recent Personal Projects',
     year: 2026,
     icon: 'projects/internshipjp/icon.svg',
     image: 'projects/internshipjp/1.jpg',
     gallery: shots('internshipjp', 5),
     video: 'projects/internshipjp/reel.mp4',
+    videoNote: RECORDED,
     tagline: 'Internships matched on verified skills, in English and Myanmar.',
-    summary:
-      'An internship platform where students upload certificates, an administrator verifies them before employers can see them, and matching uses verified skills only. Students, employers and administrators each get their own workspace, with an AI assistant throughout.',
-    stack: ['React 19', 'Spring Boot 3.5', 'Java 24', 'MariaDB', 'Flyway', 'Bootstrap 5'],
-    challenge:
-      'Build trust into matching: employers only ever see qualifications an administrator has checked, and every match score explains itself, for a bilingual audience.',
+    problem:
+      'Matching students to internships only works if employers can trust the skills shown and every score explains itself, for a bilingual audience.',
+    solution:
+      'Students upload certificates, an administrator verifies them before employers can see them, and match scores use verified skills only. Students, employers and administrators each get their own workspace.',
+    highlights: [
+      'Certificate verification gates what employers see',
+      'Match scores built from verified skills, each explaining itself',
+      'AI assistant (Groq or Gemini chat) plus offline skill-gap and matching helpers',
+      'Spring Boot REST API with CSRF protection, TOTP or email-OTP sign-in and Flyway migrations',
+    ],
     contribution:
       'Member 1 of a four-person team (CST-6108, University of Information Technology): project foundation, database, integration, shared components and the bilingual layer.',
-    solution:
-      'A Spring Boot REST API with session and CSRF protection, TOTP or email-OTP two-factor sign-in and Flyway migrations, with a React front end. Certificate verification gates what employers see, match scores come from verified skills, and AI features (chat through Groq or Gemini, plus offline skill-gap and matching helpers) support each role.',
-    lessons: null,
+    context: 'Four-person university team project.',
+    stack: ['React 19', 'Spring Boot 3.5', 'Java 24', 'MariaDB', 'Flyway', 'Bootstrap 5'],
     links: { demo: '', github: 'https://github.com/Harry-Pyae/InternshipJP' },
-  },
-  {
-    id: 'clickwise',
-    title: 'ClickWise AI Tools Hub',
-    category: 'Hackathon Prototypes',
-    status: 'Completed',
-    year: 2026,
-    icon: null,
-    image: 'projects/clickwise/2.jpg',
-    gallery: shots('clickwise', 5),
-    video: 'projects/clickwise/reel.mp4',
-    tagline: 'Detect AI-generated text, images and audio, with scores that explain themselves.',
-    summary:
-      'One of Harry’s two major hackathon builds: an AI-awareness hub for checking text, images and audio for AI-generated content, with charts that explain each score, highlighted passages, masking and humanising tools, and a quiz with a leaderboard.',
-    stack: ['Next.js 16', 'React 19', 'Tailwind CSS 4', 'Supabase', 'Groq (Qwen, Whisper)', 'Recharts'],
-    challenge:
-      'Give people a clear, explainable read on whether content was AI-generated across three media types, rather than a single opaque percentage.',
-    contribution: null,
-    solution:
-      'Text scores blend local statistical analysis with a language-model read; images are checked with a vision model and audio is transcribed with Whisper. Results show a gauge, category breakdown, risk radar, score distribution and highlighted sentences. Supabase handles accounts and history; masking and humanising run locally with rule-based transforms.',
-    lessons: null,
-    links: { demo: '', github: 'https://github.com/Harry-Pyae/ai-detection-project' },
   },
   {
     id: 'flavourwave',
     title: 'FlavourWave',
-    category: 'Hackathon Prototypes',
-    status: 'Completed',
+    category: 'Major Hackathon Projects',
     year: 2023,
     icon: 'projects/flavourwave/icon.png',
     image: 'projects/flavourwave/1.jpg',
     gallery: shots('flavourwave', 4),
     video: 'projects/flavourwave/reel.mp4',
+    videoNote: "Built from the project's own screenshots. The title and end cards are motion graphics.",
+    walkthrough: 'Screenshots', // chapter name in the player (default: 'Recorded app')
     tagline: 'A drinks storefront with Stripe pre-orders and a delivery-tracking back office.',
-    summary:
-      'One of Harry’s two major hackathon builds, made with team Axionix: a customer storefront for browsing drinks, pre-ordering and paying with Stripe, connected to an internal admin for pre-orders, products, recipes, factories, warehouses, logistics and drivers.',
-    stack: ['Next.js 14', 'TypeScript', 'Tailwind CSS', 'Clerk', 'Stripe', 'Laravel 10', 'Backpack', 'MySQL'],
-    challenge:
-      'Connect a consumer storefront to the operations behind it, from pre-order and payment to production, stock and delivery, within a hackathon timeframe.',
-    contribution: null,
+    problem: 'Connect a consumer storefront to the operations behind it, from pre-order and payment to production, stock and delivery.',
     solution:
-      'A Next.js storefront with Clerk sign-in, Stripe checkout, TanStack Query and a map-based delivery view, plus a Laravel 10 + Backpack admin with department-based roles, pre-order acceptance and sales dashboards, joined by a JSON API.',
-    lessons: null,
+      'A Next.js storefront for browsing drinks, pre-ordering and paying with Stripe, joined by a JSON API to a Laravel + Backpack admin for pre-orders, products, recipes, factories, warehouses, logistics and drivers.',
+    highlights: [
+      'Clerk sign-in and Stripe checkout for pre-orders',
+      'Map-based delivery location picker',
+      'Department-based admin roles, pre-order acceptance and sales dashboards',
+    ],
+    contribution: null,
+    context: 'Hackathon build with team Axionix.',
+    stack: ['Next.js 14', 'TypeScript', 'Tailwind CSS', 'Clerk', 'Stripe', 'Laravel 10', 'Backpack', 'MySQL'],
     links: { demo: '', github: 'https://github.com/linhtutkyawdev/Axionix_FlavourWave' },
+  },
+  {
+    id: 'clickwise',
+    title: 'ClickWise AI Tools Hub',
+    category: 'Major Hackathon Projects',
+    year: 2026,
+    icon: null,
+    image: 'projects/clickwise/2.jpg',
+    gallery: shots('clickwise', 5),
+    video: 'projects/clickwise/reel.mp4',
+    videoNote:
+      "Recorded on the live site (masking and the quiz), sped up slightly. Text detection on the live site was failing at recording time, so the detection screenshots come from the app's built-in demo mode and show sample scores. The title and end cards are motion graphics.",
+    tagline: 'Detect AI-generated text, images and audio, with scores that explain themselves.',
+    problem: 'People need a clear read on whether text, images or audio were AI-generated, not a single opaque percentage.',
+    solution:
+      'Text scores blend local statistical analysis with a language-model read; images are checked with a vision model and audio is transcribed with Whisper. Charts and highlighted sentences explain each result.',
+    highlights: [
+      'Gauge, category breakdown, risk radar and score distribution for every check',
+      'Masking and humanising tools that run locally with rule-based transforms',
+      'Quiz with a leaderboard; Supabase accounts and history',
+    ],
+    contribution: null,
+    context: 'Hackathon build.',
+    stack: ['Next.js 16', 'React 19', 'Tailwind CSS 4', 'Supabase', 'Groq (Qwen, Whisper)', 'Recharts'],
+    links: { demo: 'https://ai-detection-project-nine.vercel.app', github: 'https://github.com/Harry-Pyae/ai-detection-project' },
   },
   {
     id: 'astrocare',
     title: 'AstroCare',
-    category: 'Hackathon Prototypes',
-    status: 'Completed',
+    category: 'Smaller Hackathon Projects',
     year: 2026,
     icon: 'projects/astrocare/icon.png',
     image: 'projects/astrocare/2.jpg',
     gallery: shots('astrocare', 4),
     video: 'projects/astrocare/reel.mp4',
+    videoNote: LIVE,
     tagline: 'Astronaut health trends measured against each crew member’s own baseline.',
-    summary:
-      'A crew health self-monitoring prototype that compares each astronaut’s last seven days with their own three-week baseline and explains changes in plain, neutral language, with no diagnoses and no risk scores. Built by a five-member student team in a hackathon practice round, using synthetic data.',
-    stack: ['React 18', 'TypeScript', 'Vite', 'Tailwind CSS 4', 'Recharts', 'NASA DONKI API'],
-    challenge:
-      'Surface meaningful health changes for crew without alarming them or pretending to diagnose, and stay useful when data is missing or stale.',
-    contribution: null,
+    problem: 'Surface meaningful health changes for crew without alarming them or pretending to diagnose, even when data is missing or stale.',
     solution:
-      'Personal-baseline statuses (within range, worth reviewing at ±15%, insufficient or stale data), trend charts with the baseline shaded, daily check-ins, upcoming-task context, a decision log, demo scenarios, a NASA solar-flare feed with a cached fallback, QR crew badges, English and Myanmar, and light and dark themes.',
-    lessons: null,
+      'Each astronaut’s last seven days are compared with their own three-week baseline and explained in plain, neutral language: no diagnoses and no risk scores.',
+    highlights: [
+      'Baseline statuses: within range, worth reviewing at ±15%, insufficient or stale data',
+      'Trend charts with the baseline shaded, daily check-ins and a decision log',
+      'NASA solar-flare feed with a cached fallback, QR crew badges, English and Myanmar',
+    ],
+    contribution: null,
+    context: 'Five-member student team, hackathon practice round, synthetic data.',
+    stack: ['React 18', 'TypeScript', 'Vite', 'Tailwind CSS 4', 'Recharts', 'NASA DONKI API'],
     links: { demo: 'https://astro-care-ai.vercel.app', github: 'https://github.com/Harry-Pyae/AstroCareAI' },
   },
   {
     id: 'chatledger',
     title: 'Chat to Ledger',
-    category: 'Hackathon Prototypes',
-    status: 'Completed',
+    category: 'Smaller Hackathon Projects',
     year: 2026,
     icon: null,
     image: 'projects/chatledger/2.jpg',
     gallery: shots('chatledger', 2),
     video: 'projects/chatledger/reel.mp4',
+    videoNote: LIVE,
     tagline: 'Turns messy Messenger and Viber sales chats into a clean order book.',
-    summary:
-      'An AI order book for Myanmar small businesses: paste chat text in mixed Burmese and English, and Gemini extracts structured orders for review before they reach a sales ledger with revenue, unpaid amounts and repeat customers. Built for the Cursor Myanmar AI Hackathon 2026 (uab Bank topic: AI for SMEs & Entrepreneurs).',
-    stack: ['React 19', 'Vite', 'Tailwind CSS 4', 'Supabase', 'Google Gemini', 'Netlify Functions'],
-    challenge:
-      'Read informal, mixed-language chat reliably enough that a seller can trust the extracted orders, without saving anything they have not reviewed.',
-    contribution: 'Built solo in about three hours with an AI-assisted workflow: Cursor’s agent for the code, Claude for planning and prompts.',
+    problem: 'Small Myanmar businesses take orders in informal, mixed Burmese and English chats that are hard to turn into a reliable record of sales and unpaid amounts.',
     solution:
-      'Netlify Functions call Gemini to extract orders, draft Burmese payment reminders and write business insights. A review table lets the seller fix rows before saving to Supabase; the ledger shows revenue, orders, top product, money owed, average order value and repeat customers, with search and paid/unpaid toggles.',
-    lessons: null,
+      'Paste the chat, Gemini extracts structured orders, and the seller reviews and fixes them before anything is saved to a sales ledger.',
+    highlights: [
+      'Review table: nothing is saved until the seller confirms',
+      'Ledger with revenue, money owed, top product, average order value and repeat customers',
+      'Burmese payment reminders and business insights drafted by Gemini through Netlify Functions',
+    ],
+    contribution: 'Built solo with an AI-assisted workflow: Cursor’s agent for the code, Claude for planning and prompts.',
+    context: 'Cursor Myanmar AI Hackathon 2026 (uab Bank topic: AI for SMEs & Entrepreneurs), built in about three hours.',
+    stack: ['React 19', 'Vite', 'Tailwind CSS 4', 'Supabase', 'Google Gemini', 'Netlify Functions'],
     links: { demo: 'https://chat-ledger.netlify.app', github: 'https://github.com/Harry-Pyae/chat-ledger' },
   },
   {
     id: 'mymedia',
     title: 'MyMedia',
-    category: 'Personal Full-Stack Projects',
-    status: 'Completed',
+    category: 'Earlier Work',
     year: 2023,
     icon: 'projects/mymedia/icon.png',
     image: 'projects/mymedia/1.jpg',
     gallery: shots('mymedia', 3),
     video: 'projects/mymedia/reel.mp4',
+    videoNote: `${RECORDED} The categories and posts are sample content added for the recording.`,
     tagline: 'A news and media admin with categories, posts and trending stats.',
-    summary:
-      'An earlier Laravel project (2023): a news and media site where admins manage categories and posts with images in a Laravel dashboard, and readers use a separate Vue client through an API that also records post views for a trending list.',
-    stack: ['Laravel 10', 'Jetstream', 'Livewire', 'MySQL', 'AdminLTE'],
-    challenge: 'Separate content management from reading: a dashboard for editors and a public API for a single-page client.',
-    contribution: null,
+    problem: 'Separate content management from reading: a dashboard for editors and a public API for a single-page client.',
     solution:
-      'Laravel 10 with Jetstream authentication; category and post management with image upload and search; admin account management; and an API for sign-in, registration, post lists, search, details and view tracking that powers the trending posts view.',
-    lessons: null,
+      'A Laravel dashboard where admins manage categories and posts with images, and a JSON API for a separate Vue client that also records post views for a trending list.',
+    highlights: [
+      'Jetstream authentication and admin account management',
+      'Category and post management with image upload and search',
+      'API for sign-in, post lists, search, details and view tracking',
+    ],
+    contribution: null,
+    context: 'Earlier work: a Laravel admin plus a JSON API for a separate Vue client, a step toward the Vue + Laravel API apps that followed.',
+    stack: ['Laravel 10', 'Jetstream', 'Livewire', 'MySQL', 'AdminLTE'],
     links: { demo: '', github: 'https://github.com/Harry-Pyae/MyMediaProject' },
   },
   {
     id: 'pizza',
     title: 'Pizza Order System',
-    category: 'Personal Full-Stack Projects',
-    status: 'Completed',
+    category: 'Earlier Work',
     year: 2022,
     icon: null,
     image: 'projects/pizza/1.jpg',
     gallery: shots('pizza', 5),
     video: 'projects/pizza/reel.mp4',
+    videoNote: `${RECORDED} The menu and its pizza images are sample content added for the recording.`,
     tagline: 'Browse pizzas, fill a cart and order, with an admin to run the shop.',
-    summary:
-      'An early Laravel project (December 2022): a pizza ordering site with separate customer and admin experiences. Customers filter the menu by category, view details, add to cart and track orders; admins manage categories, pizzas, orders, users and contact messages.',
-    stack: ['Laravel 9', 'Jetstream', 'Blade', 'jQuery (AJAX)', 'MySQL'],
-    challenge: 'Serve two roles from one app, routing each user to the right experience after sign-in, and keep the cart and ordering responsive without full page reloads.',
-    contribution: null,
+    problem: 'Serve customers and shop admins from one app, and keep the cart and ordering responsive without full page reloads.',
     solution:
-      'Role-based redirects and middleware for the admin and customer areas; AJAX cart, ordering and order-status updates; category filtering, view counts and order history; and admin management for the menu, orders, users and messages.',
-    lessons: null,
+      'Role-based redirects and middleware send each user to the right area; the cart, ordering and order-status updates run over AJAX.',
+    highlights: [
+      'Menu filtering by category, view counts and order history',
+      'Admin management for categories, pizzas, orders, users and contact messages',
+    ],
+    contribution: null,
+    context: 'Earlier work: server-rendered Laravel with Blade and jQuery AJAX, the groundwork for the API-driven apps that followed.',
+    stack: ['Laravel 9', 'Jetstream', 'Blade', 'jQuery (AJAX)', 'MySQL'],
     links: { demo: '', github: 'https://github.com/Harry-Pyae/PizzaOrderSystem' },
   },
+  {
+    id: 'classifile',
+    title: 'ClassiFile',
+    category: 'Current explorations',
+    suite: 'clarifile',
+    status: 'Release candidate · Under active development',
+    year: 2026,
+    icon: 'projects/classifile/icon.svg',
+    image: 'projects/classifile/1.jpg',
+    gallery: shots('classifile', 4),
+    video: 'projects/classifile/reel.mp4',
+    videoNote: DESKTOP,
+    tagline: 'Sorts documents by their content: files a copy when sure, asks when not, and learns from the answers.',
+    problem:
+      'Sorting folders of mixed documents takes time, and an automatic sorter only helps if it knows when to ask and never loses or alters the originals.',
+    solution:
+      'A Windows desktop app that classifies documents offline and files a verified copy when one category is clearly ahead. Everything else waits in “Needs your decision” with the best categories and the reason.',
+    highlights: [
+      'Offline classification: word-level TF-IDF built on the Python standard library, with no network calls',
+      'Confidence-gated filing (Strict by default), only into categories with at least three confirmed documents',
+      'Learns from your decisions and existing folders; matching updates every 10 decisions and keeps the previous version if the new one would make more mistakes',
+      'Originals are never changed, moved or deleted: it works on hash-verified copies and never overwrites',
+    ],
+    context: 'Release candidate 1.0.0-rc.2 for a small pilot on Windows, English only for now. Part of the ClariFile suite.',
+    stack: ['Python 3.12', 'PySide6', 'PyMuPDF', 'Tesseract OCR', 'SQLite', 'PyInstaller'],
+    links: { demo: '', github: 'https://github.com/ClariFile/ClassiFile' },
+  },
+  {
+    id: 'summarease',
+    title: 'SummarEase',
+    category: 'Current explorations',
+    suite: 'clarifile',
+    status: 'In development',
+    year: 2026,
+    icon: 'projects/summarease/icon.svg',
+    image: 'projects/summarease/1.jpg',
+    gallery: shots('summarease', 4),
+    video: 'projects/summarease/reel.mp4',
+    videoNote: DESKTOP,
+    tagline: 'Summarizes a document at the level of detail you choose, with every line linked to its source.',
+    problem: 'A long document needs a quick read you can trust, so every line of a summary should lead back to where it came from.',
+    solution:
+      'An offline desktop app with a two-pane reading workspace. Summaries are extractive: every line is taken word for word from the document and links to its page, slide or section.',
+    highlights: [
+      'Four nested detail levels: Brief, Key points, Detailed and Comprehensive',
+      'Source references: following a summary line scrolls the source pane to that page',
+      'Copy, or export to searchable PDF or Word; an export is checked and never overwrites a file',
+      'Open, paste or drag in documents; OCR text and gaps are marked',
+    ],
+    context:
+      'In development: reading, summaries and export work; evaluation on real documents has not been run yet. Part of the ClariFile suite.',
+    stack: ['Python 3.12', 'PySide6', 'PyMuPDF'],
+    links: { demo: '', github: 'https://github.com/ClariFile/SummarEase' },
+  },
+  {
+    id: 'fhcp',
+    title: 'FHCP',
+    category: 'Where it began',
+    icon: null,
+    image: 'projects/fhcp/1.jpg',
+    gallery: shots('fhcp', 4),
+    video: 'projects/fhcp/reel.mp4',
+    videoNote: PRESENTATION,
+    walkthrough: 'Recorded page',
+    tagline: 'My first HTML and CSS page: a one-page fan site for the series Supernatural.',
+    highlights: [
+      'Hand-written HTML and CSS, no JavaScript',
+      'Season cards and detail blocks that scale up on hover',
+      'Media queries from 320 px up to 3840 px wide',
+    ],
+    context:
+      'Where it began: my first project using only HTML and CSS, pushed to GitHub in May 2022. Its buttons, links and sign-up form are layout only.',
+    stack: ['HTML5', 'CSS3', 'MDB UI Kit (CSS)', 'Font Awesome', 'Boxicons'],
+    links: { demo: '', github: 'https://github.com/Harry-Pyae/FHCP' },
+  },
+  {
+    id: 'cinemagichub',
+    title: 'CineMagicHub',
+    category: 'Where it began',
+    year: 2023,
+    icon: 'projects/cinemagichub/icon.png',
+    image: 'projects/cinemagichub/1.jpg',
+    gallery: shots('cinemagichub', 4),
+    video: 'projects/cinemagichub/reel.mp4',
+    videoNote: PRESENTATION,
+    walkthrough: 'Recorded page',
+    tagline: 'An early movie-themed landing page with dropdown menus and hover effects.',
+    highlights: [
+      'Bootstrap 4 navbar with Movies and Guest dropdowns',
+      'Featured film section, a hero grid and a Popular Movies row that lifts on hover',
+      'Responsive layout: the hero grid steps aside on small screens',
+    ],
+    context:
+      'Where it began: built in 2023 while learning HTML, CSS and Bootstrap, and uploaded to GitHub later. Search, log-in, watch and download are layout only.',
+    stack: ['HTML5', 'CSS3', 'Bootstrap 4', 'Font Awesome'],
+    links: { demo: '', github: 'https://github.com/Harry-Pyae/CineMagicHub-2023' },
+  },
 ]
+
+// A suite groups related applications under one name; it is not a project of its own. Its card opens
+// an overview that leads to each app. `integration` describes how the apps relate, as currently planned.
+export const suites = [
+  {
+    id: 'clarifile',
+    title: 'ClariFile',
+    category: 'Current explorations',
+    status: 'In development',
+    icon: 'projects/clarifile/icon.svg',
+    tagline: 'Companion desktop tools for organizing documents and creating source-linked summaries.',
+    apps: ['classifile', 'summarease'],
+    integration: {
+      label: 'Planned companion integration',
+      text: 'Both applications work on their own and never share a database. Discovering the companion app and handing a document to it, with your permission, is the intended workflow; the integration design is still a draft and not built.',
+    },
+    links: { demo: '', github: '' },
+  },
+]
+
+// Engineering story shown inside the related project's details, with a short teaser on the main page.
+// Kept unpublished until every part is verified with the author (see AUTHOR-CHECKLIST.md).
+export const story = {
+  published: false,
+  project: null, // id of the project the story belongs to
+  title: 'Getting pagination right',
+  teaser: '',
+  parts: [
+    // [heading, text]: what the app needed, the bug, how it was investigated, the logic and API
+    // behaviour, edge cases handled, the outcome, and what was learned. Leave out anything unverified.
+  ],
+}
+
+const byId = (id) => projects.find((p) => p.id === id) ?? suites.find((x) => x.id === id)
+export const featuredProjects = featured.map(byId).filter(Boolean)
+export const categoryOf = (p) => categories.find((c) => c.name === p.category)
+export const appsOf = (suite) => suite.apps.map(byId)
+export const inGroup = (name) => projects.filter((p) => p.category === name)

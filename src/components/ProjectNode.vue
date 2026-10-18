@@ -6,6 +6,7 @@ defineProps({
   idPrefix: { type: String, required: true }, // keeps description ids unique when a project appears twice
   port: { type: String, default: 'none' }, // side of the branch connection point: 'left' | 'right' | 'none'
   lit: { type: Boolean, default: false }, // highlighted from outside (carousel hover / keyboard focus)
+  label: { type: String, default: '' }, // optional short category line (hero cards)
 })
 defineEmits(['open'])
 </script>
@@ -23,12 +24,8 @@ defineEmits(['open'])
     <ProjectArt :project="project" glyph class="sym" />
     <span class="body">
       <span class="title">{{ project.title }}</span>
-      <span :id="`${idPrefix}-${project.id}-desc`" class="desc">
-        {{ project.tagline || project.summary }}
-        <span v-if="project.status !== 'Completed' || project.year" class="status">
-          {{ project.status === 'Completed' ? project.year : project.status }}
-        </span>
-      </span>
+      <span :id="`${idPrefix}-${project.id}-desc`" class="desc">{{ project.tagline }}</span>
+      <span v-if="label" class="label">{{ label }}</span>
     </span>
     <svg class="arrow" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
       <path d="M5 11L11 5M6 5h5v5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" />
@@ -124,21 +121,11 @@ defineEmits(['open'])
   font-size: 14px;
   line-height: 1.5;
 }
-.status {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 6px;
+.label {
+  margin-top: 2px;
   color: var(--ink-3);
   font-size: 12.5px;
   font-weight: 500;
-}
-.status::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  border: 1px solid var(--ink-3);
-  border-radius: 50%;
 }
 .arrow {
   position: absolute;

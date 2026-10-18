@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
-import { projects } from '../content/projects.js'
+import { featuredProjects as projects, categoryOf } from '../content/projects.js'
 import { motion as cfg } from '../content/motion.js'
 import { motionOn, prefersReduced, openProject, heroVisible, showProject } from '../state.js'
 import { FIBRES, EXIT_ENV, TAU, heroExit, flowDuration, polyLength } from '../tree.js'
@@ -410,6 +410,7 @@ watch([activeId, motionOn, openProject], kick)
             :project="p"
             id-prefix="hero"
             :lit="activeId === p.id"
+            :label="categoryOf(p)?.label"
             :port="tendril?.id === p.id ? tendril.port : 'none'"
             @open="showProject(p)"
           >

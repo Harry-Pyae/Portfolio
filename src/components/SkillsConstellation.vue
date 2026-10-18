@@ -1,6 +1,10 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { profile } from '../content/profile.js'
+import { projects } from '../content/projects.js'
+import { showProject } from '../state.js'
+
+const byId = (id) => projects.find((p) => p.id === id)
 
 // Skills as small constellations: each skill is a plain label under a star; thin connectors join
 // neighbouring stars on the same row only, so lines never cross text. Static, non-interactive.
@@ -88,6 +92,23 @@ const clusterIndex = groups.map((g) => g.clusters.map(() => n++))
         </div>
       </div>
     </section>
+
+    <!-- Currently exploring: what I'm deepening now, and where it shows up. No ratings. -->
+    <section class="sky-group exploring rv" style="--d: 7" aria-labelledby="skills-exploring">
+      <span class="tree-port" data-port="skills-exploring" aria-hidden="true"></span>
+      <h3 id="skills-exploring" class="group-title">Currently exploring</h3>
+      <ul class="explore-list">
+        <li v-for="x in profile.skills.exploring" :key="x.name">
+          <span class="x-name"><span class="star" aria-hidden="true"></span>{{ x.name }}</span>
+          <span class="x-note">{{ x.note }}</span>
+          <span class="x-links">
+            <button v-for="id in x.projects" :key="id" type="button" class="x-link" @click="showProject(byId(id))">
+              {{ byId(id).title }}
+            </button>
+          </span>
+        </li>
+      </ul>
+    </section>
   </div>
 </template>
 
@@ -102,8 +123,64 @@ const clusterIndex = groups.map((g) => g.clusters.map(() => n++))
   grid-column: 1 / -1;
 }
 .lane {
-  grid-row: 2;
+  grid-row: 2 / span 2;
   grid-column: 2;
+}
+.sky-group.exploring {
+  grid-row: 3;
+  grid-column: 1;
+}
+.explore-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+  gap: 20px 36px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.explore-list li {
+  display: grid;
+  gap: 4px;
+  align-content: start;
+}
+.x-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  font: 600 16px/1.3 var(--font-head);
+}
+.exploring .star {
+  width: 6px;
+  height: 6px;
+  background: var(--glow-spark);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--glow-spark) 55%, transparent);
+}
+.x-note {
+  color: var(--ink-2);
+  font-size: 14.5px;
+}
+.x-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+.x-link {
+  min-height: 30px;
+  padding: 3px 11px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink-2);
+  font: 500 13px/1.2 var(--font-body);
+  cursor: pointer;
+  transition: border-color 0.25s var(--ease), color 0.25s var(--ease);
+}
+.x-link:hover,
+.x-link:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 .sky-group.core {
   grid-row: 2;
@@ -209,7 +286,8 @@ const clusterIndex = groups.map((g) => g.clusters.map(() => n++))
   top: 0;
   left: 0;
 }
-.core > .tree-port {
+.core > .tree-port,
+.exploring > .tree-port {
   left: 100%;
 }
 @media (max-width: 860px) {
@@ -221,11 +299,13 @@ const clusterIndex = groups.map((g) => g.clusters.map(() => n++))
     display: none;
   }
   .sky-group.core,
-  .sky-group.general {
+  .sky-group.general,
+  .sky-group.exploring {
     grid-row: auto;
     grid-column: 1;
   }
-  .core > .tree-port {
+  .core > .tree-port,
+  .exploring > .tree-port {
     left: 0;
   }
 }

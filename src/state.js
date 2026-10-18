@@ -18,20 +18,21 @@ watchEffect(() => document.documentElement.classList.toggle('motion-off', !motio
 
 export const heroVisible = ref(true)
 
-// Two dark themes to compare: 'nebula' (blue/cyan, default) and 'charcoal' (the earlier charcoal +
-// yellow design). Remembered per visitor; storage may be unavailable, so every access is guarded.
-const THEMES = ['nebula', 'charcoal']
-const THEME_COLOR = { nebula: '#040b18', charcoal: '#101114' }
+// Two dark appearances: 'nebula' (navy + cyan, default) and 'ember' (charcoal + gold). Remembered per
+// visitor; storage may be unavailable, so every access is guarded.
+const THEMES = ['nebula', 'ember']
+const THEME_COLOR = { nebula: '#040b18', ember: '#101114' }
 const stored = (() => {
   try {
-    return localStorage.getItem('portfolio-theme')
+    const t = localStorage.getItem('portfolio-theme')
+    return t === 'charcoal' ? 'ember' : t // earlier name of the ember appearance
   } catch {
     return null
   }
 })()
 export const theme = ref(THEMES.includes(stored) ? stored : 'nebula')
 export function toggleTheme() {
-  theme.value = theme.value === 'nebula' ? 'charcoal' : 'nebula'
+  theme.value = theme.value === 'nebula' ? 'ember' : 'nebula'
   try {
     localStorage.setItem('portfolio-theme', theme.value)
   } catch {

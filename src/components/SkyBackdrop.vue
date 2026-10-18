@@ -46,7 +46,7 @@ function paint(c, w, h, seed, count, bright) {
   const ctx = c.getContext('2d')
   ctx.scale(dpr, dpr)
   const rand = rng(seed)
-  const warm = theme.value === 'charcoal'
+  const warm = theme.value === 'ember'
   // Irregular density: a soft diagonal band of extra stars, sparse elsewhere; no tiling.
   for (let n = 0, tries = 0; n < count && tries < count * 6; tries++) {
     const x = rand() * w

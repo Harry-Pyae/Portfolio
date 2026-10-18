@@ -9,6 +9,8 @@ import SpiralShowcase from './components/SpiralShowcase.vue'
 import ProjectTree from './components/ProjectTree.vue'
 import AboutSection from './components/AboutSection.vue'
 import ContactSection from './components/ContactSection.vue'
+import ExplorationsSection from './components/ExplorationsSection.vue'
+import BeganSection from './components/BeganSection.vue'
 import ProjectModal from './components/ProjectModal.vue'
 import TreeTrunk from './components/TreeTrunk.vue'
 
@@ -37,8 +39,10 @@ onBeforeUnmount(() => io.disconnect())
         </section>
       </div>
       <ProjectTree />
+      <ExplorationsSection />
       <AboutSection />
       <ContactSection />
+      <BeganSection />
     </main>
     <footer class="footer">
       <!-- The trunk opens into roots across this full-width zone; text stays in the container below. -->
@@ -83,13 +87,12 @@ onBeforeUnmount(() => io.disconnect())
   }
 }
 .footer {
-  margin-top: clamp(56px, 7vw, 96px);
   padding-bottom: 32px;
   color: var(--ink-3);
   font-size: 14px;
 }
 .roots-zone {
-  height: clamp(200px, 22vw, 300px);
+  height: clamp(240px, 26vw, 380px);
 }
 .footer-row {
   max-width: var(--maxw);

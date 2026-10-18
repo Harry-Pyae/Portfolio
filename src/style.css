@@ -30,9 +30,9 @@
   --maxw: 1240px;
 }
 
-/* The earlier charcoal + yellow design, kept as a switchable theme (navbar toggle). Same tokens, so
-   every component, the tree and its light follow automatically. */
-:root[data-theme='charcoal'] {
+/* Ember: the charcoal + gold appearance (navbar toggle). Same tokens, so every component, the tree
+   and its light follow automatically. */
+:root[data-theme='ember'] {
   --bg: #101114;
   --surface: #17181c;
   --surface-2: #1e2025;
@@ -159,26 +159,6 @@ h2 {
   background: var(--accent-hover);
 }
 
-.badge {
-  display: inline-flex;
-  align-items: center;
-  flex: none;
-  padding: 0.35em 0.7em;
-  border: 1px solid var(--line-strong);
-  border-radius: 999px;
-  color: var(--ink-2);
-  font: 600 12px/1.2 var(--font-body);
-  white-space: nowrap;
-}
-.badge[data-status='In progress'] {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-.badge[data-status='Completed'] {
-  border-color: var(--glow-branch);
-  color: var(--glow-branch);
-}
-
 .chips {
   display: flex;
   flex-wrap: wrap;
@@ -195,16 +175,6 @@ h2 {
   color: var(--ink-2);
   font: 500 13px/1.2 var(--font-body);
   white-space: nowrap;
-}
-
-.link-off {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.8em 1.2em;
-  border: 1px dashed var(--line-strong);
-  border-radius: 999px;
-  color: var(--ink-3);
-  font-size: 14px;
 }
 
 .sr-only {
@@ -351,7 +321,10 @@ h2 {
   animation: none;
 }
 .motion-off .t-pulse,
-.motion-off .b-pulse {
+.motion-off .b-pulse,
+.motion-off .b-grow,
+.motion-off .root-hover,
+.motion-off .root-pulse {
   display: none;
 }
 
@@ -363,7 +336,7 @@ h2 {
   transform: translateY(14px);
 }
 /* Elements carrying a branch port only fade, so the branch never detaches while they settle. */
-.reveal-ready .rv:has(.tree-port) {
+.reveal-ready .rv:has(.tree-port, .port) {
   transform: none;
 }
 .reveal-ready.is-revealed .rv {

@@ -1,8 +1,13 @@
 <script setup>
 import { ref } from 'vue'
 import { profile } from '../content/profile.js'
+import { projects } from '../content/projects.js'
+import { showProject } from '../state.js'
 import { useSection } from '../reveal.js'
 import SkillsConstellation from './SkillsConstellation.vue'
+import InterestsSection from './InterestsSection.vue'
+
+const byId = (id) => projects.find((p) => p.id === id)
 
 const root = ref(null)
 const { classes, reveal } = useSection(root)
@@ -47,17 +52,26 @@ const { classes, reveal } = useSection(root)
         <div class="narrative rv" style="--d: 2">
           <p v-for="(para, i) in profile.about" :key="i">{{ para }}</p>
         </div>
-        <ul class="focus rv" style="--d: 3" aria-label="Focus">
-          <li v-for="f in profile.focus" :key="f">{{ f }}</li>
-        </ul>
-        <p class="status rv" style="--d: 4">
-          <span class="beacon" aria-hidden="true"><span class="beacon-wave anim"></span></span>
-          <span>{{ profile.status }}</span>
-        </p>
+        <!-- Milestones: a small branch of its own off the trunk. -->
+        <div class="milestones rv" style="--d: 3">
+          <h3 class="ms-title">Milestones<span class="tree-port" data-port="milestones" aria-hidden="true"></span></h3>
+          <ul class="ms-list">
+            <li v-for="m in profile.milestones" :key="m.title">
+              <span class="ms-name">{{ m.title }}</span>
+              <span class="ms-text">{{ m.text }}</span>
+              <span v-if="m.projects" class="ms-links">
+                <button v-for="id in m.projects" :key="id" type="button" class="ms-link" @click="showProject(byId(id))">
+                  {{ byId(id).title }}
+                </button>
+              </span>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
 
     <SkillsConstellation />
+    <InterestsSection />
   </section>
 </template>
 
@@ -186,23 +200,39 @@ const { classes, reveal } = useSection(root)
 .narrative p + p {
   color: var(--ink-2);
 }
-.focus {
+.milestones {
+  max-width: 62ch;
+  margin-top: 34px;
+}
+.ms-title {
+  position: relative;
+  width: fit-content;
+  margin-bottom: 14px;
+  font-size: 18px;
+}
+.ms-title > .tree-port {
+  left: -22px;
+  top: 50%;
+}
+.ms-list {
   display: grid;
-  gap: 12px;
-  margin: 30px 0 0;
-  padding: 0;
+  gap: 14px;
+  margin: 0;
+  padding: 0 0 0 14px;
+  border-left: 1px solid color-mix(in srgb, var(--glow-branch) 40%, transparent);
   list-style: none;
 }
-.focus li {
+.ms-list li {
   position: relative;
-  padding-left: 24px;
-  color: var(--ink);
-  font: 500 16.5px/1.45 var(--font-head);
+  display: grid;
+  gap: 2px;
+  padding-left: 16px;
 }
-.focus li::before {
+/* each milestone is a small node on the branch */
+.ms-list li::before {
   content: '';
   position: absolute;
-  left: 2px;
+  left: -18px;
   top: 0.55em;
   width: 7px;
   height: 7px;
@@ -210,47 +240,35 @@ const { classes, reveal } = useSection(root)
   background: var(--glow-branch);
   box-shadow: 0 0 8px color-mix(in srgb, var(--glow-branch) 60%, transparent);
 }
-.status {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  max-width: 62ch;
-  margin: 34px 0 0;
-  padding: 16px 20px;
-  border: 1px solid var(--line-strong);
-  border-left: 2px solid var(--accent);
-  border-radius: 12px;
-  background: var(--surface);
+.ms-name {
+  color: var(--ink);
+  font: 600 16px/1.4 var(--font-head);
+}
+.ms-text {
   color: var(--ink-2);
   font-size: 15px;
 }
-.beacon {
-  position: relative;
-  flex: none;
-  width: 9px;
-  height: 9px;
-  margin-top: 7px;
-  border-radius: 50%;
-  background: var(--glow-trunk);
-  box-shadow: 0 0 10px 1px color-mix(in srgb, var(--glow-trunk) 70%, transparent);
+.ms-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
 }
-.beacon-wave {
-  position: absolute;
-  inset: -1px;
-  border: 1px solid var(--glow-trunk);
-  border-radius: 50%;
-  opacity: 0;
-  animation: beacon 3.2s ease-out infinite;
+.ms-link {
+  min-height: 32px;
+  padding: 4px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font: 500 13.5px/1.2 var(--font-body);
+  cursor: pointer;
+  transition: border-color 0.25s var(--ease), color 0.25s var(--ease);
 }
-@keyframes beacon {
-  0% {
-    opacity: 0.7;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(3.2);
-  }
+.ms-link:hover,
+.ms-link:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 @media (max-width: 860px) {

@@ -1,0 +1,21 @@
+import { record } from './hq.mjs'
+const out = process.argv[2], st = process.argv[3], base = 'http://127.0.0.1:8010'
+await record(out + '/mymedia', async (p, r) => {
+  await p.goto(base + '/login', { waitUntil: 'networkidle' })
+  await p.fill('#email', 'harry@mymedia.test'); await p.fill('#password', 'local-demo-pass')
+  await p.locator('button', { hasText: /log in/i }).click(); await p.waitForLoadState('networkidle')
+  await p.goto(base + '/category', { waitUntil: 'networkidle' })
+  await r.start(); await r.wait(1200)
+  await r.type(p.locator('input[name=categoryName], input[type=text]').first(), 'Design', 70)
+  await r.type(p.locator('textarea').first(), 'Layouts, type and colour notes.', 35)
+  await r.wait(400)
+  await p.locator('button', { hasText: /^Create$/ }).hover(); await r.wait(300); await p.locator('button', { hasText: /^Create$/ }).click()
+  await r.hold(() => p.waitForLoadState('networkidle'))
+  await r.wait(2200)
+  await p.locator('a[href$="/post"]').first().click()
+  await r.hold(() => p.waitForLoadState('networkidle'))
+  await r.wait(1500); await r.glide(420, 1600); await r.wait(1400); await r.glide(-420, 900)
+  await p.locator('a[href$="/post/trend"]').first().click()
+  await r.hold(() => p.waitForLoadState('networkidle'))
+  await r.wait(1500); await r.glide(300, 1200); await r.wait(1800)
+})

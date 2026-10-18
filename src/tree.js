@@ -30,6 +30,18 @@ export const heroExit = shallowRef(null)
 // Project card currently hovered/focused in the tree (lights its branch), and Projects visibility.
 export const litProject = ref(null)
 export const projectsVisible = ref(true)
+// Small screens: the trunk becomes a side spine, so every card's connection point faces left.
+const mq = matchMedia('(max-width: 860px)')
+export const narrow = ref(mq.matches)
+mq.addEventListener('change', (e) => (narrow.value = e.matches))
+// Set once the Current explorations section first comes into view (its branches grow in once).
+export const exploreShown = ref(false)
+
+// Hover (real mice only) and keyboard focus light a card's branch; leaving restores it.
+export const lightOn = (e, id) => e.pointerType === 'mouse' && (litProject.value = id)
+export const lightOff = (id) => litProject.value === id && (litProject.value = null)
+export const focusLight = (e, id) => e.target.matches(':focus-visible') && (litProject.value = id)
+export const blurLight = () => (litProject.value = null)
 
 export const ease = (e) => e * e * (3 - 2 * e)
 export const polyLength = (pts) => pts.reduce((s, p, i) => (i ? s + Math.hypot(p[0] - pts[i - 1][0], p[1] - pts[i - 1][1]) : 0), 0)

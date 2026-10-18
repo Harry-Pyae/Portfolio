@@ -2,7 +2,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { projects, categories } from '../content/projects.js'
 import { showProject, prefersReduced } from '../state.js'
-import { litProject, projectsVisible } from '../tree.js'
+import { litProject, projectsVisible, lightOn, lightOff, focusLight, blurLight, narrow } from '../tree.js'
 import ProjectNode from './ProjectNode.vue'
 
 // Layout of the branching project section. The trunk passing through it, the branches to each card
@@ -14,8 +14,10 @@ const rand = (n) => {
 }
 
 // Categories become branch groups on the trunk; cards alternate sides within each group.
+// Quiet groups (Earlier Work) get a smaller, calmer branch and compact cards.
 const groups = categories
-  .map((name) => ({ name, items: projects.filter((p) => p.category === name) }))
+  .filter((c) => !c.section)
+  .map((c) => ({ ...c, items: projects.filter((p) => p.category === c.name) }))
   .filter((g) => g.items.length)
 let n = 0
 for (const g of groups) {
@@ -24,24 +26,16 @@ for (const g of groups) {
 
 const section = ref(null)
 const pending = ref(false) // staggered entrance; cards stay fully interactive throughout
-const narrow = ref(false)
 
 const portSide = (it) => (narrow.value || it.side === 'right' ? 'left' : 'right')
 
-const enter = (e, id) => e.pointerType === 'mouse' && (litProject.value = id)
-const leave = (id) => litProject.value === id && (litProject.value = null)
 const focusIn = (e, id) => {
   pending.value = false // keyboard users never wait for the entrance
-  if (e.target.matches(':focus-visible')) litProject.value = id
+  focusLight(e, id)
 }
-const focusOut = () => (litProject.value = null)
 
-const mq = matchMedia('(max-width: 860px)')
-const onMq = () => (narrow.value = mq.matches)
 let io
 onMounted(() => {
-  onMq()
-  mq.addEventListener('change', onMq)
   if (!prefersReduced.value && section.value.getBoundingClientRect().top > innerHeight) pending.value = true
   io = new IntersectionObserver(
     ([e]) => {
@@ -53,7 +47,6 @@ onMounted(() => {
   io.observe(section.value)
 })
 onBeforeUnmount(() => {
-  mq.removeEventListener('change', onMq)
   io.disconnect()
 })
 </script>
@@ -68,8 +61,8 @@ onBeforeUnmount(() => {
 
     <div class="tree">
       <span class="trunk-anchor" aria-hidden="true"></span>
-      <div v-for="g in groups" :key="g.name" class="group">
-        <h3 class="group-label">{{ g.name }}</h3>
+      <div v-for="(g, gi) in groups" :key="g.name" class="group" :class="{ quiet: g.quiet }">
+        <h3 class="group-label" :data-group="gi">{{ g.name }}</h3>
         <ol class="nodes">
           <li
             v-for="it in g.items"
@@ -77,11 +70,12 @@ onBeforeUnmount(() => {
             class="node-wrap"
             :class="it.side"
             :data-project="it.p.id"
+            :data-group="gi"
             :style="{ '--i': it.i, '--reach': `${it.reach}px` }"
-            @pointerenter="enter($event, it.p.id)"
-            @pointerleave="leave(it.p.id)"
+            @pointerenter="lightOn($event, it.p.id)"
+            @pointerleave="lightOff(it.p.id)"
             @focusin="focusIn($event, it.p.id)"
-            @focusout="focusOut"
+            @focusout="blurLight"
           >
             <ProjectNode
               :project="it.p"
@@ -170,6 +164,26 @@ onBeforeUnmount(() => {
 .pending .node-wrap {
   opacity: 0;
   transform: translateY(16px);
+}
+
+/* Earlier Work: a smaller, calmer branch that is still easy to open. */
+.quiet .group-label {
+  border-color: var(--line-strong);
+  color: var(--ink-2);
+  font-size: 14px;
+}
+.quiet .node-wrap {
+  --node-w: 228px;
+}
+.quiet :deep(.node) {
+  padding: 11px 12px 12px;
+  box-shadow: none;
+}
+.quiet :deep(.title) {
+  font-size: 15.5px;
+}
+.quiet :deep(.desc) {
+  font-size: 13.5px;
 }
 
 @media (max-width: 860px) {

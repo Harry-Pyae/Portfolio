@@ -14,6 +14,9 @@ const ICONS = {
 }
 const icon = (label) => ICONS[label.toLowerCase()] ?? 'M8 12l4-4M7 9.5L5.5 11a2.1 2.1 0 003 3L10 12.5M10 7.5L11.5 6a2.1 2.1 0 013 3L13 10.5'
 
+// Only channels with a real link are shown.
+const channels = profile.contact.filter((c) => c.href)
+
 // Optional copy-email: only appears when a real mailto: address exists in the profile data.
 const status = ref('')
 async function copy(c) {
@@ -52,12 +55,11 @@ async function copy(c) {
           Get in touch<span class="tree-port" data-port="contact" aria-hidden="true"></span>
         </h2>
         <p class="lede rv" style="--d: 2">
-          Happy to talk about Vue and Laravel roles, collaborations, or a project you have in mind.
+          {{ profile.contactLede }}
         </p>
         <ul class="channels rv" style="--d: 3">
-          <li v-for="c in profile.contact" :key="c.label">
+          <li v-for="c in channels" :key="c.label">
             <a
-              v-if="c.href"
               class="channel"
               :href="c.href"
               :target="c.href.startsWith('http') ? '_blank' : null"
@@ -68,11 +70,6 @@ async function copy(c) {
               <span class="value">{{ c.text || c.href.replace(/^mailto:/, '') }}</span>
               <span v-if="c.href.startsWith('http')" class="sr-only">(opens in a new tab)</span>
             </a>
-            <div v-else class="channel off">
-              <svg class="ico" viewBox="0 0 20 20" aria-hidden="true"><path :d="icon(c.label)" /></svg>
-              <span class="name">{{ c.label }}</span>
-              <span class="value">Not listed yet</span>
-            </div>
             <button v-if="c.href.startsWith('mailto:')" class="copy" type="button" @click="copy(c)">Copy email</button>
           </li>
         </ul>
@@ -251,17 +248,6 @@ a.channel:hover {
   text-align: right;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-.off {
-  border-style: dashed;
-  background: transparent;
-}
-.off .ico {
-  stroke: var(--ink-3);
-}
-.off .name,
-.off .value {
-  color: var(--ink-3);
 }
 .copy {
   padding: 0 16px;

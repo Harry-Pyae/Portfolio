@@ -14,7 +14,7 @@ const TINTS = {
     blue: [[74, 136, 232], 10],
     green: [[105, 216, 175], 24],
   },
-  charcoal: {
+  ember: {
     cyan: [[255, 216, 77], 3], // yellow
     blue: [[255, 232, 160], 10], // pale gold
     green: [[255, 232, 160], 24],

@@ -10,16 +10,18 @@ const links = [
 ]
 
 // Active section: whichever section crosses a thin band just above the middle of the viewport.
-// The footer counts as Contact, so the last link stays lit at the very bottom.
+// Subsections count toward their parent link (no nav item each); the footer counts as Contact.
+const parentOf = { explorations: 'projects', beginnings: 'contact' }
 const active = ref(null)
 const inBand = new Set()
 let io
 onMounted(() => {
-  const targets = [...links.map((l) => document.getElementById(l.id)), document.querySelector('.footer')]
+  const ids = [...links.map((l) => l.id), ...Object.keys(parentOf)]
+  const targets = [...ids.map((id) => document.getElementById(id)), document.querySelector('.footer')]
   io = new IntersectionObserver(
     (entries) => {
       for (const e of entries) {
-        const id = e.target.id || 'contact'
+        const id = parentOf[e.target.id] ?? (e.target.id || 'contact')
         e.isIntersecting ? inBand.add(id) : inBand.delete(id)
       }
       active.value = links.map((l) => l.id).filter((id) => inBand.has(id)).pop() ?? null
@@ -47,16 +49,16 @@ onBeforeUnmount(() => io?.disconnect())
         </li>
       </ul>
       <div class="tools">
-        <!-- Compare the two dark themes; the label names the theme you'll switch to. -->
+        <!-- Two dark appearances; the label names the one you'll switch to. -->
         <button
           class="theme"
           type="button"
-          :aria-label="theme === 'nebula' ? 'Switch to charcoal theme' : 'Switch to nebula theme'"
-          :title="theme === 'nebula' ? 'Switch to the charcoal theme' : 'Switch to the nebula theme'"
+          :aria-label="theme === 'nebula' ? 'Switch to the Ember appearance' : 'Switch to the Nebula appearance'"
+          :title="theme === 'nebula' ? 'Switch to the Ember appearance' : 'Switch to the Nebula appearance'"
           @click="toggleTheme"
         >
-          <span class="swatch" :class="theme === 'nebula' ? 'to-charcoal' : 'to-nebula'" aria-hidden="true"></span>
-          <span class="tool-text" aria-hidden="true">{{ theme === 'nebula' ? 'Charcoal' : 'Nebula' }}</span>
+          <span class="swatch" :class="theme === 'nebula' ? 'to-ember' : 'to-nebula'" aria-hidden="true"></span>
+          <span class="tool-text" aria-hidden="true">{{ theme === 'nebula' ? 'Ember' : 'Nebula' }}</span>
         </button>
         <button class="motion" type="button" :aria-label="motionOn ? 'Pause motion' : 'Resume motion'" @click="toggleMotion">
           <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true">
@@ -193,7 +195,7 @@ onBeforeUnmount(() => io?.disconnect())
   height: 14px;
   border-radius: 50%;
 }
-.to-charcoal {
+.to-ember {
   background: #ffd84d;
   box-shadow: 0 0 0 3px #17181c;
 }
