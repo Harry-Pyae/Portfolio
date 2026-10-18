@@ -88,18 +88,20 @@ onBeforeUnmount(() => {
       </button>
       <div id="nav-tools" ref="tools" class="tools" :class="{ open: menu }">
         <SoundControls />
-        <!-- Two dark appearances; the label names the one you'll switch to. -->
+        <!-- Ember: on = charcoal with a gold tree, off = navy with the teal tree. The swatch shows the
+             tree colour in use. -->
         <button
           class="theme"
           type="button"
-          :aria-label="theme === 'nebula' ? 'Switch to the Ember appearance' : 'Switch to the Nebula appearance'"
-          :title="theme === 'nebula' ? 'Switch to the Ember appearance' : 'Switch to the Nebula appearance'"
+          :aria-pressed="theme === 'ember'"
+          aria-label="Ember appearance"
+          :title="theme === 'ember' ? 'Ember appearance: on' : 'Ember appearance: off'"
           @click="toggleTheme"
         >
-          <span class="swatch" :class="theme === 'nebula' ? 'to-ember' : 'to-nebula'" aria-hidden="true"></span>
-          <span class="tool-text" aria-hidden="true">{{ theme === 'nebula' ? 'Ember' : 'Nebula' }}</span>
+          <span class="swatch" aria-hidden="true"></span>
+          <span class="tool-text" aria-hidden="true">Ember</span>
         </button>
-        <button class="motion" type="button" :aria-label="motionOn ? 'Pause motion' : 'Resume motion'" @click="toggleMotion">
+        <button class="motion" type="button" :aria-pressed="!motionOn" :aria-label="motionOn ? 'Pause motion' : 'Resume motion'" @click="toggleMotion">
           <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true">
             <path v-if="motionOn" d="M6 4h3v12H6zM11 4h3v12h-3z" fill="currentColor" />
             <path v-else d="M6 4l10 6-10 6z" fill="currentColor" />
@@ -112,7 +114,7 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-/* Slim inset bar: sticky with breathing room above, solid navy (no backdrop blur), thin cyan edge. */
+/* Slim inset bar: sticky with breathing room above, solid navy (no backdrop blur), one fine border. */
 .nav-wrap {
   position: sticky;
   top: 12px;
@@ -129,8 +131,8 @@ onBeforeUnmount(() => {
   height: 56px;
   margin: 0 auto;
   padding: 0 10px 0 12px;
-  border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
-  border-radius: 18px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-card);
   background: color-mix(in srgb, var(--surface) 94%, transparent);
   box-shadow: 0 10px 30px -18px rgba(0, 0, 0, 0.9);
 }
@@ -148,11 +150,10 @@ onBeforeUnmount(() => {
   place-items: center;
   width: 34px;
   height: 34px;
-  border: 1px solid color-mix(in srgb, var(--accent) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
   border-radius: 50%;
   color: var(--accent);
   font: 700 16px/1 var(--font-head);
-  box-shadow: 0 0 12px -4px color-mix(in srgb, var(--glow-trunk) 60%, transparent);
 }
 .brand-name {
   font: 600 16px/1 var(--font-head);
@@ -178,20 +179,19 @@ onBeforeUnmount(() => {
 .links a:hover {
   color: var(--ink);
 }
-/* Active section: the link brightens and a small luminous dot sits beneath it. */
+/* Active section: the link brightens and a short amber marker sits beneath it. */
 .links a::after {
   content: '';
   position: absolute;
   left: 50%;
-  bottom: 4px;
-  width: 4px;
-  height: 4px;
-  margin-left: -2px;
-  border-radius: 50%;
+  bottom: 5px;
+  width: 14px;
+  height: 2px;
+  margin-left: -7px;
+  border-radius: 1px;
   background: var(--accent);
-  box-shadow: 0 0 6px 1px color-mix(in srgb, var(--glow-trunk) 70%, transparent);
   opacity: 0;
-  transform: scale(0.4);
+  transform: scaleX(0.3);
   transition:
     opacity 0.3s var(--ease),
     transform 0.3s var(--ease);
@@ -216,10 +216,12 @@ onBeforeUnmount(() => {
   height: 40px;
   padding: 0 12px;
   border: 1px solid var(--line-strong);
-  border-radius: 12px;
-  background: var(--surface-2);
+  border-radius: var(--r-ctl);
+  background: color-mix(in srgb, var(--bg) 55%, var(--surface));
   color: var(--ink-2);
-  font: 600 13.5px/1 var(--font-body);
+  font: 500 12px/1 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   cursor: pointer;
   transition:
     color 0.25s var(--ease),
@@ -229,19 +231,16 @@ onBeforeUnmount(() => {
   color: var(--ink);
   border-color: var(--accent);
 }
-/* Swatch previews the other theme: its background ring and accent core. */
+/* Pressed controls (Ember on, motion paused) carry the amber edge; the swatch is the tree's colour. */
+.tools button[aria-pressed='true'] {
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  color: var(--accent);
+}
 .swatch {
-  width: 14px;
-  height: 14px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-}
-.to-ember {
-  background: #ffd84d;
-  box-shadow: 0 0 0 3px #17181c;
-}
-.to-nebula {
-  background: #50d9e8;
-  box-shadow: 0 0 0 3px #081725;
+  background: var(--glow-trunk);
 }
 .menu-btn {
   display: none;
@@ -273,7 +272,7 @@ onBeforeUnmount(() => {
     margin-left: auto;
     padding: 0;
     border: 1px solid var(--line-strong);
-    border-radius: 12px;
+    border-radius: var(--r-ctl);
     background: color-mix(in srgb, var(--bg) 55%, var(--surface));
     color: var(--ink-2);
     cursor: pointer;
@@ -303,7 +302,7 @@ onBeforeUnmount(() => {
     min-width: 200px;
     padding: 8px;
     border: 1px solid var(--line-strong);
-    border-radius: 14px;
+    border-radius: var(--r-card);
     background: var(--surface);
     box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.95);
   }

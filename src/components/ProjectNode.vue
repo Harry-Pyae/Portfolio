@@ -44,11 +44,11 @@ defineEmits(['open'])
   column-gap: 12px;
   align-items: start;
   width: 100%;
-  padding: 14px 14px 15px;
+  padding: 13px 14px 14px;
   border: 1px solid var(--line-strong);
-  border-radius: 14px;
-  background: var(--surface);
-  box-shadow: 0 12px 28px -16px rgba(0, 0, 0, 0.9);
+  border-radius: var(--r-card);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  box-shadow: 0 10px 24px -18px rgba(0, 0, 0, 0.9);
   color: var(--ink);
   font: inherit;
   text-align: left;
@@ -64,8 +64,8 @@ defineEmits(['open'])
   inset: -1px;
   border-radius: inherit;
   box-shadow:
-    0 20px 40px -16px rgba(0, 0, 0, 0.95),
-    0 0 22px -10px color-mix(in srgb, var(--accent) 50%, transparent);
+    0 18px 36px -18px rgba(0, 0, 0, 0.95),
+    0 0 18px -10px color-mix(in srgb, var(--accent) 35%, transparent);
   opacity: 0;
   transition: opacity 0.3s var(--ease);
   pointer-events: none;
@@ -73,7 +73,7 @@ defineEmits(['open'])
 .node.lit,
 .node:focus-visible {
   transform: scale(var(--node-zoom, 1.04));
-  border-color: color-mix(in srgb, var(--accent) 75%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
 }
 .node.lit::before,
 .node:focus-visible::before {
@@ -82,7 +82,7 @@ defineEmits(['open'])
 @media (hover: hover) {
   .node:hover {
     transform: scale(var(--node-zoom, 1.04));
-    border-color: color-mix(in srgb, var(--accent) 75%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 60%, transparent);
   }
   .node:hover::before {
     opacity: 1;
@@ -113,7 +113,7 @@ defineEmits(['open'])
 }
 .title {
   padding-right: 18px; /* room for the corner arrow */
-  font: 600 17px/1.25 var(--font-head);
+  font: 600 16.5px/1.25 var(--font-head);
   letter-spacing: -0.01em;
 }
 .desc {
@@ -121,11 +121,24 @@ defineEmits(['open'])
   font-size: 14px;
   line-height: 1.5;
 }
+/* category / status: a small telemetry readout with a status mark */
 .label {
-  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 4px;
   color: var(--ink-3);
-  font-size: 12.5px;
-  font-weight: 500;
+  font: 500 11px/1.3 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.label::before {
+  content: '';
+  flex: none;
+  width: 5px;
+  height: 5px;
+  border-radius: 1px;
+  background: var(--accent-muted);
 }
 .arrow {
   position: absolute;
@@ -154,7 +167,7 @@ defineEmits(['open'])
   top: var(--port-y);
   width: 9px;
   height: 9px;
-  border: 1.5px solid color-mix(in srgb, var(--glow-branch) 70%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--accent-muted) 80%, transparent);
   border-radius: 50%;
   background: var(--surface);
   transform: translate(-50%, -50%);
@@ -177,14 +190,14 @@ defineEmits(['open'])
 .node.lit .port,
 .node:focus-visible .port {
   border-color: var(--glow-pale);
-  background: var(--glow-spark); /* lit connection point: one of the rare warm knots */
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--glow-spark) 60%, transparent);
+  background: var(--glow-spark); /* lit connection point: an amber knot */
+  box-shadow: 0 0 8px 1px color-mix(in srgb, var(--glow-spark) 50%, transparent);
 }
 @media (hover: hover) {
   .node:hover .port {
     border-color: var(--glow-pale);
     background: var(--glow-spark);
-    box-shadow: 0 0 10px 2px color-mix(in srgb, var(--glow-spark) 60%, transparent);
+    box-shadow: 0 0 8px 1px color-mix(in srgb, var(--glow-spark) 50%, transparent);
   }
 }
 </style>

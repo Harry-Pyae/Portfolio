@@ -75,7 +75,7 @@ const channels = profile.contact.filter((c) => c.href)
   align-items: center;
   padding: clamp(32px, 6vw, 72px);
   border: 1px solid var(--line-strong);
-  border-radius: 24px;
+  border-radius: 14px;
   /* no fill: the tree's trunk runs through the signal side; text sits on solid channel rows */
 }
 .body {
@@ -144,9 +144,7 @@ const channels = profile.contact.filter((c) => c.href)
   height: 12px;
   margin: -6px;
   background: var(--glow-pale);
-  box-shadow:
-    0 0 12px 3px color-mix(in srgb, var(--glow-trunk) 70%, transparent),
-    0 0 40px 8px color-mix(in srgb, var(--glow-trunk) 25%, transparent);
+  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--glow-trunk) 50%, transparent);
 }
 .wave {
   width: 120px;
@@ -165,7 +163,7 @@ const channels = profile.contact.filter((c) => c.href)
 }
 @keyframes wave {
   0% {
-    opacity: 0.55;
+    opacity: 0.35;
     transform: scale(0.1);
   }
   100% {
@@ -203,7 +201,7 @@ const channels = profile.contact.filter((c) => c.href)
   min-height: 52px;
   padding: 0 18px;
   border: 1px solid var(--line-strong);
-  border-radius: 12px;
+  border-radius: var(--r-ctl);
   background: var(--surface-2);
   color: var(--ink);
   text-decoration: none;
@@ -212,7 +210,7 @@ const channels = profile.contact.filter((c) => c.href)
     background-color 0.3s var(--ease);
 }
 a.channel:hover {
-  border-color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
 }
 .ico {
   width: 20px;

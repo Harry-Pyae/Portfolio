@@ -240,7 +240,9 @@ function measure() {
   const cw = cards[0].offsetWidth
   const ch = cards[0].offsetHeight
   const rx = Math.max(40, W / 2 - (cw / 2) * 1.02 - 6)
-  const ry = Math.max(10, Math.min(H / 2 - ch / 2 - 6, rx * 0.66))
+  // a narrow stage tilts the orbit more open (taller), so the ring still shows between the cards
+  const tilt = Math.min(1.5, Math.max(0.66, 0.66 + (580 - W) / 160))
+  const ry = Math.max(10, Math.min(H / 2 - ch / 2 - 6, rx * tilt))
   geo = { W, H, cx: W / 2, cy: H / 2, rx, ry, cw, ch, colH: Math.max(0, H - ch - 12) }
   bough = {}
   for (const k of ['rear', 'front']) {
@@ -373,7 +375,7 @@ function strandPaths(fine) {
 }
 function renderBoughs(st, fade) {
   if (!bough?.rear || !bough?.front) return
-  const narrow = geo.W < 600
+  const narrow = geo.W < 480 // phones: no fine strand or twigs
   for (const k of ['rear', 'front']) {
     const v = ((k === 'rear' ? 0.6 : 1) * fade).toFixed(3)
     if (bough[k].svg.__o !== v) bough[k].svg.style.opacity = bough[k].svg.__o = v
@@ -673,7 +675,8 @@ watch([motionOn, prefersReduced], kick)
   color: var(--ink);
   overflow: hidden;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 780px);
+  /* the case study never takes more than 56% of the width, so the orbit keeps room for its ring */
+  grid-template-columns: minmax(0, 1fr) minmax(0, min(780px, 56%));
   gap: clamp(8px, 2vw, 32px);
   padding: 16px clamp(12px, 2vw, 32px);
 }
@@ -761,9 +764,9 @@ watch([motionOn, prefersReduced], kick)
   width: 100%;
   padding: 10px 12px;
   border: 1px solid var(--line-strong);
-  border-radius: 14px;
+  border-radius: var(--r-card);
   background: var(--surface);
-  box-shadow: 0 12px 28px -16px rgba(0, 0, 0, 0.9);
+  box-shadow: 0 10px 24px -18px rgba(0, 0, 0, 0.9);
   color: var(--ink);
   font: inherit;
   text-align: left;
@@ -773,14 +776,13 @@ watch([motionOn, prefersReduced], kick)
 .o-node:hover,
 .o-node:focus-visible,
 .o-node.current {
-  border-color: color-mix(in srgb, var(--accent) 75%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
 }
 .o-node.current {
-  /* the focus of the scene: a restrained cyan edge and halo (the theme's own trunk colour) */
-  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  /* the focus of the scene: an amber edge with a faint halo in the orbit's own colour */
   box-shadow:
-    0 12px 28px -16px rgba(0, 0, 0, 0.9),
-    0 0 24px -4px color-mix(in srgb, var(--glow-trunk) 35%, transparent);
+    0 10px 24px -18px rgba(0, 0, 0, 0.9),
+    0 0 22px -6px color-mix(in srgb, var(--glow-trunk) 30%, transparent);
   cursor: default;
 }
 .o-sym {
@@ -800,7 +802,9 @@ watch([motionOn, prefersReduced], kick)
 .o-label {
   overflow: hidden;
   color: var(--ink-3);
-  font-size: 12px;
+  font: 500 10.5px/1.4 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -830,7 +834,7 @@ watch([motionOn, prefersReduced], kick)
 }
 .core .wisp {
   position: absolute;
-  opacity: 0.55;
+  opacity: 0.4;
 }
 .cw0 {
   left: -230px;
@@ -863,7 +867,7 @@ watch([motionOn, prefersReduced], kick)
   overflow-y: auto;
   overscroll-behavior: contain;
   border: 1px solid var(--line-strong);
-  border-radius: 20px;
+  border-radius: var(--r-card);
   background: var(--surface);
   box-shadow: 0 40px 120px -30px rgba(0, 0, 0, 0.9);
 }
@@ -894,7 +898,7 @@ watch([motionOn, prefersReduced], kick)
   height: 40px;
   padding: 0 14px;
   border: 1px solid var(--line-strong);
-  border-radius: 12px;
+  border-radius: var(--r-ctl);
   background: color-mix(in srgb, var(--bg) 55%, var(--surface));
   color: var(--ink-2);
   font: 600 14px/1 var(--font-body);
@@ -906,7 +910,7 @@ watch([motionOn, prefersReduced], kick)
 }
 .back:hover,
 .step:hover {
-  border-color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
   color: var(--ink);
 }
 
@@ -967,8 +971,9 @@ watch([motionOn, prefersReduced], kick)
   will-change: transform, opacity;
 }
 
-/* ---------- small screens: the orbit becomes a band above the case study ---------- */
-@media (max-width: 860px) {
+/* ---------- tablets and phones: the orbit becomes a band above the case study ----------
+   (below 1000px a side-by-side orbit would be too narrow to show its ring) */
+@media (max-width: 999px) {
   .inspect {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: 210px minmax(0, 1fr);
@@ -981,7 +986,12 @@ watch([motionOn, prefersReduced], kick)
   .sheet {
     grid-column: 1;
     grid-row: 2;
+    justify-self: center;
+    width: min(100%, 820px);
   }
+}
+/* compact orbit cards wherever the stage is narrow or short */
+@media (max-width: 1279px) {
   .o-card {
     width: 150px;
   }
@@ -1007,6 +1017,25 @@ watch([motionOn, prefersReduced], kick)
 @media (max-width: 600px) {
   .back {
     padding: 0 10px;
+  }
+  /* phones: a taller band and narrower cards leave the ring room to show between them */
+  .inspect {
+    grid-template-rows: 250px minmax(0, 1fr);
+  }
+  .o-card {
+    width: 124px;
+  }
+  .o-node {
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: 6px;
+    padding: 6px 8px;
+  }
+  .o-sym {
+    width: 20px;
+    height: 20px;
+  }
+  .o-title {
+    font-size: 13.5px;
   }
 }
 
@@ -1097,10 +1126,11 @@ watch([motionOn, prefersReduced], kick)
   padding: 24px clamp(20px, 4vw, 40px) 36px;
 }
 .meta {
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   color: var(--ink-3);
-  font-size: 14px;
-  font-weight: 500;
+  font: 500 12px/1.6 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 h2 {
   font-size: clamp(30px, 5vw, 40px);
@@ -1125,13 +1155,15 @@ h2 {
 .details div {
   padding: 16px 18px;
   border: 1px solid var(--line-strong);
-  border-radius: 14px;
+  border-radius: var(--r-card);
   background: var(--surface-2);
 }
 dt {
-  margin-bottom: 6px;
-  color: var(--accent);
-  font: 600 15px/1.3 var(--font-head);
+  margin-bottom: 8px;
+  color: var(--accent-muted);
+  font: 500 11.5px/1.3 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 dd {
   margin: 0;
@@ -1139,9 +1171,9 @@ dd {
   font-size: 15px;
 }
 .sub {
-  margin: 26px 0 10px;
-  color: var(--accent);
-  font-size: 15px;
+  margin: 28px 0 10px;
+  color: var(--ink);
+  font-size: 16px;
 }
 .highlights {
   display: grid;
@@ -1152,7 +1184,7 @@ dd {
   font-size: 15px;
 }
 .highlights li::marker {
-  color: var(--glow-branch);
+  color: var(--accent-muted);
 }
 .contribution {
   margin: 0;
@@ -1161,11 +1193,11 @@ dd {
 }
 .status {
   margin-left: 10px;
-  padding: 0.25em 0.7em;
+  padding: 0.3em 0.6em;
   border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
-  border-radius: 999px;
-  color: var(--ink-2);
-  font-size: 12.5px;
+  border-radius: 4px;
+  color: var(--accent);
+  font-size: 11px;
   white-space: nowrap;
 }
 .suite-link,
@@ -1180,13 +1212,13 @@ dd {
 }
 .suite-link {
   margin-top: 12px;
-  padding: 6px 14px;
-  border-radius: 999px;
+  padding: 7px 14px;
+  border-radius: var(--r-ctl);
   font-size: 14px;
 }
 .suite-link:hover,
 .app:hover {
-  border-color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
 }
 .apps {
   display: grid;
@@ -1202,7 +1234,7 @@ dd {
   width: 100%;
   height: 100%;
   padding: 14px 16px;
-  border-radius: 14px;
+  border-radius: var(--r-card);
 }
 .app-title {
   font: 600 17px/1.3 var(--font-head);

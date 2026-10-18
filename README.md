@@ -1,6 +1,6 @@
 # Harry · Portfolio
 
-Dark portfolio built as one continuous cosmic tree: the hero's spiral of light (with the project carousel orbiting it) continues down the page as a twisting trunk, branches out to the projects, the ClariFile suite, About, Skills and Contact, and opens into roots in the footer, where the earliest projects sit. Two dark appearances, switched from the navbar and remembered per visitor: **Nebula** (deep navy, cyan strands, green branches, sparse gold light; default) and **Ember** (charcoal + gold). Vue 3 + Vite, frontend only. Builds to static files that can be hosted anywhere (GitHub Pages, Netlify, Vercel, any web server or sub-path).
+Dark portfolio built as one continuous cosmic tree: the hero's spiral of light (with the project carousel orbiting it) continues down the page as a twisting trunk, branches out to the projects, the ClariFile suite, About, Skills and Contact, and opens into roots in the footer, where the earliest projects sit. The look is a calm deep-space telemetry interface: navy-slate surfaces, one warm amber accent for selected controls, active navigation and the points where branches meet content, a restrained teal tree, monospace metadata labels, and a quiet starfield. The navbar's **Ember** toggle (remembered per visitor) switches to charcoal with a gold tree. Vue 3 + Vite, frontend only. Builds to static files that can be hosted anywhere (GitHub Pages, Netlify, Vercel, any web server or sub-path).
 
 ```bash
 npm install
@@ -17,7 +17,7 @@ npm run preview   # serve dist/ locally
 | Projects, suites, their groups and order, which seven entries appear in the hero spiral, and the engineering story | `src/content/projects.js` |
 | Soundtrack: the two tracks, their volumes, the crossfade, and each project's excerpt (start, end, fades, volume) | `src/content/audioCues.js` (method in `notes/soundtrack.md`) |
 | Carousel speed, orbit width, depth, trunk shape (radius, turns, strands), halo strength, hover zoom | `src/content/motion.js` |
-| Colours and fonts (Space Grotesk headings, Inter body) | semantic tokens at the top of `src/style.css` (`--accent`, `--glow-trunk`, `--glow-branch`, `--glow-spark`, `--glow-pale`); the Ember appearance overrides the same tokens under `:root[data-theme='ember']` |
+| Colours and fonts (Space Grotesk headings, Inter body, system monospace for metadata; control and card radii) | semantic tokens at the top of `src/style.css` (`--accent`, `--glow-trunk`, `--glow-branch`, `--glow-spark`, `--glow-pale`); the Ember appearance overrides the same tokens under `:root[data-theme='ember']` |
 
 - **Portrait:** put a photo in `public/` (e.g. `public/harry.jpg`) and set `portrait: 'harry.jpg'`.
 - **Contact:** fill `href` (`mailto:` or `https://`) and `text`. Entries without an `href` are hidden. There is deliberately no contact form.
@@ -27,7 +27,7 @@ npm run preview   # serve dist/ locally
   - `suites`: a suite (ClariFile) groups related apps; it is not a project itself. `apps` lists its app ids, `status` its development status, `integration` how the apps relate as currently planned. Its card opens an overview that leads to each app; an app names its suite with `suite`.
   - `story`: the "Getting pagination right" engineering story (`year`, `label`, `title`, `teaser`, short `parts`, an illustrative `code` sample). With `project: null` it is a fixed card in About whose full text opens in an overlay; set `project` to an id to show it inside that project instead.
   - Each project: `tagline` (the one sentence on cards), `problem` and `solution` (one or two sentences each), `highlights` (a few verified features), `contribution` (only where documented; leave `null` to hide the section), `context` (team, scope or time constraints when known, or the project's place in your journey), `stack`, `year`, `links` (`demo`, `github`; leave `''` to hide), `image` (cover and video poster), `gallery` (screenshots), `icon` (optional logo), `video` (walkthrough reel) and `status` (optional development status, shown on cards and in details).
-  - Media lives in `public/projects/<id>/` (`1.jpg`…, `icon.*`, `reel.mp4`). Anything still to confirm is listed in `AUTHOR-CHECKLIST.md`, never shown as a placeholder on the page.
+  - Media lives in `public/projects/<id>/` (`1.jpg`…, `icon.*`, `reel.mp4`). A fact that isn't confirmed is simply left out, never shown as a placeholder on the page.
 - The page `<title>` and meta description live in `index.html`.
 
 ## Structure
@@ -73,14 +73,15 @@ Cards ride a looping track measured in "slots". The visible column is the first 
 - The hero draws the upper tree: fibres splay into a canopy at the top, pinch into a waist, and settle to the trunk radius at the bottom of the stage. It publishes its exit (positions, twist phase and rate, radius, flow phase) in `tree.js`.
 - `TreeTrunk` continues those exact fibres below the hero, around a centreline through waypoints measured from layout anchors: beside the Projects heading → the Projects trunk line → through the ClariFile suite node → the About, Skills and Beyond the Code lanes → the Contact beacon → down the centre of Where it began → the roots. Waypoints are joined by cubic curves with vertical tangents, so the curve is continuous in position and direction; the radius eases between waypoints.
 - Branches start on the main strand and end on ports (`.port` on project cards, `.tree-port` elsewhere). They are tapered filled shapes, so width carries the hierarchy: About and Contact limbs and each project group's limbs are thickest where they leave the trunk (project branches grow out from beneath their group's label), skill-group branches are thinner, and a few short twigs taper to nothing. Earlier Projects get a thinner, dimmer branch.
-- Roots: in Where it began the trunk loosens (its radius widens) and each strand splits off at a staggered depth, on its front side, continuing as a primary root with the strand's own position, direction, colour and width, so there is no seam. Primaries thicken briefly, then taper through parent-to-child forks into fine rootlets; two reach the earliest-project cards, the rest go deep, diagonal or out toward the page edges. Light runs from the trunk outward and down each root once, one root after another, the first time the section comes into view; hovering an earliest-project card lights its root. All positions use layout offsets, which ignore hover and entrance transforms. Geometry is rebuilt only when the page resizes, the hero changes, or fonts load.
+- Roots: in Where it began the trunk loosens (its radius widens) and each strand splits off at a staggered depth, on its front side, continuing as a primary root with the strand's own position, direction, colour and width, so there is no seam. Primaries thicken briefly, then taper through parent-to-child forks into fine rootlets; two reach the earliest-project cards, the rest drop from a wide root collar and level out as they spread across the page. Light runs from the trunk outward and down each root once, one root after another, the first time the section comes into view; hovering an earliest-project card lights its root. All positions use layout offsets, which ignore hover and entrance transforms. Geometry is rebuilt only when the page resizes, the hero changes, or fonts load.
 - Light dashes flow up the main strands in px units on one shared timeline, so the pattern runs unbroken across the hero/page join. Branch particles, pulses and twinkles pause with the motion toggle, reduced motion, or when their section is off-screen.
 - On screens ≤ 860px the trunk becomes a spine beside the content; sections inset their content to keep that lane clear.
+- Project inspection: below 1000px the orbit becomes a band above the case study; side by side, the case study takes at most 56% of the width, and a narrow orbit stage tilts the ring more open so it stays visible between the cards.
 
 ## Background
 
 - The page background lives on `<html>` only; the fixed sky (`z-index: -1`) paints above it and below all content.
-- Stars are painted once per resize into two canvases that drift at different rates while scrolling (parallax; off for reduced motion, paused motion and small screens). Nebula clouds appear only behind the hero carousel.
+- Stars are painted once per resize into two canvases that drift at different rates while scrolling (parallax; off for reduced motion and paused motion). Nebula clouds appear only behind the hero carousel.
 
 ## Project reels (Remotion)
 

@@ -211,7 +211,7 @@ function measure() {
   const T1 = cardPorts.length ? Math.min(...cardPorts.map((p) => p.y)) - (narrow ? 26 : 40) : zone.y
   if (began) push(bx, began.y)
   push(bx, T0, rhoMid)
-  push(bx, T1 + 30, narrow ? 18 : 58)
+  push(bx, T1 + 30, narrow ? 18 : 84) // a wide root collar: the strands part before they split
 
   const cl = centreline(wps)
 
@@ -365,16 +365,17 @@ function measure() {
   if (!narrow) lead.sort((p, q) => p[0].end[0] - q[0].end[0])
   const slots = narrow
     ? [[0.62, 0.62], [0.97, 0.38]]
-    : [[0.03, 0.44], [0.78, 0.8], [0.97, 0.33]]
+    : [[0.1, 0.5], [0.7, 0.86], [0.9, 0.42]]
   const rest = strands.slice(lead.length).sort((p, q) => p.end[0] - q.end[0])
   const pickSlots = rest.map((_, i) => slots[Math.round((i * (slots.length - 1)) / Math.max(1, rest.length - 1))])
   function primary(s, E, cardId, seed) {
     const a = s.end
     const L = Math.hypot(E[0] - a[0], E[1] - a[1])
-    const c1 = [a[0] + s.dir[0] * L * 0.38, a[1] + Math.max(0.5, s.dir[1]) * L * 0.38]
+    const c1 = [a[0] + s.dir[0] * L * (cardId ? 0.38 : 0.3), a[1] + Math.max(0.5, s.dir[1]) * L * (cardId ? 0.38 : 0.3)]
+    // a free root drops from the collar, then levels out as it spreads (not a straight spoke)
     const c2 = cardId
       ? [E[0] + Math.sign(a[0] - E[0] || 1) * Math.min(90, L * 0.4), E[1] + 4] // arrive level with the port
-      : [E[0] - (E[0] - a[0]) * 0.42, E[1] - (E[1] - a[1]) * 0.32]
+      : [E[0] - (E[0] - a[0]) * 0.55, E[1] - (E[1] - a[1]) * 0.08]
     const wf = profile(s.w, Math.max(s.w * 2.4, cardId ? 4.4 : 3.4), cardId ? 1 : 0.25)
     roots.push({ id: cardId, k: s.k, halo: s === strands[0] || s === strands[1], d: cubic(a, c1, c2, E), r: ribbonF(a, c1, c2, E, wf, 36) })
     forks(a, c1, c2, E, wf, cardId ? [0.5 + rand(seed) * 0.1, 0.82] : [0.3 + rand(seed) * 0.1, 0.58 + rand(seed + 1) * 0.12, 0.84], seed, Math.sign(E[0] - bx) || 1)

@@ -170,7 +170,7 @@ const clusterIndex = groups.map((g) => g.clusters.map(() => n++))
   min-height: 30px;
   padding: 3px 11px;
   border: 1px solid var(--line-strong);
-  border-radius: 999px;
+  border-radius: 6px;
   background: var(--surface);
   color: var(--ink-2);
   font: 500 13px/1.2 var(--font-body);
@@ -179,7 +179,7 @@ const clusterIndex = groups.map((g) => g.clusters.map(() => n++))
 }
 .x-link:hover,
 .x-link:focus-visible {
-  border-color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
   color: var(--accent);
 }
 .sky-group.core {
@@ -209,10 +209,12 @@ const clusterIndex = groups.map((g) => g.clusters.map(() => n++))
 }
 .note {
   padding: 0.3em 0.7em;
-  border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
-  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
+  border-radius: 4px;
   color: var(--accent);
-  font: 600 12.5px/1.2 var(--font-body);
+  font: 500 11px/1.2 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 .clusters {
   display: grid;
@@ -263,7 +265,7 @@ const clusterIndex = groups.map((g) => g.clusters.map(() => n++))
   height: 7px;
   border-radius: 50%;
   background: var(--glow-pale);
-  box-shadow: 0 0 8px 1px color-mix(in srgb, var(--glow-trunk) 70%, transparent);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--glow-trunk) 50%, transparent);
 }
 .general .star {
   width: 5px;

@@ -138,14 +138,15 @@ onBeforeUnmount(() => {
 .group-label {
   align-self: center;
   margin: var(--label-gap, 48px) 0 34px;
-  padding: 10px 20px;
-  border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
-  border-radius: 999px;
+  padding: 10px 18px;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  border-radius: 6px;
   background: var(--surface);
   box-shadow: 0 0 0 6px var(--bg); /* a clear ring of space where the trunk passes behind the label */
   color: var(--ink);
-  font: 600 16.5px/1.2 var(--font-head);
-  letter-spacing: 0;
+  font: 500 13px/1.2 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 .group:first-child .group-label {
   margin-top: 8px;

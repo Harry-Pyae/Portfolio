@@ -30,10 +30,10 @@ const rand = (n) => {
 const envelope = (u) => (u < 0.5 ? 0.28 + 0.72 * (1 - 2 * u) ** 1.7 : 0.28 + (EXIT_ENV - 0.28) * ease((u - 0.5) * 2))
 
 // A few floating particles near the trunk (CSS-animated, compositor only).
-const sparks = Array.from({ length: 12 }, (_, i) => ({
+const sparks = Array.from({ length: 8 }, (_, i) => ({
   left: `${36 + rand(i + 1) * 28}%`,
   top: `${10 + rand(i + 31) * 80}%`,
-  '--s': `${1.4 + rand(i + 61) * 1.8}px`,
+  '--s': `${1.2 + rand(i + 61) * 1.2}px`,
   '--d': `${10 + rand(i + 91) * 9}s`,
   '--delay': `${-rand(i + 121) * 18}s`,
   '--dx': `${(rand(i + 151) - 0.5) * 40}px`,
@@ -470,14 +470,14 @@ watch([activeId, motionOn, openProject], kick)
   top: 20%;
   width: 52%;
   height: 60%;
-  opacity: 0.5;
+  opacity: 0.34;
 }
 .hw1 {
   left: 26%;
   top: 0;
   width: 48%;
   height: 40%;
-  opacity: 0.38;
+  opacity: 0.24;
   --dx: -5%;
   --dur: 52s;
 }
@@ -486,13 +486,13 @@ watch([activeId, motionOn, openProject], kick)
   top: 60%;
   width: 46%;
   height: 40%;
-  opacity: 0.32;
+  opacity: 0.2;
   --dx: 6%;
   --dur: 60s;
 }
 .core {
   fill: var(--glow-trunk);
-  opacity: calc(0.16 * var(--glow));
+  opacity: calc(0.12 * var(--glow));
 }
 .trunk path {
   fill: none;
@@ -574,10 +574,10 @@ watch([activeId, motionOn, openProject], kick)
   width: 44px;
   height: 44px;
   padding: 0;
-  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
-  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-ctl);
   background: var(--surface);
-  color: var(--accent);
+  color: var(--ink-2);
   cursor: pointer;
   transform: translateY(-50%);
   transition:
@@ -593,14 +593,12 @@ watch([activeId, motionOn, openProject], kick)
 }
 .side-arrow:hover,
 .side-arrow:focus-visible {
-  border-color: var(--accent);
-  color: var(--glow-pale);
-  box-shadow: 0 0 16px -2px color-mix(in srgb, var(--glow-trunk) 55%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  color: var(--accent);
 }
 .side-arrow:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
-  border-radius: 50%;
 }
 
 @media (max-width: 860px) {
@@ -623,7 +621,7 @@ watch([activeId, motionOn, openProject], kick)
   .next {
     right: calc(50% - 56px);
   }
-  .float:nth-of-type(n + 8),
+  .float:nth-of-type(n + 6),
   .hw2 {
     display: none;
   }

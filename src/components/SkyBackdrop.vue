@@ -13,10 +13,10 @@ const rng = (seed) => () => {
 }
 
 const r1 = rng(7)
-const twinkles = Array.from({ length: 7 }, () => ({
+const twinkles = Array.from({ length: 5 }, () => ({
   left: `${(r1() * 100).toFixed(2)}%`,
   top: `${(r1() * 100).toFixed(2)}%`,
-  '--s': `${(1.8 + r1() * 1.4).toFixed(1)}px`,
+  '--s': `${(1.5 + r1() * 1).toFixed(1)}px`,
   '--d': `${(4 + r1() * 5).toFixed(1)}s`,
   '--delay': `${(-r1() * 9).toFixed(1)}s`,
 }))
@@ -54,16 +54,17 @@ function paint(c, w, h, seed, count, bright) {
     const band = Math.exp(-(((x / w - (y / h) * 0.7 - 0.2) / 0.22) ** 2))
     if (rand() > 0.35 + 0.65 * band) continue
     n++
-    const big = bright && rand() < 0.25
-    const r = big ? 0.9 + rand() * 0.7 : (bright ? 0.6 : 0.3) + rand() * 0.5
+    // small, low-opacity stars; a few brighter ones, rarely warm
+    const big = bright && rand() < 0.15
+    const r = big ? 0.8 + rand() * 0.5 : (bright ? 0.5 : 0.3) + rand() * 0.45
     const tone = rand()
-    const rgb = warm ? (tone < 0.9 ? '255,255,255' : '255,244,194') : tone < 0.78 ? '220,236,255' : tone < 0.95 ? '140,226,240' : '245,215,140'
-    ctx.fillStyle = `rgba(${rgb},${(big ? 0.75 : (bright ? 0.35 : 0.18) + rand() * 0.45).toFixed(2)})`
+    const rgb = warm ? (tone < 0.92 ? '255,255,255' : '255,244,194') : tone < 0.9 ? '214,226,240' : tone < 0.97 ? '160,205,220' : '245,215,140'
+    ctx.fillStyle = `rgba(${rgb},${(big ? 0.55 : (bright ? 0.25 : 0.12) + rand() * 0.3).toFixed(2)})`
     ctx.beginPath()
     ctx.arc(x, y, r, 0, Math.PI * 2)
     ctx.fill()
     if (big) {
-      ctx.fillStyle = `rgba(${rgb},0.08)`
+      ctx.fillStyle = `rgba(${rgb},0.05)`
       ctx.beginPath()
       ctx.arc(x, y, r * 4, 0, Math.PI * 2)
       ctx.fill()
@@ -79,8 +80,8 @@ function draw() {
   // each layer is taller than the viewport by exactly how far it will drift over the whole page
   const scrollable = Math.max(0, document.documentElement.scrollHeight - h)
   heights.value = RATES.map((r) => h + Math.ceil(scrollable * r))
-  paint(far.value, w, heights.value[0], 1337, Math.round((w * heights.value[0]) / 7500), false)
-  paint(near.value, w, heights.value[1], 4242, Math.round((w * heights.value[1]) / 30000), true)
+  paint(far.value, w, heights.value[0], 1337, Math.round((w * heights.value[0]) / 11000), false)
+  paint(near.value, w, heights.value[1], 4242, Math.round((w * heights.value[1]) / 48000), true)
   update()
 }
 
@@ -172,14 +173,14 @@ watch(motionOn, update)
   height: var(--s);
   border-radius: 50%;
   background: var(--glow-pale);
-  box-shadow: 0 0 4px 1px color-mix(in srgb, var(--glow-trunk) 45%, transparent);
-  opacity: 0.3;
+  box-shadow: 0 0 3px color-mix(in srgb, var(--glow-trunk) 35%, transparent);
+  opacity: 0.18;
   will-change: opacity;
   animation: twinkle var(--d) ease-in-out var(--delay) infinite alternate;
 }
 @keyframes twinkle {
   to {
-    opacity: 0.9;
+    opacity: 0.6;
   }
 }
 .dust {
@@ -188,7 +189,7 @@ watch(motionOn, update)
   height: 1px;
   border-radius: 1px;
   background: var(--ink-2);
-  opacity: 0.35;
+  opacity: 0.25;
   will-change: transform;
   animation: dust var(--d) ease-in-out infinite alternate;
 }
@@ -198,7 +199,7 @@ watch(motionOn, update)
   }
 }
 @media (max-width: 720px) {
-  .twinkle:nth-of-type(n + 5),
+  .twinkle:nth-of-type(n + 4),
   .dust:nth-of-type(n + 3) {
     display: none;
   }

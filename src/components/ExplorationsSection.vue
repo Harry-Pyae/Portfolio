@@ -144,7 +144,7 @@ watch(shown, (v) => v && (exploreShown.value = true), { immediate: true })
   top: 12%;
   padding: 4px 10px;
   border: 1px dashed var(--line-strong);
-  border-radius: 999px;
+  border-radius: 6px;
   background: var(--bg);
   color: var(--ink-3);
   font-size: 12.5px;

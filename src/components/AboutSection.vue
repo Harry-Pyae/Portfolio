@@ -80,13 +80,13 @@ const { classes, reveal } = useSection(root)
         </div>
         <!-- An engineering story from the early days: a fixed card with a short brief; the full account opens
              in an overlay, so the page (and the tree measured from it) never changes height. -->
-        <div v-if="story.published && !story.project" class="story-card rv" style="--d: 4">
+        <div v-if="story.published" class="story-card rv" style="--d: 4">
           <span class="sc-year">{{ story.year }}<template v-if="story.label"> · {{ story.label }}</template></span>
           <span class="sc-title">{{ story.title }}</span>
           <span class="sc-teaser">{{ story.teaser }}</span>
           <button type="button" class="sc-more" @click="storyDlg.showModal()">Read the story</button>
         </div>
-        <dialog v-if="story.published && !story.project" ref="storyDlg" class="story-dlg" aria-labelledby="story-dlg-title" @click="(e) => e.target === storyDlg && storyDlg.close()">
+        <dialog v-if="story.published" ref="storyDlg" class="story-dlg" aria-labelledby="story-dlg-title" @click="(e) => e.target === storyDlg && storyDlg.close()">
           <div class="sd-inner">
             <button type="button" class="sd-close" autofocus @click="storyDlg.close()">
               <span class="sr-only">Close the story</span>
@@ -104,6 +104,9 @@ const { classes, reveal } = useSection(root)
               <figcaption>Illustrative example, not the original code</figcaption>
               <pre><code>{{ story.code }}</code></pre>
             </figure>
+            <button v-if="byId(story.project)" type="button" class="sc-more sd-project" @click="storyDlg.close(), showProject(byId(story.project))">
+              View {{ byId(story.project).title }}
+            </button>
           </div>
         </dialog>
       </div>
@@ -186,7 +189,7 @@ const { classes, reveal } = useSection(root)
   border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
   border-radius: 50%;
   background: var(--surface);
-  box-shadow: 0 0 40px -14px color-mix(in srgb, var(--glow-trunk) 60%, transparent);
+  box-shadow: 0 0 32px -16px color-mix(in srgb, var(--glow-trunk) 50%, transparent);
 }
 .avatar img,
 .monogram {
@@ -275,9 +278,9 @@ const { classes, reveal } = useSection(root)
   top: 0.55em;
   width: 7px;
   height: 7px;
+  border: 1.5px solid var(--accent-muted);
   border-radius: 50%;
-  background: var(--glow-branch);
-  box-shadow: 0 0 8px color-mix(in srgb, var(--glow-branch) 60%, transparent);
+  background: var(--surface);
 }
 .ms-name {
   color: var(--ink);
@@ -297,7 +300,7 @@ const { classes, reveal } = useSection(root)
   min-height: 32px;
   padding: 4px 12px;
   border: 1px solid var(--line-strong);
-  border-radius: 999px;
+  border-radius: 6px;
   background: var(--surface);
   color: var(--ink);
   font: 500 13.5px/1.2 var(--font-body);
@@ -306,7 +309,7 @@ const { classes, reveal } = useSection(root)
 }
 .ms-link:hover,
 .ms-link:focus-visible {
-  border-color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
   color: var(--accent);
 }
 .ms-badges {
@@ -339,13 +342,14 @@ const { classes, reveal } = useSection(root)
   margin-top: 30px;
   padding: 18px 20px;
   border: 1px solid var(--line-strong);
-  border-radius: 14px;
+  border-radius: var(--r-card);
   background: var(--surface);
 }
 .sc-year {
   color: var(--accent);
-  font: 600 13px/1.2 var(--font-head);
-  letter-spacing: 0.04em;
+  font: 500 11.5px/1.4 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 .sc-title {
   color: var(--ink);
@@ -368,12 +372,15 @@ const { classes, reveal } = useSection(root)
 .sc-more:hover {
   color: var(--accent-hover);
 }
+.sd-project {
+  margin-top: 18px;
+}
 .story-dlg {
   width: min(720px, calc(100% - 32px));
   max-height: calc(100dvh - 48px);
   padding: 0;
   border: 1px solid var(--line-strong);
-  border-radius: 18px;
+  border-radius: var(--r-card);
   background: var(--surface);
   color: var(--ink);
 }
@@ -431,7 +438,7 @@ const { classes, reveal } = useSection(root)
   width: 40px;
   height: 40px;
   border: 1px solid var(--line-strong);
-  border-radius: 50%;
+  border-radius: var(--r-ctl);
   background: var(--surface);
   color: var(--ink);
   cursor: pointer;
@@ -466,10 +473,10 @@ const { classes, reveal } = useSection(root)
   white-space: pre-wrap; /* wraps instead of scrolling sideways */
   overflow-wrap: anywhere;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 6px;
   background: var(--bg);
   color: var(--ink-2);
-  font: 13px/1.6 ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font: 13px/1.6 var(--font-mono);
 }
 
 @media (max-width: 860px) {

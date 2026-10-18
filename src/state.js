@@ -21,7 +21,7 @@ export const heroVisible = ref(true)
 // Two dark appearances: 'nebula' (navy + cyan, default) and 'ember' (charcoal + gold). Remembered per
 // visitor; storage may be unavailable, so every access is guarded.
 const THEMES = ['nebula', 'ember']
-const THEME_COLOR = { nebula: '#040b18', ember: '#101114' }
+const THEME_COLOR = { nebula: '#030712', ember: '#0e0f12' }
 const stored = (() => {
   try {
     const t = localStorage.getItem('portfolio-theme')

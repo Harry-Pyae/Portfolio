@@ -102,7 +102,7 @@ export const projects = [
       'Department-based admin roles, pre-order acceptance and sales dashboards',
     ],
     contribution: null,
-    context: 'Hackathon build with team Axionix.',
+    context: 'JICA hackathon project, built with team Axionix.',
     stack: ['Next.js 14', 'TypeScript', 'Tailwind CSS', 'Clerk', 'Stripe', 'Laravel 10', 'Backpack', 'MySQL'],
     links: { demo: '', github: 'https://github.com/linhtutkyawdev/Axionix_FlavourWave' },
   },
@@ -127,7 +127,7 @@ export const projects = [
       'Quiz with a leaderboard; Supabase accounts and history',
     ],
     contribution: null,
-    context: 'Hackathon build.',
+    context: 'UNESCO Youth Hackathon 2026 project.',
     stack: ['Next.js 16', 'React 19', 'Tailwind CSS 4', 'Supabase', 'Groq (Qwen, Whisper)', 'Recharts'],
     links: { demo: 'https://ai-detection-project-nine.vercel.app', github: 'https://github.com/Harry-Pyae/ai-detection-project' },
   },
@@ -150,7 +150,7 @@ export const projects = [
       'NASA solar-flare feed with a cached fallback, QR crew badges, English and Myanmar',
     ],
     contribution: null,
-    context: 'Five-member student team, hackathon practice round, synthetic data.',
+    context: 'NASA hackathon practice round: a five-member student team, working with synthetic data.',
     stack: ['React 18', 'TypeScript', 'Vite', 'Tailwind CSS 4', 'Recharts', 'NASA DONKI API'],
     links: { demo: 'https://astro-care-ai.vercel.app', github: 'https://github.com/Harry-Pyae/AstroCareAI' },
   },
@@ -181,7 +181,7 @@ export const projects = [
     id: 'mymedia',
     title: 'MyMedia',
     category: 'Earlier Work',
-    year: 2023,
+    year: 2022,
     icon: 'projects/mymedia/icon.png',
     image: 'projects/mymedia/1.jpg',
     gallery: shots('mymedia', 3),
@@ -338,18 +338,17 @@ export const suites = [
   },
 ]
 
-// Engineering story from the author's own account. It belongs to a 2022 personal app that isn't one of
-// the portfolio projects, so it is told in About (project: null); set `project` to an id to show it
-// inside that project's details instead.
+// Engineering story from the author's own account, from building MyMedia in 2022. It is told in About and
+// inside that project's details (`project`: the project id; null = About only).
 export const story = {
   published: true,
-  project: null,
+  project: 'mymedia',
   year: 2022,
   label: 'My longest-running bug', // shown beside the year
   title: 'Getting pagination right',
   teaser: 'Two months stuck, one method to fix it.',
   parts: [
-    ['The app', 'A Vue front end, a Laravel API via Axios, MySQL underneath. Lists needed pages.'],
+    ['The app', 'MyMedia: a Vue front end, a Laravel API via Axios, MySQL underneath. Lists needed pages.'],
     ['The bug', 'For two months paging never worked: my query used get(), which returns every row and no page details.'],
     ['The fix', 'paginate() returns one page plus current page, last page and total. Page 2 finally meant page 2.'],
     ['The lesson', 'Check what a method really returns before blaming the code around it.'],

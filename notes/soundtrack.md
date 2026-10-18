@@ -6,7 +6,7 @@ Facts about the two supplied tracks and how the project excerpts in `src/content
 
 | | `architecture-of-stillness.mp3` (main) | `across-the-glass-horizon.mp3` (project excerpts) |
 | --- | --- | --- |
-| Source file in the repo root | `Architecture_of_Stillness.mp3` | `Across_the_Glass_Horizon.mp3` |
+| Original file name | `Architecture_of_Stillness.mp3` | `Across_the_Glass_Horizon.mp3` |
 | Format | MPEG-1 Layer III (MP3), ID3v2.3 tag | MPEG-1 Layer III (MP3), ID3v2.3 tag |
 | Bitrate / sample rate / channels | 192 kb/s CBR, 44.1 kHz, stereo | 192 kb/s CBR, 44.1 kHz, stereo |
 | Duration | 147.91 s (2:27.91) | 158.64 s (2:38.64) |
@@ -16,7 +16,7 @@ Facts about the two supplied tracks and how the project excerpts in `src/content
 | Loudness (mono RMS) | −11.4 dB over the body (first/last 5 s excluded) | −12.1 dB overall |
 | Tempo estimate | ≈ 61.5 BPM (slow, ambient) | 150 BPM (0.4 s beats, 1.6 s bars) |
 
-**Licensing (for the author):** the files carry no licence or usage information. The C2PA data only says they were generated with Google's generative AI. Whether they can be published in a public portfolio depends on the terms of the Google product used to make them and on your account. Please confirm before the audio is committed or deployed; until then `public/audio/` is git-ignored.
+**Licensing:** the files carry no licence text; the C2PA data only says they were generated with Google's generative AI. The author confirmed they may be published. If the site is ever used commercially, check the music tool's own terms once.
 
 ## Structure of across-the-glass-horizon
 

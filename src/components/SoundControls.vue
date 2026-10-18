@@ -63,10 +63,12 @@ button {
   height: 40px;
   padding: 0 12px;
   border: 1px solid var(--line-strong);
-  border-radius: 12px;
+  border-radius: var(--r-ctl);
   background: color-mix(in srgb, var(--bg) 55%, var(--surface));
   color: var(--ink-2);
-  font: 600 13.5px/1 var(--font-body);
+  font: 500 12px/1 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   white-space: nowrap;
   cursor: pointer;
   transition:
@@ -78,14 +80,18 @@ button:hover {
   border-color: var(--accent);
 }
 .enable {
-  /* the primary-button language: dark tinted fill, accent edge, no bright block */
-  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
-  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
-  color: var(--accent-hover);
+  /* the primary-button language: dark tinted fill, amber edge, no bright block */
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  color: var(--accent);
 }
-.toggle.on,
+/* playing: amber level bars; muted: amber edge on the mute control */
+.toggle.on {
+  color: var(--accent);
+}
 .mute[aria-pressed='true'] {
-  color: var(--ink);
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  color: var(--accent);
 }
 .bars {
   display: inline-flex;

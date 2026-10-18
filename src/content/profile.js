@@ -31,7 +31,7 @@ export const profile = {
     },
     {
       title: 'Hackathons',
-      text: 'Building under a deadline, again and again.',
+      text: 'Building under a deadline, again and again. Next up: IGNIS, for an upcoming NASA hackathon.',
       badges: [
         { by: 'Cursor', name: 'Myanmar AI Hackathon 2026' },
         { by: 'UNESCO', name: 'Youth Hackathon 2026' },

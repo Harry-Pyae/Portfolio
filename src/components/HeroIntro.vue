@@ -43,10 +43,8 @@ import { profile } from '../content/profile.js'
   border: 1px solid var(--line-strong);
   border-radius: 50%;
   background: var(--surface);
-  /* Restrained rim light: one thin cyan edge, no washes. */
-  box-shadow:
-    -3px -3px 0 -1px color-mix(in srgb, var(--accent) 55%, transparent),
-    0 0 28px -12px color-mix(in srgb, var(--accent) 50%, transparent);
+  /* Restrained rim light: one thin amber edge, no washes. */
+  box-shadow: -3px -3px 0 -1px color-mix(in srgb, var(--accent) 50%, transparent);
 }
 .portrait img,
 .placeholder {
@@ -64,8 +62,8 @@ import { profile } from '../content/profile.js'
 }
 .name {
   color: var(--ink);
-  font: 700 clamp(68px, 9vw, 120px) / 0.95 var(--font-head);
-  letter-spacing: -0.045em;
+  font: 700 clamp(60px, 7.6vw, 104px) / 0.95 var(--font-head);
+  letter-spacing: -0.04em;
 }
 .title {
   margin: 20px 0 0;
@@ -93,10 +91,10 @@ import { profile } from '../content/profile.js'
 .stack li::before {
   content: '';
   display: inline-block;
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   margin-right: 8px;
-  border-radius: 50%;
+  border-radius: 1px;
   background: var(--accent);
   vertical-align: 2px;
 }
