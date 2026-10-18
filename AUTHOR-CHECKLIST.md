@@ -5,7 +5,9 @@ simply left out until you add it in `src/content/projects.js` or `src/content/pr
 
 ## Milestones and recognition (`profile.milestones`)
 
-- [ ] **Certification:** the exact title, the issuer, the date, and a verification link. The site says only "Completed a full-stack developer certification".
+- [x] **Certifications:** shown in Milestones: Full-Stack Web Developer (CodeLab), IT Passport (ITPEC), participation certificates from Cursor, UNESCO Youth Hackathon 2026 and JICA.
+- [ ] **Certificate dates and verification links** (optional): add them to `milestones` in `profile.js` if you want them public.
+- [ ] **JICA:** the event or programme the participation certificate was for (shown only as "Participation certificate").
 - [ ] **Development offers:** the site says "Received multiple development offers" and nothing more. Add detail only if you want it public, and never as a claim of employment.
 - [ ] **Hackathon outcomes:** only participation is shown. Add any finalist or winning result with the event name and year:
   - FlavourWave: the hackathon's name and date are not in the code (which dates from December 2023).
@@ -13,20 +15,12 @@ simply left out until you add it in `src/content/projects.js` or `src/content/pr
   - AstroCare: the docs call it "a hackathon practice round"; add the event's name if it should be shown.
   - Chat to Ledger: built for the Cursor Myanmar AI Hackathon 2026. Was there a result beyond participation?
 
-## Pagination story (`story` in `projects.js`, unpublished)
+## Pagination story (`story` in `projects.js`, published in About)
 
-No account of a "manual API pagination challenge" was found in your messages or notes. In the public code, BloodCare and InternshipJP use framework pagination (Laravel `paginate()`, Spring `Pageable`). One documented pagination bug exists in BloodCare (`STATUS.md`, "`[ 2, 2 ]` fixed at its source": a controller's `total` merged with the paginator's own `total`). To publish the story, supply:
+Written from your account: a 2022 personal app (Vue, Laravel, Axios, MySQL), two months of failing paged data, fixed by using `paginate()` instead of `get()`. It sits in About because the app isn't one of the portfolio projects.
 
-- [ ] Which project and which API endpoint it was.
-- [ ] What the app needed: the list, its size range if you know it, and the client that consumed it.
-- [ ] The actual bug or challenge, in your words (for example: duplicated or skipped rows, wrong totals, off-by-one pages).
-- [ ] How you found and investigated it, as you remember it.
-- [ ] The logic you wrote (page/limit or cursor, ordering, how totals were computed) and the response shape.
-- [ ] Edge cases you handled (empty pages, last page, page beyond the end, filters changing mid-pagination).
-- [ ] The outcome you observed, without numbers you didn't measure.
-- [ ] What you learned.
-
-Then fill `story.project`, `story.teaser` and `story.parts`, and set `published: true`.
+- [ ] Which app it was. If it is one of the portfolio projects (for example an early version of MyMedia), set `story.project` to its id and the story moves into that project's details.
+- [ ] Confirm the "What stayed with me" lesson, which I wrote from the shape of your account.
 
 ## Projects
 

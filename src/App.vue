@@ -11,7 +11,8 @@ import AboutSection from './components/AboutSection.vue'
 import ContactSection from './components/ContactSection.vue'
 import ExplorationsSection from './components/ExplorationsSection.vue'
 import BeganSection from './components/BeganSection.vue'
-import ProjectModal from './components/ProjectModal.vue'
+import ProjectInspect from './components/ProjectInspect.vue'
+import { initSound } from './audio.js'
 import TreeTrunk from './components/TreeTrunk.vue'
 
 // One observer pauses the hero's animation work (carousel loop, trunk light, wisps) while it is off-screen.
@@ -20,6 +21,7 @@ let io
 onMounted(() => {
   io = new IntersectionObserver(([e]) => (heroVisible.value = e.isIntersecting), { rootMargin: '80px 0px' })
   io.observe(hero.value)
+  initSound() // tries to start the main soundtrack; a blocked autoplay shows "Enable soundtrack"
 })
 onBeforeUnmount(() => io.disconnect())
 </script>
@@ -58,7 +60,7 @@ onBeforeUnmount(() => io.disconnect())
       </div>
     </footer>
   </div>
-  <ProjectModal />
+  <ProjectInspect />
 </template>
 
 <style scoped>

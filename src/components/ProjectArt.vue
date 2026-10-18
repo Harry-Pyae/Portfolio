@@ -67,8 +67,11 @@ img {
   height: 100%;
   object-fit: cover;
 }
+/* Logos keep their shape but lose their brand colours, so every card reads as one calm set. */
 .glyph img {
   padding: 5px;
   object-fit: contain;
+  filter: grayscale(1) brightness(1.25) contrast(0.9);
+  opacity: 0.85;
 }
 </style>

@@ -139,8 +139,9 @@ function render() {
       transform: `translate3d(${(x - w / 2).toFixed(2)}px,${(y - h / 2).toFixed(2)}px,0) scale(${scale.toFixed(4)})`,
       opacity: opacity.toFixed(3),
       visibility: opacity > 0.01 ? 'visible' : 'hidden',
-      // the light trunk sits at z 0, beneath every card; nearer cards stack above farther ones
-      zIndex: b > 0.01 ? 40 : 1 + Math.round(near * 20),
+      // Cards spiral around the trunk (z 5): the far half of the orbit passes behind its light, the near
+      // half in front; nearer cards stack above farther ones, and a hovered/focused card comes to the front.
+      zIndex: b > 0.01 ? 40 : depth < -0.2 ? 1 + Math.round(near * 3) : 6 + Math.round(near * 20),
     })
     if (dims[i]) apply(dims[i], writtenDim[i], { opacity: dim.toFixed(3) })
   }
@@ -150,6 +151,8 @@ function apply(el, prev, next) {
 }
 
 // Measurements are cached here and only refreshed by the ResizeObserver (stage + every card).
+const sideArrows = matchMedia('(min-width: 861px)')
+
 function measure() {
   const el = stage.value
   const W = el.clientWidth
@@ -164,7 +167,8 @@ function measure() {
   const h = Math.max(...sizes.map((s) => s.h))
   const grow = cfg.depth.maxScale * cfg.hoverScale // leave room so a zoomed card is never clipped
   // ...and keep the whole moving/zoomed envelope clear of the side arrows
-  const side = Math.max(0, ...arrows.value.map((a) => a?.offsetWidth ?? 0)) + 8
+  // On small screens the arrows sit below the stage, so the whole width is free for the swing.
+  const side = sideArrows.matches ? Math.max(0, ...arrows.value.map((a) => a?.offsetWidth ?? 0)) + 8 : 0
   const R = Math.max(0, Math.min(cfg.orbitWidth / 2, (W - w * grow) / 2 - 8 - side))
   const top = (h * grow) / 2 + 10
   geo = { cx: W / 2, top, span: Math.max(0, H - 2 * top), R }
@@ -456,6 +460,7 @@ watch([activeId, motionOn, openProject], kick)
   pointer-events: none;
 }
 .trunk {
+  z-index: 5; /* between the far and near halves of the orbit, so cards wind around it */
   width: 100%;
   height: 100%;
   overflow: visible;
@@ -599,9 +604,24 @@ watch([activeId, motionOn, openProject], kick)
 }
 
 @media (max-width: 860px) {
+  .showcase {
+    padding-bottom: 64px; /* room for the arrows below the stage */
+  }
   .stage {
-    --card-w: 220px;
-    height: 500px;
+    --card-w: 184px;
+    height: 600px;
+  }
+  /* Previous / next move under the stage, freeing the full width for the cards' left-right swing. */
+  .side-arrow {
+    top: auto;
+    bottom: 4px;
+    transform: none;
+  }
+  .prev {
+    left: calc(50% - 56px);
+  }
+  .next {
+    right: calc(50% - 56px);
   }
   .float:nth-of-type(n + 8),
   .hw2 {

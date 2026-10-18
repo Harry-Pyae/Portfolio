@@ -73,15 +73,6 @@ import { profile } from '../content/profile.js'
   font: 500 clamp(17px, 1.5vw, 20px) / 1.4 var(--font-head);
   letter-spacing: -0.005em;
 }
-.title::before {
-  content: '';
-  display: inline-block;
-  width: 28px;
-  height: 2px;
-  margin-right: 12px;
-  background: var(--accent);
-  vertical-align: 0.3em;
-}
 .lede {
   max-width: 46ch;
   margin: 20px 0 0;

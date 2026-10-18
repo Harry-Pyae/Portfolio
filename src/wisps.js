@@ -10,9 +10,10 @@ const SIZE = lowPower ? 128 : 200
 // theme → tint name → [rgb, noise seed]. Components ask for roles; each theme supplies its colours.
 const TINTS = {
   nebula: {
+    // one cyan family, so the nebula reads as a single atmosphere rather than a colour blend
     cyan: [[80, 217, 232], 3],
-    blue: [[74, 136, 232], 10],
-    green: [[105, 216, 175], 24],
+    blue: [[46, 160, 190], 10],
+    green: [[64, 186, 196], 24],
   },
   ember: {
     cyan: [[255, 216, 77], 3], // yellow

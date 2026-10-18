@@ -65,6 +65,48 @@ html {
 html:has(dialog[open]) {
   overflow: hidden;
 }
+/* The scrollbar's space stays reserved, so locking scroll for the project scene never reflows the page. */
+html {
+  scrollbar-gutter: stable;
+}
+
+/* ---------- project inspection: the portfolio stays mounted, pushes toward the chosen card and fades;
+   the sky drifts forward a little. Reduced/paused motion: plain fades only. ---------- */
+.page,
+.nav-wrap {
+  transition:
+    opacity 0.6s var(--ease),
+    transform 0.9s var(--ease);
+}
+.page {
+  transform-origin: var(--push-origin, 50% 0); /* kept after closing, so the return eases back in place */
+}
+.sky {
+  transition: transform 1.2s var(--ease);
+}
+html.inspecting .page {
+  opacity: 0;
+  transform: scale(1.06);
+}
+html.inspecting .nav-wrap {
+  opacity: 0;
+}
+html.inspecting .sky {
+  transform: scale(1.05);
+}
+html.inspecting .page .anim,
+html.inspecting .page .flow,
+html.inspecting .page .wisp {
+  animation-play-state: paused;
+}
+html.inspect-simple .page,
+html.inspect-simple .nav-wrap {
+  transition: opacity 0.25s linear;
+}
+html.inspecting.inspect-simple .page,
+html.inspecting.inspect-simple .sky {
+  transform: none;
+}
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -110,7 +152,7 @@ h2 {
 .section {
   max-width: var(--maxw);
   margin: 0 auto;
-  padding: clamp(88px, 11vw, 144px) var(--gutter) 0;
+  padding: clamp(150px, 17vw, 240px) var(--gutter) 0; /* generous breathing room between sections */
   scroll-margin-top: 84px; /* clears the sticky navbar */
 }
 .section-head {
@@ -136,8 +178,8 @@ h2 {
   padding: 0.85em 1.4em;
   border: 1px solid var(--line-strong);
   border-radius: 999px;
-  background: var(--surface);
-  color: var(--ink);
+  background: color-mix(in srgb, var(--bg) 55%, var(--surface));
+  color: var(--ink-2);
   font: 600 15px/1 var(--font-body);
   text-decoration: none;
   cursor: pointer;
@@ -148,15 +190,17 @@ h2 {
 }
 .btn:hover {
   border-color: var(--accent);
+  color: var(--ink);
 }
+/* Primary: a dark tinted fill with an accent edge, not a bright solid block. */
 .btn--primary {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: var(--on-accent);
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  color: var(--accent-hover);
 }
 .btn--primary:hover {
-  border-color: var(--accent-hover);
-  background: var(--accent-hover);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 22%, var(--surface));
 }
 
 .chips {

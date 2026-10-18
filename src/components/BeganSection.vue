@@ -44,7 +44,7 @@ const { classes, reveal } = useSection(root)
 
 <style scoped>
 .began {
-  padding-top: clamp(72px, 9vw, 120px);
+  padding-top: clamp(120px, 14vw, 190px);
 }
 .began-head {
   max-width: calc(50% - 70px); /* the trunk descends through the centre here */

@@ -158,6 +158,7 @@ watch(shown, (v) => v && (exploreShown.value = true), { immediate: true })
     padding-left: var(--spine-inset);
   }
   .parent {
+    width: auto; /* fills what's left beside the spine (a fixed 300px overflowed 360px screens) */
     margin: 0 0 0 48px;
     max-width: 320px;
   }

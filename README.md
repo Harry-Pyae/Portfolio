@@ -1,4 +1,4 @@
-# Harry — Portfolio
+# Harry · Portfolio
 
 Dark portfolio built as one continuous cosmic tree: the hero's spiral of light (with the project carousel orbiting it) continues down the page as a twisting trunk, branches out to the projects, the ClariFile suite, About, Skills and Contact, and opens into roots in the footer, where the earliest projects sit. Two dark appearances, switched from the navbar and remembered per visitor: **Nebula** (deep navy, cyan strands, green branches, sparse gold light; default) and **Ember** (charcoal + gold). Vue 3 + Vite, frontend only. Builds to static files that can be hosted anywhere (GitHub Pages, Netlify, Vercel, any web server or sub-path).
 
@@ -14,17 +14,18 @@ npm run preview   # serve dist/ locally
 | What | Where |
 | --- | --- |
 | Name, title, intro, About paragraphs, milestones, skills (core, general, currently exploring), interests (Beyond the Code), contact lede and links, portrait | `src/content/profile.js` |
-| Projects, suites, their groups and order, which seven entries appear in the hero spiral, and the (unpublished) engineering story | `src/content/projects.js` |
+| Projects, suites, their groups and order, which seven entries appear in the hero spiral, and the engineering story | `src/content/projects.js` |
+| Soundtrack: the two tracks, their volumes, the crossfade, and each project's excerpt (start, end, fades, volume) | `src/content/audioCues.js` (method in `notes/soundtrack.md`) |
 | Carousel speed, orbit width, depth, trunk shape (radius, turns, strands), halo strength, hover zoom | `src/content/motion.js` |
 | Colours and fonts (Space Grotesk headings, Inter body) | semantic tokens at the top of `src/style.css` (`--accent`, `--glow-trunk`, `--glow-branch`, `--glow-spark`, `--glow-pale`); the Ember appearance overrides the same tokens under `:root[data-theme='ember']` |
 
 - **Portrait:** put a photo in `public/` (e.g. `public/harry.jpg`) and set `portrait: 'harry.jpg'`.
-- **Contact:** fill `href` (`mailto:` or `https://`) and `text`. Entries without an `href` are hidden. There is deliberately no contact form. A copy-email button appears once a real `mailto:` address exists.
+- **Contact:** fill `href` (`mailto:` or `https://`) and `text`. Entries without an `href` are hidden. There is deliberately no contact form.
 - **Projects** (`src/content/projects.js`):
   - `categories`: the groups in display order (Recent Personal Projects, Major Hackathon Projects, Smaller Hackathon Projects, Earlier Work, then Current explorations and Where it began). Groups without `section` are branches of the project tree; `section: 'explorations'` and `section: 'roots'` place a group in its own part of the page. `quiet: true` gives a group a smaller, calmer branch; `label` is the short category shown on hero cards.
   - `featured`: the project or suite ids shown in the hero spiral, in order (seven by default). Every project is also on the page, in the order of the `projects` array within each group.
   - `suites`: a suite (ClariFile) groups related apps; it is not a project itself. `apps` lists its app ids, `status` its development status, `integration` how the apps relate as currently planned. Its card opens an overview that leads to each app; an app names its suite with `suite`.
-  - `story`: the "Getting pagination right" engineering story. It stays unpublished (`published: false`) until every part is verified; see `AUTHOR-CHECKLIST.md`.
+  - `story`: the "Getting pagination right" engineering story (`year`, `label`, `title`, `teaser`, short `parts`, an illustrative `code` sample). With `project: null` it is a fixed card in About whose full text opens in an overlay; set `project` to an id to show it inside that project instead.
   - Each project: `tagline` (the one sentence on cards), `problem` and `solution` (one or two sentences each), `highlights` (a few verified features), `contribution` (only where documented; leave `null` to hide the section), `context` (team, scope or time constraints when known, or the project's place in your journey), `stack`, `year`, `links` (`demo`, `github`; leave `''` to hide), `image` (cover and video poster), `gallery` (screenshots), `icon` (optional logo), `video` (walkthrough reel), `videoNote` (caption under the reel), `walkthrough` (chapter name when the reel is not a screen recording) and `status` (optional development status, shown on cards and in details).
   - Media lives in `public/projects/<id>/` (`1.jpg`…, `icon.*`, `reel.mp4`). Anything still to confirm is listed in `AUTHOR-CHECKLIST.md`, never shown as a placeholder on the page.
 - The page `<title>` and meta description live in `index.html`.
@@ -35,6 +36,7 @@ npm run preview   # serve dist/ locally
 src/
   content/              editable data (profile, projects, motion)
   state.js              shared UI state: motion on/off, reduced motion, theme, open project, hero visibility
+  audio.js              the one soundtrack controller: main track, project excerpts (sample-accurate loops), crossfades, mute
   tree.js               shared tree model: fibres, hero exit (join geometry), flow timing, lit project
   wisps.js              textured nebula behind the carousel, generated once per theme and cached
   reveal.js             one-time section entrances + off-screen pause
@@ -49,11 +51,12 @@ src/
     BeganSection.vue     Where it began: the earliest projects, set among the footer roots
     InterestsSection.vue Beyond the Code: interests with small line drawings (not interactive)
     ProjectNode.vue      compact project card: one button with symbol, title, sentence (+ category in the hero), connection point
-    ProjectModal.vue     project case study (native <dialog>): reel player with chapters, screenshots, problem/solution, highlights, links; suite overview
+    ProjectInspect.vue   in-page project inspection: the selected project glowing at the centre, the others orbiting it; case study (reel with chapters, screenshots, problem/solution, highlights, links); #/project/<id> history entries
+    SoundControls.vue    soundtrack play/pause, mute and "Enable soundtrack", shared by the navbar and the inspection scene
     ProjectArt.vue       screenshot, or a placeholder / small glyph with an orbit line
     AboutSection.vue     identity in an orbital frame, first-person narrative, milestones branch
     SkillsConstellation.vue  skills as small constellations, plus Currently exploring
-    ContactSection.vue   contact with the tree's beacon node; honest unavailable states
+    ContactSection.vue   contact with the tree's beacon node: email, GitHub, LinkedIn
 ```
 
 ## How the carousel works
@@ -81,9 +84,9 @@ Cards ride a looping track measured in "slots". The visible column is the first 
 
 ## Project reels (Remotion)
 
-Each project has a 16-second reel (`public/projects/<id>/reel.mp4`) in its details view: a short title card, the recorded app (FlavourWave: its own screenshots) on a gently tilted screen, and an end card. No narration.
+Each project has a 16-second reel (`public/projects/<id>/reel.mp4`) in its inspection scene: a short title card, the recorded app (FlavourWave: its own screenshots) on a gently tilted screen, and an end card. No narration.
 
-The player in the details view loads the reel only when the dialog shows it (`preload="none"`, screenshot poster). It uses the browser's own controls (play/pause, seeking, fullscreen) plus Replay and three chapter buttons (Title, Recorded app, End card); the caption under it says which parts are recorded and which are motion graphics. A muted preview starts on its own only with motion on, no reduced-motion preference and a mouse-style pointer. Chapter times live in `ProjectModal.vue` and must match the frames in `video/src/ProjectReel.tsx`.
+The player in the inspection scene loads the reel only when the project is opened (`preload="none"`, screenshot poster). It uses the browser's own controls (play/pause, seeking, fullscreen) plus Replay and three chapter buttons (Title, Recorded app, End card); the caption under it says which parts are recorded and which are motion graphics. A muted preview starts on its own only with motion on, no reduced-motion preference and a mouse-style pointer. Chapter times live in `ProjectInspect.vue` and must match the frames in `video/src/ProjectReel.tsx`.
 
 ```bash
 cd video
@@ -96,3 +99,9 @@ npm run render -- bloodcare pizza   # or just some
 - `video/src/Root.tsx` registers one composition per project (title, meta line, accent colour, logo, and the recording window to use); `video/src/ProjectReel.tsx` holds the scenes, built from named `Interactive` elements with inline `interpolate()` animations so they stay editable in Studio.
 - Walkthroughs are sharp frame recordings of the real apps (`video/public/hq/<id>/`: 1920×1080 JPEG frames + `index.json`), played frame-accurately by the composition; FlavourWave uses screenshots (`video/public/shots`). `video/public/` is not committed and the frame folders are deleted after rendering to save space. `video/capture/` holds the scripts that recorded them, so any reel can be re-recorded and re-rendered.
 - Reels render at 1920×1080 (H.264, CRF 23), 2–6.5 MB each.
+
+## Project inspection and soundtrack
+
+Selecting a project opens an inspection scene over the page without leaving it: the portfolio stays mounted underneath (scroll position, carousel phase, tree), and each project gets a `#/project/<id>` history entry, so Back/Forward and direct links work. The selected project rests at the centre, glowing; the other projects orbit it slowly (right, across the front, left, behind, back to the right). Previous/Next (buttons or arrow keys) switch projects; Escape or Return goes back. With reduced motion or the motion control paused, transitions become simple fades.
+
+The soundtrack is handled by `src/audio.js`: `Architecture of Stillness` plays while browsing (its position is kept while a project is open), and each project plays its own excerpt of `Across the Glass Horizon`, looped and crossfaded. If the browser blocks autoplay, an "Enable soundtrack" control appears; play/pause and mute are remembered. Audio and visual motion are separate controls. The excerpt boundaries in `audioCues.js` were chosen by signal analysis (see `notes/soundtrack.md`) and are worth a listen to fine-tune.

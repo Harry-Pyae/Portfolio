@@ -37,6 +37,9 @@ mq.addEventListener('change', (e) => (narrow.value = e.matches))
 // Set once the Current explorations section first comes into view (its branches grow in once).
 export const exploreShown = ref(false)
 
+// Opening or leaving a project sends light along its branch back toward the trunk (inbound pulse).
+export const pulseIn = ref(null)
+
 // Hover (real mice only) and keyboard focus light a card's branch; leaving restores it.
 export const lightOn = (e, id) => e.pointerType === 'mouse' && (litProject.value = id)
 export const lightOff = (id) => litProject.value === id && (litProject.value = null)

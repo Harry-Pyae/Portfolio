@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { profile } from '../content/profile.js'
-import { projects } from '../content/projects.js'
+import { projects, story } from '../content/projects.js'
 import { showProject } from '../state.js'
 import { useSection } from '../reveal.js'
 import SkillsConstellation from './SkillsConstellation.vue'
@@ -10,6 +10,7 @@ import InterestsSection from './InterestsSection.vue'
 const byId = (id) => projects.find((p) => p.id === id)
 
 const root = ref(null)
+const storyDlg = ref(null)
 const { classes, reveal } = useSection(root)
 </script>
 
@@ -58,7 +59,17 @@ const { classes, reveal } = useSection(root)
           <ul class="ms-list">
             <li v-for="m in profile.milestones" :key="m.title">
               <span class="ms-name">{{ m.title }}</span>
-              <span class="ms-text">{{ m.text }}</span>
+              <span v-if="m.text" class="ms-text">{{ m.text }}</span>
+              <!-- Certificates are facts, not controls: no button styling, no hover. -->
+              <span v-if="m.badges" class="ms-badges">
+                <span v-for="b in m.badges" :key="b.by + b.name" class="ms-badge">
+                  <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+                    <circle cx="8" cy="6" r="4" fill="none" stroke="currentColor" stroke-width="1.3" />
+                    <path d="M5.6 9.3L4.8 14l3.2-1.6 3.2 1.6-.8-4.7" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" />
+                  </svg>
+                  <span><strong>{{ b.by }}</strong> {{ b.name }}</span>
+                </span>
+              </span>
               <span v-if="m.projects" class="ms-links">
                 <button v-for="id in m.projects" :key="id" type="button" class="ms-link" @click="showProject(byId(id))">
                   {{ byId(id).title }}
@@ -67,6 +78,34 @@ const { classes, reveal } = useSection(root)
             </li>
           </ul>
         </div>
+        <!-- An engineering story from the early days: a fixed card with a short brief; the full account opens
+             in an overlay, so the page (and the tree measured from it) never changes height. -->
+        <div v-if="story.published && !story.project" class="story-card rv" style="--d: 4">
+          <span class="sc-year">{{ story.year }}<template v-if="story.label"> · {{ story.label }}</template></span>
+          <span class="sc-title">{{ story.title }}</span>
+          <span class="sc-teaser">{{ story.teaser }}</span>
+          <button type="button" class="sc-more" @click="storyDlg.showModal()">Read the story</button>
+        </div>
+        <dialog v-if="story.published && !story.project" ref="storyDlg" class="story-dlg" aria-labelledby="story-dlg-title" @click="(e) => e.target === storyDlg && storyDlg.close()">
+          <div class="sd-inner">
+            <button type="button" class="sd-close" autofocus @click="storyDlg.close()">
+              <span class="sr-only">Close the story</span>
+              <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+                <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            </button>
+            <span class="sc-year">{{ story.year }}<template v-if="story.label"> · {{ story.label }}</template></span>
+            <h3 id="story-dlg-title" class="sd-title">{{ story.title }}</h3>
+            <template v-for="[head, text] in story.parts" :key="head">
+              <h4>{{ head }}</h4>
+              <p>{{ text }}</p>
+            </template>
+            <figure v-if="story.code" class="sc-code">
+              <figcaption>Illustrative example, not the original code</figcaption>
+              <pre><code>{{ story.code }}</code></pre>
+            </figure>
+          </div>
+        </dialog>
       </div>
     </div>
 
@@ -269,6 +308,168 @@ const { classes, reveal } = useSection(root)
 .ms-link:focus-visible {
   border-color: var(--accent);
   color: var(--accent);
+}
+.ms-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 6px;
+}
+.ms-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-2);
+  font-size: 14px;
+}
+.ms-badge svg {
+  flex: none;
+  color: var(--glow-spark);
+}
+.ms-badge strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* ---------- engineering story ---------- */
+.story-card {
+  display: grid;
+  gap: 4px;
+  max-width: 62ch;
+  margin-top: 30px;
+  padding: 18px 20px;
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.sc-year {
+  color: var(--accent);
+  font: 600 13px/1.2 var(--font-head);
+  letter-spacing: 0.04em;
+}
+.sc-title {
+  color: var(--ink);
+  font: 600 19px/1.3 var(--font-head);
+}
+.sc-teaser {
+  color: var(--ink-2);
+  font-size: 15px;
+}
+.sc-more {
+  justify-self: start;
+  margin-top: 6px;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: 600 14px/1.4 var(--font-body);
+  cursor: pointer;
+}
+.sc-more:hover {
+  color: var(--accent-hover);
+}
+.story-dlg {
+  width: min(720px, calc(100% - 32px));
+  max-height: calc(100dvh - 48px);
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 18px;
+  background: var(--surface);
+  color: var(--ink);
+}
+.story-dlg::backdrop {
+  background: rgba(2, 6, 14, 0.8);
+}
+/* Short fade and rise both ways; overlay/display transitions let the close animate in the top layer. */
+.story-dlg,
+.story-dlg::backdrop {
+  transition:
+    opacity 0.28s var(--ease),
+    transform 0.28s var(--ease),
+    overlay 0.28s allow-discrete,
+    display 0.28s allow-discrete;
+}
+.story-dlg {
+  opacity: 0;
+  transform: translateY(12px) scale(0.98);
+}
+.story-dlg::backdrop {
+  opacity: 0;
+}
+.story-dlg[open],
+.story-dlg[open]::backdrop {
+  opacity: 1;
+}
+.story-dlg[open] {
+  transform: none;
+}
+@starting-style {
+  .story-dlg[open],
+  .story-dlg[open]::backdrop {
+    opacity: 0;
+  }
+  .story-dlg[open] {
+    transform: translateY(12px) scale(0.98);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .story-dlg,
+  .story-dlg::backdrop {
+    transition: none;
+  }
+}
+.sd-inner {
+  position: relative;
+  padding: 28px clamp(20px, 4vw, 36px) 32px;
+}
+.sd-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+.sd-title {
+  margin: 6px 0 4px;
+  font-size: clamp(22px, 3vw, 28px);
+}
+.sd-inner h4 {
+  margin: 18px 0 4px;
+  color: var(--ink);
+  font-size: 15.5px;
+}
+.sd-inner p {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 15px;
+}
+.sc-code {
+  margin: 18px 0 0;
+}
+.sc-code figcaption {
+  margin-bottom: 6px;
+  color: var(--ink-3);
+  font-size: 13px;
+  font-style: italic;
+}
+.sc-code pre {
+  margin: 0;
+  padding: 14px 16px;
+  overflow: hidden;
+  white-space: pre-wrap; /* wraps instead of scrolling sideways */
+  overflow-wrap: anywhere;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--ink-2);
+  font: 13px/1.6 ui-monospace, 'Cascadia Code', Consolas, monospace;
 }
 
 @media (max-width: 860px) {

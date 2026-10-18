@@ -351,17 +351,28 @@ export const suites = [
   },
 ]
 
-// Engineering story shown inside the related project's details, with a short teaser on the main page.
-// Kept unpublished until every part is verified with the author (see AUTHOR-CHECKLIST.md).
+// Engineering story from the author's own account. It belongs to a 2022 personal app that isn't one of
+// the portfolio projects, so it is told in About (project: null); set `project` to an id to show it
+// inside that project's details instead.
 export const story = {
-  published: false,
-  project: null, // id of the project the story belongs to
+  published: true,
+  project: null,
+  year: 2022,
+  label: 'My longest-running bug', // shown beside the year
   title: 'Getting pagination right',
-  teaser: '',
+  teaser: 'Two months stuck, one method to fix it.',
   parts: [
-    // [heading, text]: what the app needed, the bug, how it was investigated, the logic and API
-    // behaviour, edge cases handled, the outcome, and what was learned. Leave out anything unverified.
+    ['The app', 'A Vue front end, a Laravel API via Axios, MySQL underneath. Lists needed pages.'],
+    ['The bug', 'For two months paging never worked: my query used get(), which returns every row and no page details.'],
+    ['The fix', 'paginate() returns one page plus current page, last page and total. Page 2 finally meant page 2.'],
+    ['The lesson', 'Check what a method really returns before blaming the code around it.'],
   ],
+  // Illustrative only: written for this page, not the original code.
+  code: `// before: every row, no page info
+Post::latest()->get();
+
+// after: one page + page details
+Post::latest()->paginate(10);`,
 }
 
 const byId = (id) => projects.find((p) => p.id === id) ?? suites.find((x) => x.id === id)

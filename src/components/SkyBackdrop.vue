@@ -36,8 +36,8 @@ const nearLayer = ref(null)
 const far = ref(null)
 const near = ref(null)
 const heights = ref([0, 0])
-// Subtle, and off for reduced motion / paused motion / small screens.
-const parallaxOn = () => motionOn.value && innerWidth >= 720
+// Subtle, on every screen size; off for reduced motion / paused motion (motionOn covers both).
+const parallaxOn = () => motionOn.value
 
 function paint(c, w, h, seed, count, bright) {
   const dpr = 1 // stars are single-pixel dots: 1x canvases keep the two drifting layers light on the GPU
@@ -74,7 +74,8 @@ function paint(c, w, h, seed, count, bright) {
 function draw() {
   if (!far.value || !near.value) return
   const w = innerWidth
-  const h = innerHeight
+  // the full screen height, so the layers still cover the viewport when a phone's address bar hides
+  const h = Math.max(innerHeight, screen.height || 0)
   // each layer is taller than the viewport by exactly how far it will drift over the whole page
   const scrollable = Math.max(0, document.documentElement.scrollHeight - h)
   heights.value = RATES.map((r) => h + Math.ceil(scrollable * r))
@@ -103,18 +104,27 @@ const redraw = () => {
   clearTimeout(timer)
   timer = setTimeout(draw, 150)
 }
+// Phones resize the viewport's height whenever the address bar slides in or out while scrolling;
+// repainting then would flash the stars. Only a width change needs a repaint here (page-height
+// changes come through the ResizeObserver).
+let lastW = innerWidth
+const onResize = () => {
+  if (innerWidth === lastW) return
+  lastW = innerWidth
+  redraw()
+}
 let ro
 onMounted(() => {
   draw()
   addEventListener('scroll', onScroll, { passive: true })
-  addEventListener('resize', redraw)
+  addEventListener('resize', onResize)
   ro = new ResizeObserver(redraw) // page height changes (fonts, layout) change the drift range
   ro.observe(document.body)
 })
 onBeforeUnmount(() => {
   clearTimeout(timer)
   removeEventListener('scroll', onScroll)
-  removeEventListener('resize', redraw)
+  removeEventListener('resize', onResize)
   ro.disconnect()
 })
 watch(theme, draw)

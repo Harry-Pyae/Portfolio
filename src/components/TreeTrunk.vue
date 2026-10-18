@@ -1,6 +1,6 @@
 <script setup>
 import { ref, shallowRef, watch, onMounted, onBeforeUnmount } from 'vue'
-import { FIBRES, heroExit, litProject, projectsVisible, exploreShown, ease, flowDuration } from '../tree.js'
+import { FIBRES, heroExit, litProject, pulseIn, projectsVisible, exploreShown, ease, flowDuration } from '../tree.js'
 
 /*
  * The one continuous tree below the hero. It starts exactly where the hero's fibres leave the stage
@@ -149,20 +149,50 @@ function measure() {
     // Otherwise a short straight run out of the hero, then one swing to the first group label.
     push(wps[0].x, wps[0].y + 40, hx.rho)
   }
-  if (labels.length) push(ax, labels[0].y)
-  if (ports.length) push(ax, Math.max(...ports.map((p) => p.y)) + 70)
+  // Projects: the trunk wanders through each group's label (groups sit a little left or right of centre),
+  // staying under a group until its last card, then swinging across in the gap to the next group.
+  labels.forEach((l, gi) => {
+    const x = narrow ? ax : l.x
+    push(x, l.y)
+    const ys = ports.filter((p) => p.group === String(gi)).map((p) => p.y)
+    if (ys.length) push(x, Math.max(...ys) + (gi === labels.length - 1 ? 70 : 20))
+  })
+  if (!labels.length && ports.length) push(ax, Math.max(...ports.map((p) => p.y)) + 70)
   // Current explorations: the suite node sits on the trunk (desktop); on small screens it branches off the spine.
   const suiteX = narrow ? ax : (at(page, '#explorations .suite-anchor')?.x ?? ax)
   const suiteNode = at(page, '#explorations [data-suite]')
   if (suiteNode) push(suiteX, suiteNode.y + suiteNode.h / 2)
   const appEls = [...page.querySelectorAll('#explorations [data-project]')]
   if (appEls.length) push(suiteX, Math.max(...appEls.map((li) => off(li, page)[1] + li.offsetHeight)) + 40)
+  // About, Skills and Beyond the Code: the trunk runs down each lane, and where the column beside it opens
+  // up (below the portrait, below the general tools, below the interests heading) it drifts out into that
+  // space and back, rather than running straight down beside empty room. Each swing gets at least ~1.3×
+  // its sideways shift in height, so the strands bend instead of folding.
+  const WANDER = {
+    about: { side: -1, from: '#about .identity' },
+    skills: { side: 1, from: '#about .sky-group.general' },
+    interests: { side: -1, from: '#about .interests .intro' },
+  }
   for (const name of ['about', 'skills', 'interests']) {
     const lane = at(page, `[data-lane="${name}"]`)
-    if (lane) {
-      push(lane.x + lane.w / 2, lane.y)
-      push(lane.x + lane.w / 2, lane.y + lane.h)
+    if (!lane) continue
+    const cx = lane.x + lane.w / 2
+    const bottom = lane.y + lane.h
+    push(cx, lane.y)
+    const open = !narrow && at(page, WANDER[name].from)
+    if (open) {
+      const y0 = Math.max(lane.y, open.y + open.h + 24)
+      const rest = bottom - y0
+      // a short lane can't fit a gentle swing (the strands would curl), so it stays straight
+      const amp = Math.min(Math.abs(open.x + open.w / 2 - cx) * 0.75, rest / 4)
+      if (rest > 360 && amp > 40) {
+        const dx = WANDER[name].side * amp
+        push(cx, y0)
+        push(cx + dx, y0 + rest * 0.4)
+        push(cx + dx * 0.6, y0 + rest * 0.62)
+      }
     }
+    push(cx, bottom)
   }
   const node = at(page, '[data-node="contact"]')
   const contactPort = port('contact')
@@ -411,7 +441,7 @@ watch(heroExit, schedule)
       <g class="roots" :class="{ 'roots-lit': rootsLit }">
         <path v-for="(d, i) in geo.rootlets" :key="`o${i}`" class="rootlet" :d="d" />
         <template v-for="(r, i) in geo.roots" :key="`r${i}`">
-          <g class="root-g" :class="{ lit: r.id && litProject === r.id }" :data-root="r.id || null">
+          <g class="root-g" :class="{ lit: r.id && (litProject === r.id || pulseIn === r.id) }" :data-root="r.id || null">
             <template v-if="r.halo">
               <path class="root-halo wide" :d="r.d" pathLength="1" />
               <path class="root-halo near" :d="r.d" pathLength="1" />
@@ -436,7 +466,7 @@ watch(heroExit, schedule)
         v-for="b in geo.kbranches"
         :key="`k${b.id}`"
         class="branch"
-        :class="{ lit: litProject === b.id || litProject === 'clarifile', grow: exploreShown, kid: b.kid }"
+        :class="{ lit: litProject === b.id || litProject === 'clarifile' || pulseIn === b.id, inbound: pulseIn === b.id, grow: exploreShown, kid: b.kid }"
         :data-branch="b.id"
       >
         <path class="b-halo" :d="b.d" />
@@ -450,7 +480,7 @@ watch(heroExit, schedule)
         v-for="b in geo.pbranches"
         :key="b.id"
         class="branch"
-        :class="{ lit: litProject === b.id, quiet: b.quiet }"
+        :class="{ lit: litProject === b.id || pulseIn === b.id, inbound: pulseIn === b.id, quiet: b.quiet }"
         :data-branch="b.id"
       >
         <path class="b-halo" :d="b.d" />
@@ -673,6 +703,20 @@ watch(heroExit, schedule)
   }
   to {
     stroke-dashoffset: -1.1;
+    opacity: 1;
+  }
+}
+/* Opening or leaving a project: the light runs back from the card to the trunk. */
+.lit.inbound .b-pulse {
+  animation: branch-pulse-in 0.75s ease-in-out 1;
+}
+@keyframes branch-pulse-in {
+  from {
+    stroke-dashoffset: -1.1;
+    opacity: 1;
+  }
+  to {
+    stroke-dashoffset: 0.08;
     opacity: 1;
   }
 }

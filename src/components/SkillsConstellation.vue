@@ -117,7 +117,7 @@ const clusterIndex = groups.map((g) => g.clusters.map(() => n++))
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) var(--lane-w) minmax(0, 0.8fr);
   row-gap: clamp(28px, 4vw, 48px);
-  margin-top: clamp(96px, 11vw, 150px);
+  margin-top: clamp(140px, 15vw, 210px);
 }
 .skills-title {
   grid-column: 1 / -1;

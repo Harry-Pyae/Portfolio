@@ -17,17 +17,6 @@ const icon = (label) => ICONS[label.toLowerCase()] ?? 'M8 12l4-4M7 9.5L5.5 11a2.
 // Only channels with a real link are shown.
 const channels = profile.contact.filter((c) => c.href)
 
-// Optional copy-email: only appears when a real mailto: address exists in the profile data.
-const status = ref('')
-async function copy(c) {
-  const address = c.href.replace(/^mailto:/, '')
-  try {
-    await navigator.clipboard.writeText(address)
-    status.value = `Email address ${address} copied to clipboard.`
-  } catch {
-    status.value = 'Could not copy automatically. Please select the address instead.'
-  }
-}
 </script>
 
 <template>
@@ -70,11 +59,8 @@ async function copy(c) {
               <span class="value">{{ c.text || c.href.replace(/^mailto:/, '') }}</span>
               <span v-if="c.href.startsWith('http')" class="sr-only">(opens in a new tab)</span>
             </a>
-            <button v-if="c.href.startsWith('mailto:')" class="copy" type="button" @click="copy(c)">Copy email</button>
           </li>
         </ul>
-        <p class="sr-only" role="status" aria-live="polite">{{ status }}</p>
-        <p v-if="status" class="copied" aria-hidden="true">{{ status }}</p>
       </div>
     </div>
   </section>
@@ -187,7 +173,7 @@ async function copy(c) {
     transform: scale(1);
   }
 }
-/* ---------- copy + channels ---------- */
+/* ---------- channels ---------- */
 .body h2 {
   font-size: clamp(36px, 5vw, 54px);
 }
@@ -207,7 +193,6 @@ async function copy(c) {
 }
 .channels li {
   display: flex;
-  gap: 10px;
 }
 .channel {
   display: grid;
@@ -248,24 +233,6 @@ a.channel:hover {
   text-align: right;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-.copy {
-  padding: 0 16px;
-  border: 1px solid var(--line-strong);
-  border-radius: 12px;
-  background: var(--surface-2);
-  color: var(--ink-2);
-  font: 600 14px/1 var(--font-body);
-  cursor: pointer;
-}
-.copy:hover {
-  border-color: var(--accent);
-  color: var(--ink);
-}
-.copied {
-  margin: 12px 0 0;
-  color: var(--glow-branch);
-  font-size: 14px;
 }
 
 @media (max-width: 860px) {

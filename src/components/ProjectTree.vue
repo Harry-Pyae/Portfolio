@@ -8,10 +8,14 @@ import ProjectNode from './ProjectNode.vue'
 // Layout of the branching project section. The trunk passing through it, the branches to each card
 // and the particles on them are drawn by TreeTrunk from these elements' measured positions
 // (.trunk-anchor, .group-label, and each card's .port).
-const rand = (n) => {
-  const x = Math.sin(n * 12.9898) * 43758.5453
-  return x - Math.floor(x)
-}
+// Hand-tuned unevenness, so the tree grows rather than stacks. Per group: SHIFT moves the group (and the
+// trunk through its label) left or right, -1..1 of the shift range; LABEL_GAP is the space above its label.
+// Per card in tree order: REACH is its distance from the trunk (px), GAP its vertical offset from the
+// card above (px; negative tucks it alongside).
+const SHIFT = [-0.55, 0.7, -0.85, 0.45]
+const LABEL_GAP = [8, 150, 128, 156]
+const REACH = [64, 104, 52, 118, 88, 58, 72, 96]
+const GAP = [0, -6, 0, -40, 0, 14, 0, -22]
 
 // Categories become branch groups on the trunk; cards alternate sides within each group.
 // Quiet groups (Earlier Work) get a smaller, calmer branch and compact cards.
@@ -20,9 +24,15 @@ const groups = categories
   .map((c) => ({ ...c, items: projects.filter((p) => p.category === c.name) }))
   .filter((g) => g.items.length)
 let n = 0
-for (const g of groups) {
-  g.items = g.items.map((p, k) => ({ p, i: n++, side: k % 2 ? 'right' : 'left', reach: Math.round(56 + rand(n + 3) * 48) }))
-}
+groups.forEach((g, gi) => {
+  g.shift = SHIFT[gi % SHIFT.length]
+  g.labelGap = LABEL_GAP[gi % LABEL_GAP.length]
+  g.items = g.items.map((p, k) => {
+    const it = { p, i: n, side: k % 2 ? 'right' : 'left', reach: REACH[n % REACH.length], gap: k ? GAP[n % GAP.length] : 0 }
+    n++
+    return it
+  })
+})
 
 const section = ref(null)
 const pending = ref(false) // staggered entrance; cards stay fully interactive throughout
@@ -60,7 +70,13 @@ onBeforeUnmount(() => {
 
     <div class="tree">
       <span class="trunk-anchor" aria-hidden="true"></span>
-      <div v-for="(g, gi) in groups" :key="g.name" class="group" :class="{ quiet: g.quiet }">
+      <div
+        v-for="(g, gi) in groups"
+        :key="g.name"
+        class="group"
+        :class="{ quiet: g.quiet }"
+        :style="{ '--shift': g.shift, '--label-gap': `${g.labelGap}px` }"
+      >
         <h3 class="group-label" :data-group="gi">{{ g.name }}</h3>
         <ol class="nodes">
           <li
@@ -70,7 +86,7 @@ onBeforeUnmount(() => {
             :class="it.side"
             :data-project="it.p.id"
             :data-group="gi"
-            :style="{ '--i': it.i, '--reach': `${it.reach}px` }"
+            :style="{ '--i': it.i, '--reach': `${it.reach}px`, '--gap': `${it.gap}px` }"
             @pointerenter="lightOn($event, it.p.id)"
             @pointerleave="lightOff(it.p.id)"
             @focusin="focusIn($event, it.p.id)"
@@ -112,19 +128,23 @@ onBeforeUnmount(() => {
   left: 50%;
 }
 .group {
+  /* the group (and the trunk through its label) sits a little left or right of centre */
+  --shift-px: calc(var(--shift, 0) * min(6vw, 84px));
+  position: relative;
+  left: var(--shift-px);
   display: flex;
   flex-direction: column;
 }
 .group-label {
   align-self: center;
-  margin: 48px 0 26px;
-  padding: 8px 16px;
-  border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
+  margin: var(--label-gap, 48px) 0 34px;
+  padding: 10px 20px;
+  border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
   border-radius: 999px;
-  background: var(--bg);
+  background: var(--surface);
+  box-shadow: 0 0 0 6px var(--bg); /* a clear ring of space where the trunk passes behind the label */
   color: var(--ink);
-  font-size: 15px;
-  font-weight: 600;
+  font: 600 16.5px/1.2 var(--font-head);
   letter-spacing: 0;
 }
 .group:first-child .group-label {
@@ -139,7 +159,8 @@ onBeforeUnmount(() => {
 }
 .node-wrap {
   position: relative;
-  width: min(var(--node-w), calc(50% - var(--reach) - 4px));
+  /* narrower only when the shifted group would push the card past the page edge */
+  width: min(var(--node-w), calc(50% - var(--reach) - 4px - max(var(--shift-px), -1 * var(--shift-px))));
   transition:
     opacity 0.6s var(--ease),
     transform 0.6s var(--ease);
@@ -155,7 +176,7 @@ onBeforeUnmount(() => {
 }
 /* Alternate cards tuck alongside each other; same-side cards never overlap. */
 .node-wrap + .node-wrap {
-  margin-top: -28px;
+  margin-top: calc(-28px + var(--gap, 0px));
 }
 .pending .node-wrap {
   opacity: 0;
@@ -192,9 +213,12 @@ onBeforeUnmount(() => {
   .trunk-anchor {
     left: 18px;
   }
+  .group {
+    left: 0; /* the side spine stays straight */
+  }
   .group-label {
     align-self: flex-start;
-    margin: 36px 0 18px 40px;
+    margin: 60px 0 18px 40px;
   }
   .group:first-child .group-label {
     margin-top: 4px;

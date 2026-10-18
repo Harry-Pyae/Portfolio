@@ -7,7 +7,7 @@ the file), and I'll apply the changes.
 
 1. **About copy.** It is new first-person copy built only from the facts in `four-pj.md` (`profile.about`). It keeps your earlier point about moving from hand-written code to AI-assisted tools without implying libraries are worse. Keep it?
 2. **Hero intro.** It now reads: "I build web applications with Vue.js on the front end and Laravel and PHP behind it, from my own projects to hackathon prototypes." I dropped "high-performance", which no project data supports. Keep it?
-3. **Milestones use general wording only:** "Completed a full-stack developer certification", "Received multiple development offers", "Took part in hackathons" (linked to FlavourWave, ClickWise, AstroCare and Chat to Ledger). OK until you supply details?
+3. **Milestones:** CodeLab Full-Stack Web Developer, ITPEC IT Passport (described as covering IT fundamentals, management and strategy), hackathon participation certificates (I labelled the Cursor one "Myanmar AI Hackathon 2026", the event Chat to Ledger was built for), and "Received multiple development offers". Correct?
 4. **BloodCare contribution:** "Own project idea; product design and full-stack build across the Vue front end and the Laravel API." Correct?
 5. **GitHub contact link** points to `github.com/Harry-Pyae`. Keep it?
 6. **Currently exploring notes.** Each technology is tied only to where it appears:
@@ -30,8 +30,14 @@ the file), and I'll apply the changes.
 12. **Featured spiral order:** BloodCare, InternshipJP, ClariFile (the suite card), FlavourWave, ClickWise, AstroCare, Chat to Ledger, as specified. The ClariFile card opens a suite overview leading to ClassiFile and SummarEase. OK?
 13. **Group names:** Recent Personal Projects, Major Hackathon Projects, Smaller Hackathon Projects, Earlier Work, then the Current explorations and Where it began sections. The navbar keeps only Projects, About and Contact. OK?
 14. **InternshipJP** stays under Recent Personal Projects, as you classified it, although its docs describe a four-person university team project (your role as Member 1 is shown). OK?
-15. **Pagination story:** kept unpublished, because no account of it was found. The facts needed are listed in `AUTHOR-CHECKLIST.md`. One candidate is a documented BloodCare bug, where pagination totals merged into `[2, 2]`. Is that the story you meant?
+15. **Pagination story:** published in About as a fixed card ("2022 · My longest-running bug", "Getting pagination right") whose full text opens in an overlay, with a code sample labelled as illustrative. Was the app MyMedia (then it moves into MyMedia's details), and is the "What stayed with me" line true to you?
 
 ## Space
 
 16. **Deleted to save space** (all re-creatable): the raw walkthrough frames in `video/public/hq` (~430 MB; re-record with the scripts in `video/capture/`), `video/node_modules` (~800 MB; `cd video && npm install` to edit or re-render reels), the `dist/` build output, and the four pasted project folders (verified identical to their GitHub repos before deleting). The reels themselves are final in `public/projects/<id>/reel.mp4`. OK?
+
+## Soundtrack
+
+17. **Music licensing:** both tracks carry content credentials saying they were created with Google generative AI. You confirmed you may publish them, so they are in the repo. A chatbot's reply isn't the service's terms; check the music tool's terms page once if the site is ever used commercially.
+18. **Soundtrack excerpts:** each project's excerpt was chosen by analysing the music (sections, beats, loudness), not by listening. Give a few projects a listen; any boundary can be moved in `src/content/audioCues.js`.
+19. **Phone memory:** the project excerpts come from decoding the inspection track once (about 55 MB of memory). Fine for modern phones; if you'd rather keep low-end phones light, the excerpts can stream instead, with slightly less exact loops.
