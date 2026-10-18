@@ -35,7 +35,7 @@ export const profile = {
       badges: [
         { by: 'Cursor', name: 'Myanmar AI Hackathon 2026' },
         { by: 'UNESCO', name: 'Youth Hackathon 2026' },
-        { by: 'JICA', name: 'Participation certificate' },
+        { by: 'JICA', name: 'MJC hackathon, December 2023' },
       ],
       projects: ['flavourwave', 'clickwise', 'astrocare', 'chatledger'],
     },
@@ -52,7 +52,7 @@ export const profile = {
     exploring: [
       { name: 'Python', note: 'Building ClassiFile and SummarEase with it.', projects: ['classifile', 'summarease'] },
       { name: 'PostgreSQL', note: 'Through Supabase in ClickWise and Chat to Ledger.', projects: ['clickwise', 'chatledger'] },
-      { name: 'React', note: 'Part of the stack in InternshipJP, Chat to Ledger and AstroCare.', projects: ['internshipjp', 'chatledger', 'astrocare'] },
+      { name: 'React', note: 'Part of the stack in InternshipJP, Chat to Ledger and AstroCare AI.', projects: ['internshipjp', 'chatledger', 'astrocare'] },
       { name: 'Next.js', note: 'Part of the stack in ClickWise and FlavourWave.', projects: ['clickwise', 'flavourwave'] },
     ],
   },

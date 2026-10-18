@@ -3,7 +3,7 @@ import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { openProject, showProject, closeProject, motionOn, prefersReduced } from '../state.js'
 import { litProject, pulseIn } from '../tree.js'
 import { profile } from '../content/profile.js'
-import { projects, suites, categories, appsOf, story } from '../content/projects.js'
+import { projects, suites, categories, appsOf, story, caseStudyOf } from '../content/projects.js'
 import { soundTo } from '../audio.js'
 import { useWisps } from '../wisps.js'
 import ProjectArt from './ProjectArt.vue'
@@ -644,12 +644,15 @@ watch([motionOn, prefersReduced], kick)
               </svg>
               <span>{{ shown.limitation }}</span>
             </p>
-            <div v-if="shown.links?.demo || shown.links?.github" class="links">
+            <div v-if="shown.links?.demo || shown.links?.github || caseStudyOf(shown)" class="links">
               <a v-if="shown.links.demo" class="btn btn--primary" :href="shown.links.demo" target="_blank" rel="noopener noreferrer">
                 Live demo<span class="sr-only"> (opens in a new tab)</span>
               </a>
               <a v-if="shown.links.github" class="btn" :href="shown.links.github" target="_blank" rel="noopener noreferrer">
                 Repository<span class="sr-only"> on GitHub (opens in a new tab)</span>
+              </a>
+              <a v-if="caseStudyOf(shown)" class="btn" :href="caseStudyOf(shown)" target="_blank" rel="noopener noreferrer">
+                Full case study<span class="sr-only"> on the project showcase (opens in a new tab)</span>
               </a>
             </div>
           </div>

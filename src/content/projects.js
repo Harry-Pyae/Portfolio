@@ -77,7 +77,7 @@ export const projects = [
       'Spring Boot REST API with CSRF protection, TOTP or email-OTP sign-in and Flyway migrations',
     ],
     contribution:
-      'Member 1 of a four-person team (CST-6108, University of Information Technology): project foundation, database, integration, shared components and the bilingual layer.',
+      'Built most of it in a four-person team (CST-6108, University of Information Technology): project foundation, database, integration, shared components and the bilingual layer.',
     context: 'Four-person university team project.',
     stack: ['React 19', 'Spring Boot 3.5', 'Java 24', 'MariaDB', 'Flyway', 'Bootstrap 5'],
     links: { demo: '', github: 'https://github.com/Harry-Pyae/InternshipJP' },
@@ -102,7 +102,7 @@ export const projects = [
       'Department-based admin roles, pre-order acceptance and sales dashboards',
     ],
     contribution: null,
-    context: 'JICA hackathon project, built with team Axionix.',
+    context: 'Built with team Axionix for the JICA hackathon held by the Myanmar-Japan Centre (MJC), December 2023.',
     stack: ['Next.js 14', 'TypeScript', 'Tailwind CSS', 'Clerk', 'Stripe', 'Laravel 10', 'Backpack', 'MySQL'],
     links: { demo: '', github: 'https://github.com/linhtutkyawdev/Axionix_FlavourWave' },
   },
@@ -115,7 +115,7 @@ export const projects = [
     image: 'projects/clickwise/2.jpg',
     gallery: shots('clickwise', 5),
     videoNote: 'Detection screenshots show the app’s demo mode with sample results.',
-    limitation: 'Live text detection is currently unavailable: the deployed app calls a Groq model that is no longer offered. Masking and the quiz still work.',
+    limitation: 'A hackathon prototype: live text detection is currently unavailable because its Supabase backend is inactive.',
     video: 'projects/clickwise/reel.mp4',
     tagline: 'Detect AI-generated text, images and audio, with scores that explain themselves.',
     problem: 'People need a clear read on whether text, images or audio were AI-generated, not a single opaque percentage.',
@@ -133,7 +133,7 @@ export const projects = [
   },
   {
     id: 'astrocare',
-    title: 'AstroCare',
+    title: 'AstroCare AI',
     category: 'Smaller Hackathon Projects',
     year: 2026,
     icon: 'projects/astrocare/icon.png',
@@ -196,8 +196,8 @@ export const projects = [
       'Category and post management with image upload and search',
       'API for sign-in, post lists, search, details and view tracking',
     ],
-    contribution: null,
-    context: 'Earlier work: a Laravel admin plus a JSON API for a separate Vue client, a step toward the Vue + Laravel API apps that followed.',
+    contribution: 'My own app from 2022: where I first split the editors’ dashboard from the reader’s side, and where I met my longest-running bug.',
+    context: 'Earlier work: a Laravel admin plus a JSON API for a separate Vue client, a step toward the Vue + Laravel API apps that followed. The repository holds a later Laravel 10 upgrade.',
     stack: ['Laravel 10', 'Jetstream', 'Livewire', 'MySQL', 'AdminLTE'],
     links: { demo: '', github: 'https://github.com/Harry-Pyae/MyMediaProject' },
   },
@@ -219,7 +219,7 @@ export const projects = [
       'Menu filtering by category, view counts and order history',
       'Admin management for categories, pizzas, orders, users and contact messages',
     ],
-    contribution: null,
+    contribution: 'My own build from 2022: my first app with two kinds of users to serve, the customers ordering and the admins running the shop.',
     context: 'Earlier work: server-rendered Laravel with Blade and jQuery AJAX, the groundwork for the API-driven apps that followed.',
     stack: ['Laravel 9', 'Jetstream', 'Blade', 'jQuery (AJAX)', 'MySQL'],
     links: { demo: '', github: 'https://github.com/Harry-Pyae/PizzaOrderSystem' },
@@ -246,6 +246,8 @@ export const projects = [
       'Learns from your decisions and existing folders; matching updates every 10 decisions and keeps the previous version if the new one would make more mistakes',
       'Originals are never changed, moved or deleted: it works on hash-verified copies and never overwrites',
     ],
+    contribution:
+      'My own project, from idea to release candidate: deciding when it should file and when it should ask, an offline classifier on Python’s standard library, and the copy-only rules that keep originals untouched.',
     context: 'Release candidate 1.0.0-rc.2 for a small pilot on Windows, English only for now. Part of the ClariFile suite.',
     stack: ['Python 3.12', 'PySide6', 'PyMuPDF', 'Tesseract OCR', 'SQLite', 'PyInstaller'],
     links: { demo: '', github: 'https://github.com/ClariFile/ClassiFile' },
@@ -271,6 +273,8 @@ export const projects = [
       'Copy, or export to searchable PDF or Word; an export is checked and never overwrites a file',
       'Open, paste or drag in documents; OCR text and gaps are marked',
     ],
+    contribution:
+      'My own project, built around one rule I set for it: every line of a summary must lead back to where it came from.',
     context:
       'In development: reading, summaries and export work; evaluation on real documents has not been run yet. Part of the ClariFile suite.',
     stack: ['Python 3.12', 'PySide6', 'PyMuPDF'],
@@ -362,6 +366,14 @@ Post::latest()->paginate(10);`,
 }
 
 const byId = (id) => projects.find((p) => p.id === id) ?? suites.find((x) => x.id === id)
+// Each project's full case study on the showcase site, by its route there.
+const SHOWCASE = 'https://harry-project-showcase.vercel.app/projects/'
+const caseStudies = {
+  bloodcare: 'blood-donation', internshipjp: 'internship-jp', flavourwave: 'flavourwave', clickwise: 'ai-detection',
+  astrocare: 'astrocare-ai', chatledger: 'chat-ledger', mymedia: 'mymedia', pizza: 'pizza-order', clarifile: 'clarifile',
+  classifile: 'classifile', summarease: 'summarease', fhcp: 'fhcp', cinemagichub: 'cinemagichub',
+}
+export const caseStudyOf = (p) => (caseStudies[p.id] ? SHOWCASE + caseStudies[p.id] : '')
 export const featuredProjects = featured.map(byId).filter(Boolean)
 export const categoryOf = (p) => categories.find((c) => c.name === p.category)
 export const appsOf = (suite) => suite.apps.map(byId)
