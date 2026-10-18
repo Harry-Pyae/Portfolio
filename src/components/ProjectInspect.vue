@@ -325,6 +325,8 @@ function render() {
   const n = all.length
   const e = ease(Math.max(0, Math.min(1, m)))
   const st = []
+  const still = !speed && m === mTo && centre.every((v, i) => v === cTo[i]) // nothing moving
+  const px = (v, rest) => (rest || still ? Math.round(v) : v).toFixed(1)
   for (let i = 0; i < n; i++) {
     const el = cards[i]
     if (!el) continue
@@ -343,7 +345,8 @@ function render() {
     const s = (0.56 + 0.44 * near + (1.1 - 0.56 - 0.44 * near) * w) * (0.8 + 0.2 * e)
     const o = (0.28 + 0.72 * near + (1 - 0.28 - 0.72 * near) * w) * Math.min(1, m * 1.4)
     const next = {
-      transform: `translate3d(${(x - cw / 2).toFixed(1)}px,${(y - ch / 2).toFixed(1)}px,0) scale(${s.toFixed(3)})`,
+      // a card at rest (the centred one, or all while the orbit is stopped) sits on whole pixels
+      transform: `translate3d(${px(x - cw / 2, w >= 1)}px,${px(y - ch / 2, w >= 1)}px,0) scale(${s.toFixed(3)})`,
       opacity: o.toFixed(3),
       // the centre card is never covered; the glow (20) sits between the far and near sides of the ring
       zIndex: w > 0.5 ? 45 : z > 0 ? 30 + Math.round(z * 9) : 10 + Math.round((z + 1) * 9),
@@ -780,6 +783,15 @@ watch([motionOn, prefersReduced], kick)
   width: 172px;
   visibility: hidden;
   will-change: transform, opacity;
+}
+/* On standard-density screens the hint above makes the browser scale each card's text as a bitmap, so
+   cards shown smaller or larger than 1:1 look soft. Without it the cards stay on their own layers (3D
+   translate) and are re-rasterised at their true scale. High-density screens keep the hint: the bitmap
+   scaling is invisible there and phones need the cheaper path. */
+@media (max-resolution: 1.49dppx) {
+  .o-card {
+    will-change: auto;
+  }
 }
 .o-node {
   display: grid;

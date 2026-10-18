@@ -115,6 +115,9 @@ function render() {
   if (!geo) return
   const { cx, top, span, R } = geo
   const { minScale, maxScale, minOpacity } = cfg.depth
+  // At rest (paused, held, reduced motion) cards sit on whole pixels, so their text isn't resampled;
+  // while moving they keep sub-pixel positions for smooth motion.
+  const px = !speed && !nudge ? (v) => Math.round(v).toFixed(2) : (v) => v.toFixed(2)
   for (let i = 0; i < count; i++) {
     const el = cards[i]
     if (!el) continue
@@ -136,7 +139,7 @@ function render() {
     pos[i].y = y
     pos[i].s = scale
     apply(el, written[i], {
-      transform: `translate3d(${(x - w / 2).toFixed(2)}px,${(y - h / 2).toFixed(2)}px,0) scale(${scale.toFixed(4)})`,
+      transform: `translate3d(${px(x - w / 2)}px,${px(y - h / 2)}px,0) scale(${scale.toFixed(4)})`,
       opacity: opacity.toFixed(3),
       visibility: opacity > 0.01 ? 'visible' : 'hidden',
       // Cards spiral around the trunk (z 5): the far half of the orbit passes behind its light, the near
@@ -554,6 +557,15 @@ watch([activeId, motionOn, openProject], kick)
   width: var(--card-w);
   visibility: hidden;
   will-change: transform, opacity;
+}
+/* On standard-density screens the hint above makes the browser scale each card's text as a bitmap, so
+   cards shown smaller or larger than 1:1 look soft. Without it the cards stay on their own layers (3D
+   translate) and are re-rasterised at their true scale. High-density screens keep the hint: the bitmap
+   scaling is invisible there and phones need the cheaper path. */
+@media (max-resolution: 1.49dppx) {
+  .orbit-card {
+    will-change: auto;
+  }
 }
 .oc-dim {
   position: absolute;
