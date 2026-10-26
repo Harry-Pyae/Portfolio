@@ -195,6 +195,30 @@ export function pauseSound() {
 
 export const toggleSound = () => (sound.state === 'playing' ? pauseSound() : playSound())
 
+// Silent while the visitor is away (tab hidden, window minimised or another window focused); on return it
+// picks up where it left off. The visitor's own on/off choice is untouched.
+let held = null // set while away: { main } = whether the main track was sounding
+function onPresence() {
+  const away = document.hidden || !document.hasFocus()
+  if (away && !held && sound.state === 'playing') {
+    held = { main: false }
+    fade(master.gain, 0, 0.3)
+    setTimeout(() => {
+      if (!held) return
+      held.main = !mainEl.paused
+      mainEl.pause()
+      ctx.suspend()
+    }, 350)
+  } else if (!away && held) {
+    if (held.main) mainEl.play().catch(() => {})
+    held = null
+    ctx.resume().then(() => fade(master.gain, 1, 0.6))
+  }
+}
+document.addEventListener('visibilitychange', onPresence)
+addEventListener('blur', onPresence)
+addEventListener('focus', onPresence)
+
 // Where the visitor is: null = the portfolio, otherwise the inspected project or suite id.
 export function soundTo(id) {
   dest = id ?? null
@@ -206,6 +230,7 @@ export const soundDebug = () => ({
   state: sound.state,
   dest,
   ctx: ctx?.state ?? null,
+  away: !!held,
   mainTime: mainEl?.currentTime ?? 0,
   mainPaused: mainEl?.paused ?? true,
   mainGain: mainGain?.gain.value ?? 0,
