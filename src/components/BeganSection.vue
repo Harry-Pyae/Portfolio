@@ -24,12 +24,12 @@ const { classes, reveal } = useSection(root)
       </p>
     </div>
     <ol class="cards" aria-label="Earliest projects">
+      <!-- no entrance on the cards: the roots reach them, so they are always shown -->
       <li
         v-for="(p, i) in items"
         :key="p.id"
-        class="card rv"
+        class="card"
         :class="i % 2 ? 'right' : 'left'"
-        :style="{ '--d': 2 + i }"
         :data-project="p.id"
         @pointerenter="lightOn($event, p.id)"
         @pointerleave="lightOff(p.id)"

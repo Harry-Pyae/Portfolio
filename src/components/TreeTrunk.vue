@@ -110,19 +110,21 @@ function measure() {
   // ---- anchors measured from the layout ----
   const ax = anchor.x
   const headRight = Math.max(...[...head.el.children].map((c) => off(c, page)[0] + c.offsetWidth))
-  const labels = [...page.querySelectorAll('#projects .group-label')].map((el) => {
+  // each group heading's gold junction sits on the trunk line (centred via translate, like the ports,
+  // so its offset position is its centre)
+  const labels = [...page.querySelectorAll('#projects .junction')].map((el) => {
     const [x, y] = off(el, page)
-    return { x: x + el.offsetWidth / 2, y: y + el.offsetHeight / 2 }
+    return { x, y }
   })
   const ports = [...page.querySelectorAll('#projects [data-project]')].map((li) => {
     const [x, y] = off(li.querySelector('.port'), page)
     return { id: li.dataset.project, group: li.dataset.group, quiet: !!li.closest('.quiet'), x, y }
   })
-  // Group junctions: each group label sits on the trunk; its projects branch out from beneath it.
+  // Group junctions: each group's projects branch out from just beneath its gold junction.
   const junctions = {}
-  page.querySelectorAll('#projects .group-label[data-group]').forEach((el) => {
+  page.querySelectorAll('#projects .junction[data-group]').forEach((el) => {
     const [, y] = off(el, page)
-    junctions[el.dataset.group] = y + el.offsetHeight * 0.6
+    junctions[el.dataset.group] = y + 10
   })
   const port = (name) => {
     const p = at(page, `[data-port="${name}"]`)
@@ -149,16 +151,25 @@ function measure() {
     // Otherwise a short straight run out of the hero, then one swing to the first group label.
     push(wps[0].x, wps[0].y + 40, hx.rho)
   }
-  // Projects: the trunk wanders through each group's label (groups sit a little left or right of centre),
-  // staying under a group until its last card, then swinging across in the gap to the next group.
+  // Projects: the trunk passes through each group's junction (groups sit a little left or right of
+  // centre). Below the junction it already starts drifting toward the next group, within the corridor
+  // between the group's two card columns (reach − 44px each way), so each change of side is spread over
+  // a group and its gap: a few broad bends, never a kink in the short gap between groups.
+  const nextX = (gi) => (gi + 1 < labels.length ? labels[gi + 1].x : (at(page, '#explorations .suite-anchor')?.x ?? ax))
   labels.forEach((l, gi) => {
     const x = narrow ? ax : l.x
     push(x, l.y)
     const ys = ports.filter((p) => p.group === String(gi)).map((p) => p.y)
-    if (ys.length) push(x, Math.max(...ys) + (gi === labels.length - 1 ? 70 : 20))
+    if (!ys.length) return
+    // the strands spread about 30px either side of the centreline: keep them 14px clear of the cards
+    const room = Math.max(0, Math.min(...ports.filter((p) => p.group === String(gi)).map((p) => Math.abs(p.x - x))) - 44)
+    const drift = narrow ? 0 : Math.max(-room, Math.min(room, (nextX(gi) - x) * 0.45))
+    // the turn toward the next group begins below this group's last card, never beside it
+    const cardsBottom = Math.max(...[...page.querySelectorAll(`#projects [data-group="${gi}"].node-wrap`)].map((li) => off(li, page)[1] + li.offsetHeight))
+    push(x + drift, narrow ? Math.max(...ys) + (gi === labels.length - 1 ? 70 : 20) : Math.max(Math.max(...ys) + 20, cardsBottom + (gi === labels.length - 1 ? 40 : 0)))
   })
   if (!labels.length && ports.length) push(ax, Math.max(...ports.map((p) => p.y)) + 70)
-  // Current explorations: the suite node sits on the trunk (desktop); on small screens it branches off the spine.
+  // In development: the suite node sits on the trunk (desktop); on small screens it branches off the spine.
   const suiteX = narrow ? ax : (at(page, '#explorations .suite-anchor')?.x ?? ax)
   const suiteNode = at(page, '#explorations [data-suite]')
   if (suiteNode) push(suiteX, suiteNode.y + suiteNode.h / 2)
@@ -686,7 +697,7 @@ watch(heroExit, schedule)
 }
 
 /* Project branches: dim at rest; hover/focus lights the whole path and sends one pulse to the card,
-   then eases back. Earlier Work uses a thinner, calmer branch. */
+   then eases back. Earlier work uses a thinner, calmer branch. */
 .b-main,
 .b-twig,
 .b-halo {

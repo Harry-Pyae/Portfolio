@@ -9,10 +9,12 @@ const byId = (id) => projects.find((p) => p.id === id)
 // Skills as small constellations: each skill is a plain label under a star; thin connectors join
 // neighbouring stars on the same row only, so lines never cross text. Static, non-interactive.
 const groups = [
-  { key: 'core', title: 'Core specialties', note: 'High proficiency', clusters: profile.skills.core },
+  { key: 'core', title: 'Core specialties', note: 'Primary stack', clusters: profile.skills.core },
   { key: 'general', title: 'General knowledge & ecosystem tools', clusters: [{ group: null, items: profile.skills.general }] },
 ]
 const jitter = (k) => [0, 6, 2, 7, 3, 5][k % 6] // px offset of each star inside its row: an irregular skyline
+// A long list breaks into balanced rows (5 -> 3 + 2) instead of leaving one star alone on a second row.
+const cols = (n) => (n > 4 ? Math.ceil(n / 2) : n)
 
 const els = []
 const links = ref([]) // per cluster: { w, h, segs: [[x1, y1, x2, y2]] }
@@ -83,7 +85,7 @@ const clusterIndex = groups.map((g) => g.clusters.map(() => n++))
             />
           </svg>
           <h4 v-if="c.group" class="cluster-title">{{ c.group }}</h4>
-          <ul class="stars-list">
+          <ul class="stars-list" :style="{ '--cols': cols(c.items.length) }">
             <li v-for="(s, k) in c.items" :key="s">
               <span class="star" :style="{ marginTop: `${jitter(k)}px` }" aria-hidden="true"></span>
               <span class="label">{{ s }}</span>
@@ -93,7 +95,8 @@ const clusterIndex = groups.map((g) => g.clusters.map(() => n++))
       </div>
     </section>
 
-    <!-- Currently exploring: what I'm deepening now, and where it shows up. No ratings. -->
+    <!-- Currently exploring: what I'm deepening now, and where it shows up. No ratings. One compact
+         group of two columns under its heading, beside the trunk's lane. -->
     <section class="sky-group exploring rv" style="--d: 7" aria-labelledby="skills-exploring">
       <span class="tree-port" data-port="skills-exploring" aria-hidden="true"></span>
       <h3 id="skills-exploring" class="group-title">Currently exploring</h3>
@@ -102,8 +105,16 @@ const clusterIndex = groups.map((g) => g.clusters.map(() => n++))
           <span class="x-name"><span class="star" aria-hidden="true"></span>{{ x.name }}</span>
           <span class="x-note">{{ x.note }}</span>
           <span class="x-links">
-            <button v-for="id in x.projects" :key="id" type="button" class="x-link" @click="showProject(byId(id))">
-              {{ byId(id).title }}
+            <span class="x-in">In</span>
+            <button
+              v-for="id in x.projects"
+              :key="id"
+              type="button"
+              class="x-link"
+              :aria-label="`Open ${byId(id).title} project`"
+              @click="showProject(byId(id))"
+            >
+              {{ byId(id).short ?? byId(id).title }}
             </button>
           </span>
         </li>
@@ -132,8 +143,8 @@ const clusterIndex = groups.map((g) => g.clusters.map(() => n++))
 }
 .explore-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
-  gap: 20px 36px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px 36px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -163,24 +174,34 @@ const clusterIndex = groups.map((g) => g.clusters.map(() => n++))
 .x-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 4px;
+  align-items: baseline;
+  column-gap: 14px;
+  color: var(--ink-3);
+  font-size: 13.5px;
 }
+.x-in {
+  font: 500 12px/1 var(--font-mono);
+}
+/* quiet text links: a short name, underlined on hover; the button keeps a comfortable tap height */
 .x-link {
-  min-height: 30px;
-  padding: 3px 11px;
-  border: 1px solid var(--line-strong);
-  border-radius: 6px;
-  background: var(--surface);
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
   color: var(--ink-2);
-  font: 500 13px/1.2 var(--font-body);
+  font: 500 13.5px/32px var(--font-body);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--ink-3) 45%, transparent);
+  text-underline-offset: 4px;
   cursor: pointer;
-  transition: border-color 0.25s var(--ease), color 0.25s var(--ease);
+  transition:
+    color 0.2s ease,
+    text-decoration-color 0.2s ease;
 }
 .x-link:hover,
 .x-link:focus-visible {
-  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
   color: var(--accent);
+  text-decoration-color: currentColor;
 }
 .sky-group.core {
   grid-row: 2;
@@ -208,11 +229,8 @@ const clusterIndex = groups.map((g) => g.clusters.map(() => n++))
   line-height: 1.3;
 }
 .note {
-  padding: 0.3em 0.7em;
-  border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
-  border-radius: 4px;
-  color: var(--accent);
-  font: 600 12.5px/1.2 var(--font-body);
+  color: var(--ink-3);
+  font: 500 12.5px/1.2 var(--font-mono);
 }
 .clusters {
   display: grid;
@@ -244,9 +262,9 @@ const clusterIndex = groups.map((g) => g.clusters.map(() => n++))
   letter-spacing: 0;
 }
 .stars-list {
-  display: flex; /* not positioned: list items measure their offsets against the cluster */
-  flex-wrap: wrap;
-  gap: 18px 30px;
+  display: grid; /* not positioned: list items measure their offsets against the cluster */
+  grid-template-columns: repeat(var(--cols), max-content);
+  gap: 18px 28px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -303,6 +321,13 @@ const clusterIndex = groups.map((g) => g.clusters.map(() => n++))
   .sky-group.exploring {
     grid-row: auto;
     grid-column: 1;
+  }
+  /* phones: a four-item row would run off the edge, so it splits 2 + 2 */
+  .stars-list:has(> li:nth-child(4):last-child) {
+    grid-template-columns: repeat(2, max-content);
+  }
+  .explore-list {
+    grid-template-columns: minmax(0, 1fr);
   }
   .core > .tree-port,
   .exploring > .tree-port {

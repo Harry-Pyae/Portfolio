@@ -2,8 +2,6 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { profile } from '../content/profile.js'
 import { motionOn, toggleMotion } from '../state.js'
-import SoundControls from './SoundControls.vue'
-import { sound } from '../audio.js'
 
 const links = [
   { id: 'projects', label: 'Projects' },
@@ -33,29 +31,13 @@ onMounted(() => {
   targets.forEach((t) => t && io.observe(t))
 })
 onBeforeUnmount(() => io?.disconnect())
-
-// Small screens: the music and motion controls sit behind one settings button.
-const menu = ref(false)
-const menuBtn = ref(null)
-const tools = ref(null)
-const outside = (e) => menu.value && !tools.value?.contains(e.target) && !menuBtn.value?.contains(e.target) && (menu.value = false)
-const onKey = (e) => {
-  if (e.key !== 'Escape' || !menu.value) return
-  menu.value = false
-  menuBtn.value?.focus()
-}
-onMounted(() => {
-  document.addEventListener('pointerdown', outside)
-  document.addEventListener('keydown', onKey)
-})
-onBeforeUnmount(() => {
-  document.removeEventListener('pointerdown', outside)
-  document.removeEventListener('keydown', onKey)
-})
 </script>
 
 <template>
   <header class="nav-wrap">
+    <!-- One compact floating bar: the identity on the left; the sections and, set apart, the motion
+         control on the right. Everything fits on one row down to phone width (the motion control
+         becomes an icon there), so there is no menu to open. -->
     <nav class="nav" aria-label="Primary">
       <a class="brand" href="#main">
         <span class="mono" aria-hidden="true">{{ profile.monogram }}</span>
@@ -70,38 +52,26 @@ onBeforeUnmount(() => {
         </li>
       </ul>
       <button
-        ref="menuBtn"
-        class="menu-btn"
+        class="motion"
         type="button"
-        aria-label="Music and motion settings"
-        aria-controls="nav-tools"
-        :aria-expanded="menu"
-        @click="menu = !menu"
+        :aria-pressed="!motionOn"
+        :aria-label="motionOn ? 'Pause motion' : 'Resume motion'"
+        :title="motionOn ? 'Pause motion' : 'Resume motion'"
+        @click="toggleMotion"
       >
-        <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
-          <path d="M3 6h9M15 6h2M3 14h2M8 14h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-          <circle cx="13.5" cy="6" r="1.8" fill="none" stroke="currentColor" stroke-width="1.6" />
-          <circle cx="6.5" cy="14" r="1.8" fill="none" stroke="currentColor" stroke-width="1.6" />
+        <svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true">
+          <path v-if="motionOn" d="M6 4h3v12H6zM11 4h3v12h-3z" fill="currentColor" />
+          <path v-else d="M6 4l10 6-10 6z" fill="currentColor" />
         </svg>
-        <!-- the soundtrack is waiting for a click: a small marker, not a pop-up -->
-        <span v-if="sound.state === 'blocked'" class="dot" aria-hidden="true"></span>
+        <span class="motion-text" aria-hidden="true">{{ motionOn ? 'Pause' : 'Resume' }}</span>
       </button>
-      <div id="nav-tools" ref="tools" class="tools" :class="{ open: menu }">
-        <SoundControls />
-        <button class="motion" type="button" :aria-pressed="!motionOn" :aria-label="motionOn ? 'Pause motion' : 'Resume motion'" @click="toggleMotion">
-          <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true">
-            <path v-if="motionOn" d="M6 4h3v12H6zM11 4h3v12h-3z" fill="currentColor" />
-            <path v-else d="M6 4l10 6-10 6z" fill="currentColor" />
-          </svg>
-          <span class="tool-text" aria-hidden="true">{{ motionOn ? 'Pause' : 'Resume' }}</span>
-        </button>
-      </div>
     </nav>
   </header>
 </template>
 
 <style scoped>
-/* Slim inset bar: sticky with breathing room above, solid navy (no backdrop blur), one fine border. */
+/* A slim floating bar, narrower than the page so it reads as one compact object: the card surface and
+   border, slightly translucent with a light blur so the stars and tree pass softly beneath. */
 .nav-wrap {
   position: sticky;
   top: 12px;
@@ -110,17 +80,18 @@ onBeforeUnmount(() => {
   padding: 0 var(--gutter);
 }
 .nav {
-  position: relative; /* anchors the small-screen settings panel */
   display: flex;
   align-items: center;
-  gap: clamp(8px, 2vw, 24px);
-  max-width: var(--maxw);
-  height: 60px;
+  gap: 4px;
+  max-width: 780px;
+  height: 52px;
   margin: 0 auto;
-  padding: 0 10px 0 12px;
+  padding: 0 8px 0 9px;
   border: 1px solid var(--line-strong);
   border-radius: var(--r-card);
-  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   box-shadow: 0 10px 30px -18px rgba(0, 0, 0, 0.9);
 }
 .brand {
@@ -128,45 +99,51 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 10px;
   margin-right: auto;
-  padding: 6px 4px;
+  padding: 6px 8px 6px 2px;
+  border-radius: var(--r-ctl);
   color: var(--ink);
   text-decoration: none;
 }
 .mono {
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
   border-radius: 50%;
   color: var(--accent);
-  font: 700 16px/1 var(--font-head);
+  font: 700 15px/1 var(--font-head);
 }
 .brand-name {
-  font: 600 16px/1 var(--font-head);
+  font: 600 15.5px/1 var(--font-head);
   letter-spacing: -0.015em;
 }
 .links {
   display: flex;
-  gap: clamp(0px, 1vw, 10px);
+  gap: 2px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
+/* plain text links with a comfortable hit area; the active section gets a short gold mark beneath */
 .links a {
   position: relative;
-  display: block;
-  padding: 12px;
+  display: grid;
+  place-items: center;
+  min-height: 40px;
+  padding: 0 11px;
+  border-radius: var(--r-ctl);
   color: var(--ink-2);
-  font-size: 14.5px;
-  font-weight: 500;
+  font: 500 14px/1 var(--font-body);
   text-decoration: none;
-  transition: color 0.25s var(--ease);
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
 }
 .links a:hover {
   color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 5%, transparent);
 }
-/* Active section: the link brightens and a short amber marker sits beneath it. */
 .links a::after {
   content: '';
   position: absolute;
@@ -180,8 +157,8 @@ onBeforeUnmount(() => {
   opacity: 0;
   transform: scaleX(0.3);
   transition:
-    opacity 0.3s var(--ease),
-    transform 0.3s var(--ease);
+    opacity 0.25s var(--ease),
+    transform 0.25s var(--ease);
 }
 .links a.active {
   color: var(--ink);
@@ -190,43 +167,46 @@ onBeforeUnmount(() => {
   opacity: 1;
   transform: none;
 }
-/* the controls sit apart from the links, behind a fine divider */
-.tools {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding-left: clamp(8px, 1.4vw, 16px);
-  border-left: 1px solid var(--line);
-}
-.tools button {
+/* the motion control, set apart by a fine divider: shows the action it will take */
+.motion {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 7px;
-  min-width: 44px;
-  height: 40px;
-  padding: 0 12px;
+  height: 34px;
+  margin-left: 13px;
+  padding: 0 11px;
   border: 1px solid var(--line-strong);
   border-radius: var(--r-ctl);
-  background: color-mix(in srgb, var(--bg) 55%, var(--surface));
+  background: transparent;
   color: var(--ink-2);
-  font: 500 13.5px/1 var(--font-body);
+  font: 500 13px/1 var(--font-body);
   cursor: pointer;
   transition:
-    color 0.25s var(--ease),
-    border-color 0.25s var(--ease);
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.16s var(--ease);
 }
-.tools button:hover {
+.motion::before {
+  content: '';
+  position: absolute;
+  left: -9px;
+  top: 7px;
+  bottom: 7px;
+  width: 1px;
+  background: var(--line-strong);
+}
+.motion:hover {
   color: var(--ink);
-  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
 }
-/* motion paused: the control carries the amber edge */
-.tools button[aria-pressed='true'] {
+.motion:active {
+  transform: scale(0.97);
+}
+/* motion paused: the control carries the gold edge (selected state) */
+.motion[aria-pressed='true'] {
   border-color: color-mix(in srgb, var(--accent) 60%, transparent);
   color: var(--accent);
-}
-.menu-btn {
-  display: none;
 }
 @media (max-width: 600px) {
   .nav-wrap {
@@ -235,76 +215,29 @@ onBeforeUnmount(() => {
     padding: 0 10px;
   }
   .nav {
-    gap: 2px;
-    padding: 0 6px 0 8px;
+    height: 50px;
+    padding: 0 6px;
+    gap: 0;
   }
   .brand-name {
     display: none;
   }
   .links a {
-    padding: 12px 7px;
-    font-size: 14.5px;
+    padding: 0 8px;
   }
-  .menu-btn {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    margin-left: auto;
+  /* phones: the motion control keeps its label for screen readers, its icon on screen */
+  .motion {
+    width: 40px;
+    height: 40px;
+    margin-left: 9px;
     padding: 0;
-    border: 1px solid var(--line-strong);
-    border-radius: var(--r-ctl);
-    background: color-mix(in srgb, var(--bg) 55%, var(--surface));
-    color: var(--ink-2);
-    cursor: pointer;
+    justify-content: center;
   }
-  .menu-btn[aria-expanded='true'] {
-    border-color: var(--accent);
-    color: var(--ink);
+  .motion::before {
+    left: -6px;
   }
-  .dot {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-  }
-  /* the settings panel: labelled buttons in a column under the bar */
-  .tools {
-    position: absolute;
-    top: calc(100% + 8px);
-    right: 0;
+  .motion-text {
     display: none;
-    flex-direction: column;
-    border-left: 1px solid var(--line-strong);
-    align-items: stretch;
-    gap: 6px;
-    min-width: 200px;
-    padding: 8px;
-    border: 1px solid var(--line-strong);
-    border-radius: var(--r-card);
-    background: var(--surface);
-    box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.95);
-  }
-  .tools.open {
-    display: flex;
-  }
-  .tools button,
-  .tools :deep(button) {
-    justify-content: flex-start;
-    width: 100%;
-    height: 44px;
-    padding: 0 14px;
-  }
-  .tools :deep(.sound) {
-    flex-direction: column;
-  }
-  .nav .tools :deep(.label) {
-    display: inline;
   }
 }
 </style>

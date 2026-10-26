@@ -12,13 +12,17 @@
 export const tracks = {
   // Kept low so the music stays in the background. main is ~2 dB louder than the inspect track's full
   // section, so its volume sits proportionally lower and both land at the same level.
-  main: { src: 'audio/architecture-of-stillness.mp3', volume: 0.29 },
+  // main.start: where playback begins and every loop returns. The file opens with two lone hits that decay
+  // to near-silence (0–15.6 s, down to −37 dB); the music proper starts on the downbeat at 15.60 s.
+  main: { src: 'audio/architecture-of-stillness.mp3', volume: 0.29, start: 15.35 },
   inspect: { src: 'audio/across-the-glass-horizon.mp3', volume: 0.41 },
 }
 
 // Crossfade used when switching between the main soundtrack and an excerpt, or between excerpts.
 // Long and gentle on purpose: the music should drift into a project, never cut in.
 export const crossfadeSeconds = 2.6
+// Fade-in when the music starts from silence (page load, switch turned on): short, so the downbeat is heard.
+export const startFadeSeconds = 0.4
 
 // Sections of across-the-glass-horizon (158.6 s): ambient intro 0–25 · lighter rhythmic build 25–61
 // (a breath with few onsets at 53–61) · full section 61–128 (darker and steadier from ~100) · quiet outro.

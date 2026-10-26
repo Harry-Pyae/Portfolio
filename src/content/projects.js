@@ -1,16 +1,19 @@
 // Everything about the projects lives in this file: grouping, order, the hero selection and each case study.
 
 // Project groups, in display order. Groups without `section` are branches of the main project tree;
-// `section` places a group in its own part of the page ('explorations' = Current explorations,
-// 'roots' = Where it began, drawn into the footer roots). `quiet` draws a smaller, calmer branch.
-// `label` is the short category shown on hero cards.
+// `section` places a group in its own part of the page ('explorations' = In development,
+// 'roots' = Where it began, drawn into the footer roots). `lead` gives a group's cards slightly more
+// emphasis; `quiet` draws a smaller, calmer branch. `label` is the default kind of project shown on hero
+// cards, the centre of the project view and its header (a project's own `kind` overrides it).
+// `branch` names the group in the project view's explorer when it differs from `name` (groups that share
+// a branch are listed together there).
 export const categories = [
-  { name: 'Recent Personal Projects', label: 'Personal project' },
-  { name: 'Major Hackathon Projects', label: 'Major hackathon' },
-  { name: 'Smaller Hackathon Projects', label: 'Smaller hackathon' },
-  { name: 'Earlier Work', label: 'Earlier work', quiet: true },
-  { name: 'Current explorations', label: 'In development', section: 'explorations' },
-  { name: 'Where it began', label: 'Earliest work', section: 'roots', quiet: true },
+  { name: 'Recent projects', label: 'Personal project', lead: true },
+  { name: 'Hackathon projects', label: 'Hackathon project' },
+  { name: 'More hackathon projects', label: 'Hackathon project', branch: 'Hackathon projects' },
+  { name: 'Earlier work', label: 'Earlier work', quiet: true },
+  { name: 'In development', label: 'ClariFile suite', section: 'explorations' },
+  { name: 'Where it began', label: 'Earliest work', section: 'roots', quiet: true, branch: 'Roots' },
 ]
 
 // Projects (or suites) shown in the hero spiral, in carousel order. Every project is also on the page.
@@ -18,10 +21,13 @@ export const featured = ['bloodcare', 'internshipjp', 'clarifile', 'flavourwave'
 
 // Fields (paths are relative to /public):
 //   tagline       one sentence for cards; problem / solution: one or two sentences each
-//   highlights    a few verified features or implementation details
+//   highlights    a few verified features or implementation details; a ['Lead', 'text'] pair adds a lead phrase
 //   contribution  only where documented (omit otherwise; nothing is shown)
 //   context       scope, team or time constraints when known, or the project's place in the journey
-//   image         poster / cover screenshot; gallery: screenshots; icon: small logo (optional)
+//   kind          optional: what kind of project it is, when it differs from its group's label
+//   short         optional short name for compact links (cards keep the full title)
+//   glyph         monoline symbol for cards and the orbit (one of the set in ProjectArt.vue)
+//   image         poster / cover screenshot; gallery: screenshots; icon: the project's own logo (optional)
 //   video         walkthrough reel rendered from video/ with Remotion
 //   videoNote     optional one-line disclosure beside the media (sample data, presentation copy, screenshots)
 //   limitation    optional note shown beside the links (e.g. a live demo with a broken feature)
@@ -33,8 +39,9 @@ const shots = (id, n) => Array.from({ length: n }, (_, i) => `projects/${id}/${i
 export const projects = [
   {
     id: 'bloodcare',
+    glyph: 'drop',
     title: 'BloodCare',
-    category: 'Recent Personal Projects',
+    category: 'Recent projects',
     year: 2026,
     icon: 'projects/bloodcare/icon.svg',
     image: 'projects/bloodcare/2.jpg',
@@ -58,8 +65,10 @@ export const projects = [
   },
   {
     id: 'internshipjp',
+    glyph: 'cap',
+    kind: 'University team project',
     title: 'InternshipJP',
-    category: 'Recent Personal Projects',
+    category: 'Recent projects',
     year: 2026,
     icon: 'projects/internshipjp/icon.svg',
     image: 'projects/internshipjp/1.jpg',
@@ -71,21 +80,21 @@ export const projects = [
     solution:
       'Students upload certificates, an administrator verifies them before employers can see them, and match scores use verified skills only. Students, employers and administrators each get their own workspace.',
     highlights: [
-      'Certificate verification gates what employers see',
-      'Match scores built from verified skills, each explaining itself',
-      'AI assistant (Groq or Gemini chat) plus offline skill-gap and matching helpers',
-      'Spring Boot REST API with CSRF protection, TOTP or email-OTP sign-in and Flyway migrations',
+      ['Verified visibility', 'certificate verification gates what employers see.'],
+      ['Explainable matching', 'scores use verified skills and explain their results.'],
+      ['AI and offline assistance', 'Groq or Gemini chat, plus offline skill-gap and matching helpers.'],
+      ['Backend and account security', 'Spring Boot REST API, CSRF protection, TOTP or email OTP, and Flyway migrations.'],
     ],
-    contribution:
-      'Built most of it in a four-person team (CST-6108, University of Information Technology): project foundation, database, integration, shared components and the bilingual layer.',
-    context: 'Four-person university team project.',
+    contribution: 'Project foundation, database, integration, shared components and the bilingual layer.',
+    context: 'Four-person team project for CST-6108 at the University of Information Technology.',
     stack: ['React 19', 'Spring Boot 3.5', 'Java 24', 'MariaDB', 'Flyway', 'Bootstrap 5'],
     links: { demo: '', github: 'https://github.com/Harry-Pyae/InternshipJP' },
   },
   {
     id: 'flavourwave',
+    glyph: 'cup',
     title: 'FlavourWave',
-    category: 'Major Hackathon Projects',
+    category: 'Hackathon projects',
     year: 2023,
     icon: 'projects/flavourwave/icon.png',
     image: 'projects/flavourwave/1.jpg',
@@ -108,8 +117,10 @@ export const projects = [
   },
   {
     id: 'clickwise',
+    glyph: 'scan',
+    short: 'ClickWise',
     title: 'ClickWise AI Tools Hub',
-    category: 'Major Hackathon Projects',
+    category: 'Hackathon projects',
     year: 2026,
     icon: null,
     image: 'projects/clickwise/2.jpg',
@@ -133,8 +144,9 @@ export const projects = [
   },
   {
     id: 'astrocare',
+    glyph: 'pulse',
     title: 'AstroCare AI',
-    category: 'Smaller Hackathon Projects',
+    category: 'More hackathon projects',
     year: 2026,
     icon: 'projects/astrocare/icon.png',
     image: 'projects/astrocare/2.jpg',
@@ -156,8 +168,9 @@ export const projects = [
   },
   {
     id: 'chatledger',
+    glyph: 'chat',
     title: 'Chat to Ledger',
-    category: 'Smaller Hackathon Projects',
+    category: 'More hackathon projects',
     year: 2026,
     icon: null,
     image: 'projects/chatledger/2.jpg',
@@ -179,8 +192,9 @@ export const projects = [
   },
   {
     id: 'mymedia',
+    glyph: 'news',
     title: 'MyMedia',
-    category: 'Earlier Work',
+    category: 'Earlier work',
     year: 2022,
     icon: 'projects/mymedia/icon.png',
     image: 'projects/mymedia/1.jpg',
@@ -203,8 +217,9 @@ export const projects = [
   },
   {
     id: 'pizza',
+    glyph: 'slice',
     title: 'Pizza Order System',
-    category: 'Earlier Work',
+    category: 'Earlier work',
     year: 2022,
     icon: null,
     image: 'projects/pizza/1.jpg',
@@ -226,10 +241,11 @@ export const projects = [
   },
   {
     id: 'classifile',
+    glyph: 'sort',
     title: 'ClassiFile',
-    category: 'Current explorations',
+    category: 'In development',
     suite: 'clarifile',
-    status: 'Release candidate · Under active development',
+    status: 'Release candidate',
     year: 2026,
     icon: 'projects/classifile/icon.svg',
     image: 'projects/classifile/1.jpg',
@@ -248,14 +264,15 @@ export const projects = [
     ],
     contribution:
       'My own project, from idea to release candidate: deciding when it should file and when it should ask, an offline classifier on Python’s standard library, and the copy-only rules that keep originals untouched.',
-    context: 'Release candidate 1.0.0-rc.2 for a small pilot on Windows, English only for now. Part of the ClariFile suite.',
+    context: 'Release candidate 1.0.0-rc.2, under active development, for a small pilot on Windows; English only for now. Part of the ClariFile suite.',
     stack: ['Python 3.12', 'PySide6', 'PyMuPDF', 'Tesseract OCR', 'SQLite', 'PyInstaller'],
     links: { demo: '', github: 'https://github.com/ClariFile/ClassiFile' },
   },
   {
     id: 'summarease',
+    glyph: 'summary',
     title: 'SummarEase',
-    category: 'Current explorations',
+    category: 'In development',
     suite: 'clarifile',
     status: 'In development',
     year: 2026,
@@ -282,6 +299,7 @@ export const projects = [
   },
   {
     id: 'fhcp',
+    glyph: 'code',
     title: 'FHCP',
     category: 'Where it began',
     icon: null,
@@ -302,6 +320,7 @@ export const projects = [
   },
   {
     id: 'cinemagichub',
+    glyph: 'film',
     title: 'CineMagicHub',
     category: 'Where it began',
     year: 2023,
@@ -328,8 +347,10 @@ export const projects = [
 export const suites = [
   {
     id: 'clarifile',
+    glyph: 'folder',
     title: 'ClariFile',
-    category: 'Current explorations',
+    category: 'In development',
+    kind: 'Desktop suite',
     status: 'In development',
     icon: 'projects/clarifile/icon.svg',
     tagline: 'Companion desktop tools for organizing documents and creating source-linked summaries.',
@@ -366,6 +387,15 @@ Post::latest()->paginate(10);`,
 }
 
 const byId = (id) => projects.find((p) => p.id === id) ?? suites.find((x) => x.id === id)
+
+// Everything the project view can show, in page order (a suite sits before its apps).
+export const inspectable = categories.flatMap((c) => [...suites.filter((x) => x.category === c.name), ...projects.filter((p) => p.category === c.name)])
+// The project view's branches, in page order, each with its projects.
+const branchName = (c) => c.branch ?? c.name
+export const branchOf = (p) => branchName(categories.find((c) => c.name === p.category))
+export const branches = [...new Set(categories.map(branchName))]
+  .map((name) => ({ name, items: inspectable.filter((p) => branchOf(p) === name) }))
+  .filter((b) => b.items.length)
 // Each project's full case study on the showcase site, by its route there.
 const SHOWCASE = 'https://harry-project-showcase.vercel.app/projects/'
 const caseStudies = {
@@ -376,5 +406,9 @@ const caseStudies = {
 export const caseStudyOf = (p) => (caseStudies[p.id] ? SHOWCASE + caseStudies[p.id] : '')
 export const featuredProjects = featured.map(byId).filter(Boolean)
 export const categoryOf = (p) => categories.find((c) => c.name === p.category)
+// What kind of project it is: its own `kind`, else its group's label.
+export const kindOf = (p) => p.kind ?? categoryOf(p)?.label ?? ''
+// Highlights as { lead, text }: a plain string has no lead phrase.
+export const highlightsOf = (p) => (p.highlights ?? []).map((h) => (Array.isArray(h) ? { lead: h[0], text: h[1] } : { lead: '', text: h }))
 export const appsOf = (suite) => suite.apps.map(byId)
 export const inGroup = (name) => projects.filter((p) => p.category === name)

@@ -48,20 +48,20 @@ export const profile = {
       { group: 'Backend & environment', items: ['Laravel', 'PHP', 'XAMPP', 'MySQL'] },
     ],
     general: ['Tailwind CSS', 'Bootstrap', 'Docker', 'Java'],
-    // Technologies I'm currently deepening. `note` says where they show up; `projects` links them.
+    // Technologies I'm currently deepening. `note` says how I'm using it; `projects` links where it shows up.
     exploring: [
-      { name: 'Python', note: 'Building ClassiFile and SummarEase with it.', projects: ['classifile', 'summarease'] },
-      { name: 'PostgreSQL', note: 'Through Supabase in ClickWise and Chat to Ledger.', projects: ['clickwise', 'chatledger'] },
-      { name: 'React', note: 'Part of the stack in InternshipJP, Chat to Ledger and AstroCare AI.', projects: ['internshipjp', 'chatledger', 'astrocare'] },
-      { name: 'Next.js', note: 'Part of the stack in ClickWise and FlavourWave.', projects: ['clickwise', 'flavourwave'] },
+      { name: 'Python', note: 'Building two offline desktop apps with it.', projects: ['classifile', 'summarease'] },
+      { name: 'PostgreSQL', note: 'Through Supabase, for accounts, history and saved orders.', projects: ['clickwise', 'chatledger'] },
+      { name: 'React', note: 'Front ends for a team project and two hackathon builds.', projects: ['internshipjp', 'chatledger', 'astrocare'] },
+      { name: 'Next.js', note: 'Front ends for two hackathon projects.', projects: ['clickwise', 'flavourwave'] },
     ],
   },
 
   // Beyond the Code: a few things I enjoy. `icon` picks one of the line drawings in InterestsSection.vue.
   interests: [
-    { icon: 'chess', title: 'Chess', text: 'I enjoy chess: the planning, the trade-offs, and discovering what I missed after a game.' },
-    { icon: 'story', title: 'Story-driven games', text: 'I’m drawn to games with memorable stories, characters, and choices that stay with you after you stop playing.' },
-    { icon: 'cup', title: 'Cappuccino', text: 'A good cappuccino is always a welcome part of the day.' },
+    { icon: 'chess', title: 'Chess', text: 'The planning, the trade-offs, and finding what I missed after a game.' },
+    { icon: 'story', title: 'Story-driven games', text: 'Memorable stories, characters and choices that stay with you.' },
+    { icon: 'cup', title: 'Cappuccino', text: 'Always a welcome part of the day.' },
   ],
 
   contactLede: 'Have a role, a project, or an idea in mind? I’d be happy to talk.',

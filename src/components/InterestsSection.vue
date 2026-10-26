@@ -1,8 +1,8 @@
 <script setup>
 import { profile } from '../content/profile.js'
 
-// Beyond the Code: a few things I enjoy. Static text with small original line drawings; nothing here
-// is clickable, so there are no hover states or button shapes.
+// Beyond the Code: a few things I enjoy, as one quiet row beside the heading. Static text with small
+// original line drawings; nothing here is clickable, so there are no hover states or button shapes.
 const ICONS = {
   // knight: mane, muzzle, eye and a base
   chess: 'M8 20h9M9 20v-2.5c0-2 1.5-3 2-4.5l-3.2.8L7 12l4-5.5L10.5 4l2.5 1.2c3.5 1 5 4 4.5 8.3L17 18v2M13.5 9.2h.01',
@@ -53,7 +53,8 @@ const ICONS = {
 }
 .list {
   display: grid;
-  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+  gap: 18px 28px;
   margin: 0;
   padding: 4px 0 0;
   list-style: none;
@@ -64,9 +65,8 @@ const ICONS = {
 }
 .list li {
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
-  gap: 14px;
-  align-items: start;
+  gap: 10px;
+  align-content: start;
 }
 .ico {
   width: 30px;
@@ -80,8 +80,7 @@ const ICONS = {
 }
 .text {
   display: grid;
-  gap: 2px;
-  max-width: 56ch;
+  gap: 4px;
 }
 .name {
   color: var(--ink);
@@ -89,8 +88,8 @@ const ICONS = {
 }
 .line {
   color: var(--ink-2);
-  font-size: 15px;
-  line-height: 1.6;
+  font-size: 14.5px;
+  line-height: 1.55;
 }
 
 @media (max-width: 860px) {
@@ -101,6 +100,11 @@ const ICONS = {
   }
   .lane {
     display: none;
+  }
+  /* one per row beside its icon, as a short list */
+  .list li {
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 14px;
   }
 }
 </style>

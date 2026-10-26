@@ -47,7 +47,7 @@ defineEmits(['open'])
   padding: 13px 14px 14px;
   border: 1px solid var(--line-strong);
   border-radius: var(--r-card);
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  background: color-mix(in srgb, var(--surface) 97%, transparent); /* strands behind never show through text */
   box-shadow: 0 10px 24px -18px rgba(0, 0, 0, 0.9);
   color: var(--ink);
   font: inherit;
@@ -57,22 +57,22 @@ defineEmits(['open'])
     transform 0.3s var(--ease),
     border-color 0.3s var(--ease);
 }
-/* Lift shadow and edge glow are pre-rendered; only opacity changes. */
+/* Lift shadow is pre-rendered; only opacity changes. No glow: the border and the branch carry the state. */
 .node::before {
   content: '';
   position: absolute;
   inset: -1px;
   border-radius: inherit;
-  box-shadow:
-    0 18px 36px -18px rgba(0, 0, 0, 0.95),
-    0 0 18px -10px color-mix(in srgb, var(--accent) 35%, transparent);
+  box-shadow: 0 18px 36px -18px rgba(0, 0, 0, 0.95);
   opacity: 0;
   transition: opacity 0.3s var(--ease);
   pointer-events: none;
 }
+/* Lit (hover, keyboard focus, or its project lit elsewhere): the border brightens with its branch.
+   Text stays still; only the hero carousel zooms its cards (it sets --node-zoom). */
 .node.lit,
 .node:focus-visible {
-  transform: scale(var(--node-zoom, 1.04));
+  transform: scale(var(--node-zoom, 1));
   border-color: color-mix(in srgb, var(--accent) 60%, transparent);
 }
 .node.lit::before,
@@ -81,7 +81,7 @@ defineEmits(['open'])
 }
 @media (hover: hover) {
   .node:hover {
-    transform: scale(var(--node-zoom, 1.04));
+    transform: scale(var(--node-zoom, 1));
     border-color: color-mix(in srgb, var(--accent) 60%, transparent);
   }
   .node:hover::before {
@@ -104,6 +104,15 @@ defineEmits(['open'])
   width: 32px;
   height: 32px;
   margin-top: 1px;
+}
+.node.lit .sym,
+.node:focus-visible .sym {
+  color: var(--ink);
+}
+@media (hover: hover) {
+  .node:hover .sym {
+    color: var(--ink);
+  }
 }
 .body {
   display: flex;

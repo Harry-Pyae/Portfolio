@@ -34,7 +34,7 @@ export const projectsVisible = ref(true)
 const mq = matchMedia('(max-width: 860px)')
 export const narrow = ref(mq.matches)
 mq.addEventListener('change', (e) => (narrow.value = e.matches))
-// Set once the Current explorations section first comes into view (its branches grow in once).
+// Set once the In development section first comes into view (its branches grow in once).
 export const exploreShown = ref(false)
 
 // Opening or leaving a project sends light along its branch back toward the trunk (inbound pulse).

@@ -67,6 +67,10 @@ const channels = profile.contact.filter((c) => c.href)
 </template>
 
 <style scoped>
+/* Beyond the Code is a short pause, so Contact follows it at the subsection rhythm. */
+#contact {
+  padding-top: var(--sub-gap);
+}
 .contact {
   position: relative;
   display: grid;

@@ -7,18 +7,17 @@ import ProjectNode from './ProjectNode.vue'
 
 // Layout of the branching project section. The trunk passing through it, the branches to each card
 // and the particles on them are drawn by TreeTrunk from these elements' measured positions
-// (.trunk-anchor, .group-label, and each card's .port).
-// Hand-tuned unevenness, so the tree grows rather than stacks. Per group: SHIFT moves the group (and the
-// trunk through its label) left or right, -1..1 of the shift range; LABEL_GAP is the space above its label.
-// Per card in tree order: REACH is its distance from the trunk (px), GAP its vertical offset from the
-// card above (px; negative tucks it alongside).
-const SHIFT = [-0.5, 0.65, -0.8, 0.45]
-const LABEL_GAP = [8, 116, 100, 124]
-const REACH = [64, 104, 52, 118, 88, 58, 72, 96]
-const GAP = [0, -6, 0, -40, 0, 14, 0, -22]
+// (.trunk-anchor, each heading's .junction, and each card's .port).
+// Within a group, cards sit on two alignment guides, one either side of the trunk (--reach).
+// The groups themselves sit a little left or right of centre, so the trunk takes a few broad bends
+// through the section instead of running straight: it leans left through the first group, sweeps right
+// for the next two, and eases back to the centre for In development. SHIFT is each group's place in
+// the shift range (−1…1), REACH its trunk-to-card distance; both repeat if groups are added.
+const SHIFT = [-0.32, 0.44, 0.32, 0.02]
+const REACH = [64, 72, 62, 58]
 
 // Categories become branch groups on the trunk; cards alternate sides within each group.
-// Quiet groups (Earlier Work) get a smaller, calmer branch and compact cards.
+// Lead groups (recent work) get slightly stronger cards; quiet groups (earlier work) calmer ones.
 const groups = categories
   .filter((c) => !c.section)
   .map((c) => ({ ...c, items: projects.filter((p) => p.category === c.name) }))
@@ -26,12 +25,9 @@ const groups = categories
 let n = 0
 groups.forEach((g, gi) => {
   g.shift = SHIFT[gi % SHIFT.length]
-  g.labelGap = LABEL_GAP[gi % LABEL_GAP.length]
-  g.items = g.items.map((p, k) => {
-    const it = { p, i: n, side: k % 2 ? 'right' : 'left', reach: REACH[n % REACH.length], gap: k ? GAP[n % GAP.length] : 0 }
-    n++
-    return it
-  })
+  g.reach = REACH[gi % REACH.length]
+  g.headSide = g.shift > 0.2 ? 'left' : 'right' // the heading takes the side with room beside the trunk
+  g.items = g.items.map((p, k) => ({ p, i: n++, side: k % 2 ? 'right' : 'left' }))
 })
 
 const section = ref(null)
@@ -74,10 +70,13 @@ onBeforeUnmount(() => {
         v-for="(g, gi) in groups"
         :key="g.name"
         class="group"
-        :class="{ quiet: g.quiet }"
-        :style="{ '--shift': g.shift, '--label-gap': `${g.labelGap}px` }"
+        :class="{ quiet: g.quiet, lead: g.lead }"
+        :style="{ '--shift': g.shift, '--reach': `${g.reach}px` }"
       >
-        <h3 class="group-label" :data-group="gi">{{ g.name }}</h3>
+        <!-- a quiet heading beside a gold junction on the trunk; not interactive, so not boxed -->
+        <h3 class="group-label" :class="`side-${g.headSide}`">
+          <span class="junction" :data-group="gi" aria-hidden="true"></span>{{ g.name }}
+        </h3>
         <ol class="nodes">
           <li
             v-for="it in g.items"
@@ -86,7 +85,7 @@ onBeforeUnmount(() => {
             :class="it.side"
             :data-project="it.p.id"
             :data-group="gi"
-            :style="{ '--i': it.i, '--reach': `${it.reach}px`, '--gap': `${it.gap}px` }"
+            :style="{ '--i': it.i }"
             @pointerenter="lightOn($event, it.p.id)"
             @pointerleave="lightOff(it.p.id)"
             @focusin="focusIn($event, it.p.id)"
@@ -118,7 +117,8 @@ onBeforeUnmount(() => {
 
 /* ---------- layout: alternating sides of a central trunk; a side spine on small screens ---------- */
 .tree {
-  --node-w: 256px;
+  --node-w: 272px;
+  --reach: 64px; /* both guides: the gap between the trunk line and the cards' near edges */
   position: relative;
   padding-bottom: 24px;
 }
@@ -128,27 +128,53 @@ onBeforeUnmount(() => {
   left: 50%;
 }
 .group {
-  /* the group (and the trunk through its label) sits a little left or right of centre */
-  --shift-px: calc(var(--shift, 0) * min(4vw, 56px));
+  /* the group (and the trunk through it) sits a little left or right of centre: padding on one side moves
+     its centre line without the box ever reaching past the page */
+  --shift-px: calc(var(--shift, 0) * min(12vw, 170px));
   position: relative;
-  left: var(--shift-px);
   display: flex;
   flex-direction: column;
+  padding-left: max(0px, calc(2 * var(--shift-px)));
+  padding-right: max(0px, calc(-2 * var(--shift-px)));
 }
+/* The heading starts at the trunk line: its gold junction sits on the trunk, the text clear beside it. */
 .group-label {
-  align-self: center;
-  margin: var(--label-gap, 48px) 0 34px;
-  padding: 10px 18px;
-  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
-  border-radius: 6px;
-  background: var(--surface);
-  box-shadow: 0 0 0 6px var(--bg); /* a clear ring of space where the trunk passes behind the label */
-  color: var(--ink);
-  font: 600 15px/1.2 var(--font-head);
+  position: relative;
+  align-self: flex-start;
+  margin: 96px 0 26px 50%;
+  padding-left: 44px; /* past the trunk's strands */
+  color: var(--ink-2);
+  font: 600 15px/1.3 var(--font-head);
   letter-spacing: -0.005em;
 }
 .group:first-child .group-label {
   margin-top: 8px;
+}
+.junction {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 11px;
+  height: 11px;
+  border: 1.5px solid var(--accent);
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg) 70%, transparent);
+  transform: translate(-50%, -50%);
+}
+.group-label.side-left {
+  align-self: flex-end;
+  margin-left: 0;
+  margin-right: 50%;
+  padding-left: 0;
+  padding-right: 44px;
+  text-align: right;
+}
+.side-left .junction {
+  left: 100%;
+}
+.lead .group-label {
+  color: var(--ink);
 }
 .nodes {
   display: flex;
@@ -159,8 +185,7 @@ onBeforeUnmount(() => {
 }
 .node-wrap {
   position: relative;
-  /* narrower only when the shifted group would push the card past the page edge */
-  width: min(var(--node-w), calc(50% - var(--reach) - 4px - max(var(--shift-px), -1 * var(--shift-px))));
+  width: min(var(--node-w), calc(50% - var(--reach) - 4px));
   transition:
     opacity 0.6s var(--ease),
     transform 0.6s var(--ease);
@@ -176,21 +201,30 @@ onBeforeUnmount(() => {
 }
 /* Alternate cards tuck alongside each other; same-side cards never overlap. */
 .node-wrap + .node-wrap {
-  margin-top: calc(-28px + var(--gap, 0px));
+  margin-top: -36px;
 }
 .pending .node-wrap {
   opacity: 0;
   transform: translateY(16px);
 }
 
-/* Earlier Work: a smaller, calmer branch that is still easy to open. */
+/* Recent work: the same card with a slightly warmer edge and a larger title. */
+.lead :deep(.node) {
+  border-color: color-mix(in srgb, var(--accent) 22%, var(--line-strong));
+}
+.lead :deep(.title) {
+  font-size: 17px;
+}
+/* Earlier work: a smaller, calmer branch that is still easy to open. */
 .quiet .group-label {
-  border-color: var(--line-strong);
-  color: var(--ink-2);
+  color: var(--ink-3);
   font-size: 14px;
 }
+.quiet .junction {
+  border-color: var(--accent-muted);
+}
 .quiet .node-wrap {
-  --node-w: 228px;
+  --node-w: 240px;
 }
 .quiet :deep(.node) {
   padding: 11px 12px 12px;
@@ -214,11 +248,17 @@ onBeforeUnmount(() => {
     left: 18px;
   }
   .group {
-    left: 0; /* the side spine stays straight */
+    padding: 0; /* the side spine stays straight */
   }
-  .group-label {
+  .group-label,
+  .group-label.side-left {
     align-self: flex-start;
-    margin: 60px 0 18px 40px;
+    margin: 48px 0 16px 18px; /* the junction sits on the side spine */
+    padding: 0 0 0 30px;
+    text-align: left;
+  }
+  .side-left .junction {
+    left: 0;
   }
   .group:first-child .group-label {
     margin-top: 4px;

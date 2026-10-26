@@ -7,6 +7,7 @@ npm install
 npm run dev       # local dev server
 npm run build     # static build in dist/
 npm run preview   # serve dist/ locally
+npm run check     # project view geometry: no overlaps through a full rotation at common screen sizes, paging, pause rules, branch-change interruptions
 ```
 
 ## Editing content
@@ -22,7 +23,7 @@ npm run preview   # serve dist/ locally
 - **Portrait:** put a photo in `public/` (e.g. `public/harry.jpg`) and set `portrait: 'harry.jpg'`.
 - **Contact:** fill `href` (`mailto:` or `https://`) and `text`. Entries without an `href` are hidden. There is deliberately no contact form.
 - **Projects** (`src/content/projects.js`):
-  - `categories`: the groups in display order (Recent Personal Projects, Major Hackathon Projects, Smaller Hackathon Projects, Earlier Work, then Current explorations and Where it began). Groups without `section` are branches of the project tree; `section: 'explorations'` and `section: 'roots'` place a group in its own part of the page. `quiet: true` gives a group a smaller, calmer branch; `label` is the short category shown on hero cards.
+  - `categories`: the groups in display order (Recent projects, Hackathon projects, More hackathon projects, Earlier work, then In development and Where it began). Groups without `section` are branches of the project tree; `section: 'explorations'` and `section: 'roots'` place a group in its own part of the page. `lead: true` gives a group's cards slightly more emphasis and `quiet: true` a smaller, calmer branch; `label` is the default kind of project shown on hero cards and in the project view (a project's own `kind` overrides it).
   - `featured`: the project or suite ids shown in the hero spiral, in order (seven by default). Every project is also on the page, in the order of the `projects` array within each group.
   - `suites`: a suite (ClariFile) groups related apps; it is not a project itself. `apps` lists its app ids, `status` its development status, `integration` how the apps relate as currently planned. Its card opens an overview that leads to each app; an app names its suite with `suite`.
   - `story`: the "Getting pagination right" engineering story (`year`, `label`, `title`, `teaser`, short `parts`, an illustrative `code` sample). With `project: null` it is a fixed card in About whose full text opens in an overlay; set `project` to an id to show it inside that project instead.
@@ -36,23 +37,23 @@ npm run preview   # serve dist/ locally
 src/
   content/              editable data (profile, projects, motion)
   state.js              shared UI state: motion on/off, reduced motion, theme, open project, hero visibility
-  audio.js              the one soundtrack controller: main track, project excerpts (sample-accurate loops), crossfades, mute
+  audio.js              the one soundtrack controller: main track, project excerpts (sample-accurate loops), crossfades
   tree.js               shared tree model: fibres, hero exit (join geometry), flow timing, lit project
   wisps.js              textured nebula behind the carousel, generated once and cached
   reveal.js             one-time section entrances + off-screen pause
   components/
     SkyBackdrop.vue      fixed sky: two star layers with scroll parallax, a few twinkles and dust
-    SiteNav.vue          inset sticky navbar: active-section indicator, theme toggle, motion toggle
+    SiteNav.vue          compact floating navbar: identity, section links with an active mark, motion toggle (one row down to phones)
     HeroIntro.vue        portrait, name, intro, actions
     SpiralShowcase.vue   carousel + upper tree (the single requestAnimationFrame loop), side arrows
     TreeTrunk.vue        the continuous trunk below the hero, all branches, footer roots
-    ProjectTree.vue      branching project layout (static cards)
-    ExplorationsSection.vue  Current explorations: the ClariFile suite node, its two apps, a static "Planned integration" connector
+    ProjectTree.vue      branching project layout (static cards); SHIFT / REACH set each group's place left or right of centre, so the trunk takes a few broad bends
+    ExplorationsSection.vue  In development: the ClariFile suite node, its two apps, a static "Planned integration" connector
     BeganSection.vue     Where it began: the earliest projects, set among the footer roots
     InterestsSection.vue Beyond the Code: interests with small line drawings (not interactive)
     ProjectNode.vue      compact project card: one button with symbol, title, sentence (+ category in the hero), connection point
-    ProjectInspect.vue   in-page project inspection: the selected project glowing at the centre, the others orbiting it; case study (reel, screenshots, problem/solution, highlights, links); #/project/<id> history entries
-    SoundControls.vue    soundtrack play/pause, mute and "Enable soundtrack", shared by the navbar and the inspection scene
+    ProjectInspect.vue   in-page project inspection: a branch explorer (branch labels on a spiral, the active branch's projects on a ring around the selected one); case study (reel, captioned media with a screenshot viewer, problem/solution, contribution, highlights, links); #/project/<id> history entries
+    MusicPill.vue        music button: turns the theme on and off; floats bottom-right on the page, sits in the project view's header
     ProjectArt.vue       screenshot, or a placeholder / small glyph with an orbit line
     AboutSection.vue     identity in an orbital frame, first-person narrative, milestones branch
     SkillsConstellation.vue  skills as small constellations, plus Currently exploring
@@ -76,7 +77,7 @@ Cards ride a looping track measured in "slots". The visible column is the first 
 - Roots: in Where it began the trunk loosens (its radius widens) and each strand splits off at a staggered depth, on its front side, continuing as a primary root with the strand's own position, direction, colour and width, so there is no seam. Primaries thicken briefly, then taper through parent-to-child forks into fine rootlets; two reach the earliest-project cards, the rest drop from a wide root collar and level out as they spread across the page. Light runs from the trunk outward and down each root once, one root after another, the first time the section comes into view; hovering an earliest-project card lights its root. All positions use layout offsets, which ignore hover and entrance transforms. Geometry is rebuilt only when the page resizes, the hero changes, or fonts load.
 - Light dashes flow up the main strands in px units on one shared timeline, so the pattern runs unbroken across the hero/page join. Branch particles, pulses and twinkles pause with the motion toggle, reduced motion, or when their section is off-screen.
 - On screens ≤ 860px the trunk becomes a spine beside the content; sections inset their content to keep that lane clear.
-- Project inspection: below 1000px the orbit becomes a band above the case study; side by side, the case study takes at most 56% of the width, and a narrow orbit stage tilts the ring more open so it stays visible between the cards.
+- Project inspection: any desktop window shows the explorer beside the case study (which takes at most 56% of the width); a column smaller than its design size (515×620) scales the whole explorer down to fit. Below 1000×520 it becomes two rows above the case study (the branches, then that branch's projects) and the whole scene scrolls as one page.
 
 ## Background
 
@@ -103,6 +104,6 @@ npm run render -- bloodcare pizza   # or just some
 
 ## Project inspection and soundtrack
 
-Selecting a project opens an inspection scene over the page without leaving it: the portfolio stays mounted underneath (scroll position, carousel phase, tree), and each project gets a `#/project/<id>` history entry, so Back/Forward and direct links work. The selected project rests at the centre, glowing; the other projects orbit it slowly (right, across the front, left, behind, back to the right). Previous/Next (buttons or arrow keys) switch projects; Escape or Return goes back. With reduced motion or the motion control paused, transitions become simple fades.
+Selecting a project opens an inspection scene over the page without leaving it: the portfolio stays mounted underneath (scroll position, carousel phase, tree), and each project gets a `#/project/<id>` history entry, so Back/Forward and direct links work. On the left is a two-level explorer. The branches (from `categories`: groups can share a branch through `branch`) stand as labels on a spiral that grows from Roots at the bottom to the newest work at the top, each with its project count. Only the active branch's projects orbit the selected one, clockwise, on a ring sized to stay clear of it; a branch larger than the ring holds pages through its projects. Each branch remembers its last project during a visit. The geometry lives in `src/orbit.js`, checked by `npm run check`. The ring holds still under the pointer or keyboard focus, and the Pause motion control (shared with the navbar) stops it outright. Previous/Next (buttons or arrow keys) step through every project in page order, switching branch as they go; Escape or Return goes back. Changing branch (a label, Previous/Next or the arrow keys) lights the new label and node at once, draws the new connection from its node in to the ring behind a short bright leading edge while the old one fades, and crossfades the centre card and the project set in place, in about half a second. The case study switches straight away, the ring keeps its rotation, and a quicker change takes over from wherever the last one was (never more than two connections or two centre cards at once). Fading cards take no clicks or focus. In short desktop windows (up to 760px tall) the preview is lower, with the whole image letterboxed, and the project's name stays in the header. The scene's music button sits in that header at every size. With reduced motion or the motion control paused, transitions become simple fades.
 
-The soundtrack is handled by `src/audio.js`: `Architecture of Stillness` plays while browsing (its position is kept while a project is open), and each project plays its own excerpt of `Across the Glass Horizon`, looped and crossfaded. If the browser blocks autoplay, an "Enable Music" control appears; play/pause and mute are remembered. Audio and visual motion are separate controls. The excerpt boundaries in `audioCues.js` were chosen by signal analysis (see `notes/soundtrack.md`) and are worth a listen to fine-tune.
+The soundtrack is handled by `src/audio.js`: `Architecture of Stillness` plays while browsing (its position is kept while a project is open), and each project plays its own excerpt of `Across the Glass Horizon`, looped and crossfaded. It starts on every load; if the browser blocks autoplay, it starts on the visitor's first tap or key. The round music button in the bottom-right corner turns it on or off. Audio and visual motion are separate controls. The excerpt boundaries in `audioCues.js` were chosen by signal analysis (see `notes/soundtrack.md`) and are worth a listen to fine-tune.

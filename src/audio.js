@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-import { tracks, cues, crossfadeSeconds } from './content/audioCues.js'
+import { tracks, cues, crossfadeSeconds, startFadeSeconds } from './content/audioCues.js'
 
 /*
  * The one soundtrack controller. The main track is a looping media element (so its playback position
@@ -7,25 +7,10 @@ import { tracks, cues, crossfadeSeconds } from './content/audioCues.js'
  * decoded inspection track and looped sample-accurately; switches use equal-power crossfades. Every fade cancels the one before
  * it, so rapid switching always ends on the current destination. Missing files only hide the controls.
  *
- * sound.state: 'idle' (not started) | 'blocked' (autoplay refused; waits for a click) | 'playing' |
- *              'paused' (the visitor turned it off) | 'unavailable' (no Web Audio or a missing file)
+ * sound.state: 'idle' (not started) | 'blocked' (autoplay refused; starts on the first tap or key) |
+ *              'playing' | 'paused' (the visitor turned it off) | 'unavailable' (no Web Audio or a missing file)
  */
-export const sound = reactive({ state: 'idle', muted: read('portfolio-muted') === '1' })
-
-function read(key) {
-  try {
-    return localStorage.getItem(key)
-  } catch {
-    return null
-  }
-}
-function write(key, value) {
-  try {
-    localStorage.setItem(key, value)
-  } catch {
-    /* not remembered: the control still works for this visit */
-  }
-}
+export const sound = reactive({ state: 'idle' })
 
 const url = (src) => import.meta.env.BASE_URL + src
 let ctx = null
@@ -48,13 +33,16 @@ function setup() {
   }
   ctx = new AC()
   master = ctx.createGain()
-  master.gain.value = sound.muted ? 0 : 1
   master.connect(ctx.destination)
   mainEl = new Audio()
-  mainEl.loop = true
   mainEl.preload = 'auto'
-  mainEl.src = url(tracks.main.src)
+  mainEl.src = `${url(tracks.main.src)}#t=${tracks.main.start}` // skip the near-silent opening
   mainEl.addEventListener('error', unavailable)
+  // loops back to the start point, not to 0, so the quiet opening never comes round again
+  mainEl.addEventListener('ended', () => {
+    mainEl.currentTime = tracks.main.start
+    mainEl.play().catch(() => {})
+  })
   mainGain = ctx.createGain()
   mainGain.gain.value = 0
   ctx.createMediaElementSource(mainEl).connect(mainGain).connect(master)
@@ -130,6 +118,7 @@ function fadeOutVoices(seconds) {
 function apply() {
   if (sound.state !== 'playing') return
   const X = crossfadeSeconds
+  const fromSilence = !voices.length && mainGain.gain.value < 0.01 // nothing to crossfade with
   clearTimeout(pauseTimer)
   fadeOutVoices()
   const id = dest
@@ -141,7 +130,7 @@ function apply() {
   }
   // main portfolio (or an excerpt that isn't ready / failed): the main track plays
   if (mainEl.paused) mainEl.play().catch(() => {})
-  fade(mainGain.gain, tracks.main.volume, X)
+  fade(mainGain.gain, tracks.main.volume, fromSilence ? startFadeSeconds : X)
   if (id && cues[id] && buffer == null) loadBuffer().then(() => dest === id && buffer && apply())
 }
 
@@ -150,10 +139,6 @@ export async function initSound() {
   // A missing file only hides the controls (one small request to find out).
   const ok = await fetch(url(tracks.main.src), { method: 'HEAD' }).then((r) => r.ok, () => false)
   if (!ok) return unavailable()
-  if (read('portfolio-sound') === 'off') {
-    sound.state = 'paused'
-    return
-  }
   if (!setup()) return
   try {
     await mainEl.play()
@@ -168,25 +153,30 @@ export async function initSound() {
     idle(loadBuffer)
   } else {
     mainEl.pause()
-    mainEl.removeAttribute('src') // no download until the visitor asks for the music
-    mainEl.load()
-    sound.state = 'blocked' // one discreet "Enable soundtrack" control; never retried on our own
+    sound.state = 'blocked'
+    // Browsers only allow sound after a gesture: the visitor's first tap or key starts it. A tap on the
+    // music switch is left to the switch itself, which would otherwise start it and turn it straight off.
+    const start = (e) => {
+      if (sound.state !== 'blocked') return gestures.forEach((t) => removeEventListener(t, start, true))
+      if (!e.target.closest?.('[data-sound-switch]')) playSound()
+    }
+    gestures.forEach((t) => addEventListener(t, start, true))
   }
 }
+// The events that count as a user gesture for autoplay (touch only from pointerup, mouse from pointerdown).
+const gestures = ['pointerdown', 'pointerup', 'keydown']
 const idle = (fn) => (window.requestIdleCallback ?? ((cb) => setTimeout(cb, 1500)))(fn)
 
 // Visitor action (a click): start or resume.
 export async function playSound() {
   if (!setup() || sound.state === 'unavailable') return
-  write('portfolio-sound', 'on')
-  if (!mainEl.getAttribute('src')) mainEl.src = url(tracks.main.src)
   try {
     await ctx.resume()
     await mainEl.play()
   } catch (e) {
     if (e?.name === 'NotSupportedError') return unavailable()
   }
-  if (sound.state === 'unavailable') return
+  if (sound.state === 'unavailable' || mainEl.paused) return // not a gesture the browser accepts
   sound.state = 'playing'
   if (dest && cues[dest] && buffer == null) await loadBuffer()
   apply()
@@ -195,7 +185,6 @@ export async function playSound() {
 
 export function pauseSound() {
   if (sound.state !== 'playing') return
-  write('portfolio-sound', 'off')
   sound.state = 'paused'
   const X = 0.35
   fadeOutVoices(X)
@@ -205,12 +194,6 @@ export function pauseSound() {
 }
 
 export const toggleSound = () => (sound.state === 'playing' ? pauseSound() : playSound())
-
-export function toggleMute() {
-  sound.muted = !sound.muted
-  write('portfolio-muted', sound.muted ? '1' : '0')
-  if (ctx) fade(master.gain, sound.muted ? 0 : 1, 0.25)
-}
 
 // Where the visitor is: null = the portfolio, otherwise the inspected project or suite id.
 export function soundTo(id) {
