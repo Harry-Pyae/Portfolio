@@ -1,5 +1,7 @@
 # Harry · Portfolio
 
+Live: **https://harry-portfolio-tau.vercel.app/** (Vercel; every push to `main` deploys it)
+
 Dark portfolio built as one continuous cosmic tree: the hero's spiral of light (with the project carousel orbiting it) continues down the page as a twisting trunk, branches out to the projects, the ClariFile suite, About, Skills and Contact, and opens into roots in the footer, where the earliest projects sit. The look is a calm deep-space telemetry interface: navy-slate surfaces, one warm amber accent for selected controls, active navigation and the points where branches meet content, a cool teal tree and orbit, Inter throughout with monospace only for small metadata, and a quiet starfield. There is one permanent palette (no theme switch). Vue 3 + Vite, frontend only. Builds to static files that can be hosted anywhere (GitHub Pages, Netlify, Vercel, any web server or sub-path).
 
 ```bash
