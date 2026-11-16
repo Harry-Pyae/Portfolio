@@ -239,6 +239,7 @@ const clusterIndex = groups.map((g) => g.clusters.map(() => n++))
 }
 .cluster {
   position: relative;
+  container-type: inline-size; /* rows below split by the cluster's own width, not the screen's */
 }
 .links {
   position: absolute;
@@ -308,6 +309,25 @@ const clusterIndex = groups.map((g) => g.clusters.map(() => n++))
 .exploring > .tree-port {
   left: 100%;
 }
+/* A four-item row splits 2 + 2 only when its cluster is narrower than the row itself; otherwise it would
+   run past its column (and off the page between 860 and 1000px wide). Natural row widths at the current
+   labels: General 337px, Backend 278px. Re-measure if the skills change. */
+@container (max-width: 340px) {
+  .general .stars-list:has(> li:nth-child(4):last-child) {
+    grid-template-columns: repeat(2, max-content);
+  }
+}
+@container (max-width: 285px) {
+  .core .stars-list:has(> li:nth-child(4):last-child) {
+    grid-template-columns: repeat(2, max-content);
+  }
+}
+/* A three-wide row (Frontend: 233px) gets a little tighter instead of leaving one star alone on a third row. */
+@container (max-width: 240px) {
+  .stars-list {
+    column-gap: 20px;
+  }
+}
 @media (max-width: 860px) {
   .skills {
     grid-template-columns: minmax(0, 1fr);
@@ -321,10 +341,6 @@ const clusterIndex = groups.map((g) => g.clusters.map(() => n++))
   .sky-group.exploring {
     grid-row: auto;
     grid-column: 1;
-  }
-  /* phones: a four-item row would run off the edge, so it splits 2 + 2 */
-  .stars-list:has(> li:nth-child(4):last-child) {
-    grid-template-columns: repeat(2, max-content);
   }
   .explore-list {
     grid-template-columns: minmax(0, 1fr);
