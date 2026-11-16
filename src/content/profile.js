@@ -52,7 +52,7 @@ export const profile = {
       // each certificate's event project, in the same order as the badges (AstroCare was a practice round)
       projects: ['ignis', 'chatledger', 'clickwise', 'flavourwave'],
     },
-    { title: 'Development offers', text: 'Received multiple development offers.' },
+    { title: 'Development offers', text: 'Received development offers from 12 companies.' },
   ],
 
   skills: {
