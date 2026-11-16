@@ -24,10 +24,9 @@ import { profile } from '../content/profile.js'
         </svg>
       </a>
       <a class="btn" href="#contact">Get in Touch</a>
-      <!-- the film of this portfolio: a third, quieter action, styled like the site's other text links -->
+      <!-- the film of this portfolio (YouTube): a third, quieter action, styled like the site's other text links -->
       <a v-if="profile.film" class="film" :href="profile.film.href" target="_blank" rel="noopener">
-        <svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M3 1.8v8.4L10.2 6z" fill="currentColor" /></svg>
-        <span class="film-label">{{ profile.film.label }}</span><span class="sr-only">: a 1-minute video on YouTube (opens in a new tab)</span>
+        <span class="film-label">{{ profile.film.label }}</span><svg class="ext" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" /></svg><span class="sr-only">: a 1-minute video on YouTube (opens in a new tab)</span>
       </a>
     </div>
   </div>
@@ -120,6 +119,10 @@ import { profile } from '../content/profile.js'
 .film svg {
   flex: none;
   color: var(--accent);
+}
+/* it leaves the site: the same small arrow as the project view's external links, in the hero's gold */
+.film .ext {
+  margin-left: -2px;
 }
 .film-label {
   text-decoration: underline;

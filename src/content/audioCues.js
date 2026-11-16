@@ -10,12 +10,13 @@
 // matches the music after the start. Volumes even out loudness to a common target (−14.5 dB RMS);
 // the quiet intro can't be raised above 1, so the earliest projects stay about 4 dB calmer.
 export const tracks = {
-  // Kept low so the music stays in the background. main is ~2 dB louder than the inspect track's full
-  // section, so its volume sits proportionally lower and both land at the same level.
+  // Kept low so the music stays in the background. inspect is the level of every project excerpt: about
+  // 4 dB under the page music, so opening a project lowers it and closing one brings the page level back
+  // (both through the usual crossfade). Measured: page −23.7 LUFS, excerpts −26.8 to −30.0 LUFS.
   // main.start: where playback begins and every loop returns. The file opens with two lone hits that decay
   // to near-silence (0–15.6 s, down to −37 dB); the music proper starts on the downbeat at 15.60 s.
   main: { src: 'audio/architecture-of-stillness.mp3', volume: 0.29, start: 15.35 },
-  inspect: { src: 'audio/across-the-glass-horizon.mp3', volume: 0.41 },
+  inspect: { src: 'audio/across-the-glass-horizon.mp3', volume: 0.25 },
 }
 
 // Crossfade used when switching between the main soundtrack and an excerpt, or between excerpts.

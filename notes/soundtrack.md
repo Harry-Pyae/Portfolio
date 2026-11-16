@@ -43,7 +43,9 @@ Novelty peaks (section changes) at 25, 53, 61 and 129 s.
    - onset energy right at the cut (never cut through a hit)
 4. Boundaries were then snapped to the nearest upward zero crossing (±6 ms).
 5. Each seam was rendered (last 2 s + first 2 s) and measured. The spectral jump at the splice is compared with the same moment played straight through, and with the sample step and the level step. SummarEase's own window (104.8–127.2 s) had the worst seam (+3.1 dB step, spectral jump z 1.07 against −0.01 straight-through). It now reuses ClassiFile's region instead.
-6. Volume per cue = 10^((−14.5 − excerpt RMS) / 20), capped at 1. The main track's volume (0.39) puts it at the same output level as the full-section excerpts at the inspect volume (0.55): both land at ≈ −19.6 dB.
+6. Volume per cue = 10^((−14.5 − excerpt RMS) / 20), capped at 1. Output levels: the main track plays at 0.29 (≈ −23.7 LUFS);
+   every excerpt plays through the inspect level, 0.25, so a project's music sits about 4 dB under the page music
+   (≈ −26.8 to −30.0 LUFS). Opening a project lowers the music; closing it restores the page level through the crossfade.
 
 ## Cues
 
@@ -53,6 +55,7 @@ Novelty peaks (section changes) at 25, 53, 61 and 129 s.
 | internshipjp | 64.810–103.210 | 38.4 s | full | −9.2 dB | 0.54 | 0.76 (0.53) | −0.6 dB |
 | flavourwave | 82.409–127.210 | 44.8 s | full | −9.4 dB | 0.56 | 0.37 (−0.01) | +1.4 dB |
 | clickwise | 68.009–100.010 | 32.0 s | full | −9.2 dB | 0.54 | 0.15 (−0.08) | +0.7 dB |
+| ignis | 68.009–100.010 | 32.0 s | full (same window as ClickWise, reused on purpose) | −9.2 dB | 0.54 | 0.15 (−0.08) | +0.7 dB |
 | clarifile (suite) | 28.010–56.811 | 28.8 s | build | −12.9 dB | 0.83 | −0.05 (0.40) | −0.4 dB |
 | classifile | 98.410–127.210 | 28.8 s | full, steady end | −9.6 dB | 0.57 | 0.40 (−0.01) | +2.1 dB |
 | summarease | 98.410–127.210 | 28.8 s | same as ClassiFile | −9.6 dB | 0.57 | 0.40 (−0.01) | +2.1 dB |

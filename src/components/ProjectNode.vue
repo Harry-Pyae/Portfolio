@@ -16,19 +16,19 @@ defineEmits(['open'])
   <button
     type="button"
     class="node"
-    :class="[`port-${port}`, { lit }]"
+    :class="[`port-${port}`, { lit, flagship: project.flagship }]"
     :aria-label="`Open ${project.title} project`"
     :aria-describedby="`${idPrefix}-${project.id}-desc`"
     @click="$emit('open')"
   >
     <ProjectArt :project="project" glyph class="sym" />
     <span class="body">
-      <span class="title">{{ project.title }}</span>
+      <span class="title">{{ project.title }}<span v-if="project.flagship" class="flag">Flagship</span></span>
       <span :id="`${idPrefix}-${project.id}-desc`" class="desc">{{ project.tagline }}</span>
       <span v-if="label" class="label">{{ label }}</span>
     </span>
     <svg class="arrow" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
-      <path d="M5 11L11 5M6 5h5v5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" />
+      <path d="M6.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round" />
     </svg>
     <span class="port" :data-side="port" aria-hidden="true"></span>
     <slot />
@@ -159,13 +159,29 @@ defineEmits(['open'])
 .node.lit .arrow,
 .node:focus-visible .arrow {
   color: var(--accent);
-  transform: translate(2px, -2px);
+  transform: translateX(2px);
 }
 @media (hover: hover) {
   .node:hover .arrow {
     color: var(--accent);
-    transform: translate(2px, -2px);
+    transform: translateX(2px);
   }
+}
+/* The flagship: a slightly warmer edge at rest and a small label on its title line (no extra height,
+   so the branches measured to the card stay where they are). */
+.node.flagship {
+  border-color: color-mix(in srgb, var(--accent) 34%, var(--line-strong));
+}
+.flag {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 6px;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: 4px;
+  color: var(--accent);
+  font: 500 10.5px/1.2 var(--font-mono);
+  letter-spacing: 0.02em;
+  vertical-align: 2px;
 }
 
 /* Branch connection point. Centred on the card edge via translate, so offsetLeft/Top is its centre. */

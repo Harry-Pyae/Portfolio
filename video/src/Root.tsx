@@ -135,7 +135,7 @@ export const RemotionRoot: React.FC = () => (
       height={720}
       fps={30}
       durationInFrames={REEL_FRAMES}
-      defaultProps={{ title: 'MyMedia', meta: 'Earlier project · 2023', logo: 'logos/mymedia.png', rec: { dir: 'hq/mymedia' } }}
+      defaultProps={{ title: 'MyMedia', meta: 'Earlier project · 2022', logo: 'logos/mymedia.png', rec: { dir: 'hq/mymedia' } }}
     />
     <Composition
       id="pizza"

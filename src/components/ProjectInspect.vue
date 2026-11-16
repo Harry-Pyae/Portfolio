@@ -2,7 +2,6 @@
 import { ref, reactive, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { openProject, showProject, closeProject, motionOn, prefersReduced, toggleMotion } from '../state.js'
 import { litProject, pulseIn } from '../tree.js'
-import { profile } from '../content/profile.js'
 import { suites, appsOf, story, caseStudyOf, kindOf, highlightsOf, inspectable, branches, branchOf } from '../content/projects.js'
 import { explorerLayout, ringCard, pageSize, pageOf, alignSlots, turning, MAX_PAGE, TAU, linkAt, connectTo, fadeOut } from '../orbit.js'
 import { soundTo } from '../audio.js'
@@ -881,6 +880,42 @@ watch(compact, (c) => !c && nextTick(() => (measure(), kick())))
 
       <Transition name="swap" mode="out-in" @after-enter="keepFocus(), cueRows()">
         <div v-if="shown" :key="shown.id" class="inner">
+          <!-- What it is and who did what come first; the media, the details and the links follow. -->
+          <div class="intro">
+            <p class="meta">
+              <img v-if="shown.icon" class="logo" :src="shown.icon" alt="" />
+              <span>{{ kindOf(shown) }}<template v-if="shown.year"> · {{ shown.year }}</template></span>
+              <span v-if="shown.flagship" class="status">Flagship project</span>
+              <span v-if="shown.status" class="status">{{ shown.status }}</span>
+            </p>
+            <h2 id="modal-title" tabindex="-1">{{ shown.title }}</h2>
+            <p class="lead">{{ shown.tagline }}</p>
+            <p v-if="shown.context" class="context">{{ shown.context }}</p>
+            <button v-if="parentSuite" type="button" class="suite-link" @click="showProject(parentSuite)">Part of the {{ parentSuite.title }} suite</button>
+            <section v-if="shown.contribution" class="contribution" aria-labelledby="contribution-title">
+              <h3 id="contribution-title" class="sub">My contribution</h3>
+              <p>{{ shown.contribution }}</p>
+            </section>
+          </div>
+
+          <!-- A project's one featured moment (IGNIS: a claim the record contradicts, withheld). Plain steps;
+               the technical account is one click further. -->
+          <section v-if="shown.demo" class="demo" aria-labelledby="demo-title">
+            <p class="demo-eyebrow">Featured demonstration</p>
+            <h3 id="demo-title" class="demo-title">{{ shown.demo.title }}</h3>
+            <ol class="demo-steps">
+              <li v-for="[head, text] in shown.demo.steps" :key="head"><strong>{{ head }}</strong> {{ text }}</li>
+            </ol>
+            <img class="demo-shot" :src="shown.demo.image" :alt="shown.demo.alt" loading="lazy" />
+            <details class="demo-more">
+              <summary>How the check works</summary>
+              <p>{{ shown.demo.technical }}</p>
+            </details>
+            <a v-if="shown.demo.href" class="demo-try" :href="shown.demo.href" target="_blank" rel="noopener noreferrer">
+              {{ shown.demo.cta }}<svg class="ext" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" /></svg><span class="sr-only"> (opens in a new tab)</span>
+            </a>
+          </section>
+
           <div v-if="media" class="media">
             <video
               v-if="media === 'video'"
@@ -925,15 +960,6 @@ watch(compact, (c) => !c && nextTick(() => (measure(), kick())))
           </div>
 
           <div class="body">
-            <p class="meta">
-              <img v-if="shown.icon" class="logo" :src="shown.icon" alt="" />
-              <span>{{ kindOf(shown) }}<template v-if="shown.year"> · {{ shown.year }}</template></span>
-              <span v-if="shown.status" class="status">{{ shown.status }}</span>
-            </p>
-            <h2 id="modal-title" tabindex="-1">{{ shown.title }}</h2>
-            <p class="lead">{{ shown.tagline }}</p>
-            <p v-if="shown.context" class="context">{{ shown.context }}</p>
-            <button v-if="parentSuite" type="button" class="suite-link" @click="showProject(parentSuite)">Part of the {{ parentSuite.title }} suite</button>
 
             <template v-if="apps">
               <h3 class="sub">Applications</h3>
@@ -962,12 +988,6 @@ watch(compact, (c) => !c && nextTick(() => (measure(), kick())))
                 <dd>{{ shown.solution }}</dd>
               </div>
             </dl>
-
-            <!-- right after the problem and solution: what the author did -->
-            <section v-if="shown.contribution" class="contribution" aria-labelledby="contribution-title">
-              <h3 id="contribution-title" class="sub">{{ profile.name }}’s contribution</h3>
-              <p>{{ shown.contribution }}</p>
-            </section>
 
             <template v-if="highlights.length">
               <h3 class="sub">Highlights</h3>
@@ -1003,13 +1023,13 @@ watch(compact, (c) => !c && nextTick(() => (measure(), kick())))
             <!-- the case study is where the deeper material lives; demo and code are secondary -->
             <div v-if="shown.links?.demo || shown.links?.github || caseStudyOf(shown)" class="links">
               <a v-if="caseStudyOf(shown)" class="btn btn--primary" :href="caseStudyOf(shown)" target="_blank" rel="noopener noreferrer">
-                Full case study<span class="sr-only"> on the project showcase (opens in a new tab)</span>
+                Full case study<svg class="ext" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" /></svg><span class="sr-only"> on the project showcase (opens in a new tab)</span>
               </a>
               <a v-if="shown.links.demo" class="btn" :href="shown.links.demo" target="_blank" rel="noopener noreferrer">
-                Live demo<span class="sr-only"> (opens in a new tab)</span>
+                Live demo<svg class="ext" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" /></svg><span class="sr-only"> (opens in a new tab)</span>
               </a>
               <a v-if="shown.links.github" class="btn" :href="shown.links.github" target="_blank" rel="noopener noreferrer">
-                Repository<span class="sr-only"> on GitHub (opens in a new tab)</span>
+                Repository<svg class="ext" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" /></svg><span class="sr-only"> on GitHub (opens in a new tab)</span>
               </a>
             </div>
           </div>
@@ -1782,7 +1802,7 @@ h2:focus {
 }
 .media {
   aspect-ratio: 16 / 9;
-  border-bottom: 1px solid var(--line);
+  border-block: 1px solid var(--line);
   background: #000;
 }
 .media video,
@@ -1857,12 +1877,82 @@ h2:focus {
   color: #fff;
   font: 600 11px/1 var(--font-body);
 }
+.intro {
+  padding: 24px clamp(20px, 4vw, 40px) 26px;
+}
 .body {
   padding: 24px clamp(20px, 4vw, 40px) 48px;
 }
+/* A featured moment: a quiet card in the case study's own palette; the steps first, the screenshot
+   after, the technical account behind a disclosure. */
+.demo {
+  margin: 0 clamp(20px, 4vw, 40px) 26px;
+  padding: 18px 20px 20px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line-strong));
+  border-radius: var(--r-card);
+  background: color-mix(in srgb, var(--accent) 4%, var(--surface-2));
+}
+.demo-eyebrow {
+  margin: 0 0 4px;
+  color: var(--accent);
+  font: 500 12.5px/1.4 var(--font-mono);
+}
+.demo-title {
+  margin: 0 0 12px;
+  font-size: 18px;
+}
+.demo-steps {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 14px;
+  padding-left: 1.3em;
+  color: var(--ink-2);
+  font-size: 15px;
+}
+.demo-steps li::marker {
+  color: var(--accent-muted);
+}
+.demo-steps strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+.demo-shot {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+}
+.demo-more {
+  margin-top: 12px;
+  color: var(--ink-2);
+  font-size: 14.5px;
+}
+.demo-more summary {
+  width: fit-content;
+  color: var(--ink);
+  font-weight: 500;
+  cursor: pointer;
+}
+.demo-more p {
+  margin: 8px 0 0;
+}
+.demo-try {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  margin-top: 8px;
+  color: var(--accent);
+  font-size: 14.5px;
+  text-underline-offset: 4px;
+}
+.ext {
+  flex: none;
+  opacity: 0.8;
+}
 /* Short desktop windows (a laptop at 150% scaling is about 1280 × 580): a lower preview, the whole
-   image letterboxed rather than cropped, so the project's name and summary start on the first screen;
-   the name also stays in the header. Taller windows keep the 16:9 preview. */
+   image letterboxed rather than cropped. Taller windows keep the 16:9 preview. */
 @media (min-width: 1000px) and (min-height: 520px) and (max-height: 760px) {
   .media {
     aspect-ratio: auto;
@@ -1870,10 +1960,6 @@ h2:focus {
   }
   .thumbs button {
     width: 80px;
-  }
-  .bar-title {
-    opacity: 1;
-    transform: none;
   }
 }
 .meta {
@@ -1946,9 +2032,9 @@ dd {
   color: var(--ink);
   font-weight: 600;
 }
-/* what the author did, straight after the problem and solution: set apart by a gold rule, not a card */
+/* what the author did, right under the summary: set apart by a gold rule, not a card */
 .contribution {
-  margin-top: 22px;
+  margin-top: 18px;
   padding: 2px 0 2px 16px;
   border-left: 2px solid var(--accent-muted);
 }

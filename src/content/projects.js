@@ -17,7 +17,7 @@ export const categories = [
 ]
 
 // Projects (or suites) shown in the hero spiral, in carousel order. Every project is also on the page.
-export const featured = ['bloodcare', 'internshipjp', 'clarifile', 'ignis', 'flavourwave', 'clickwise', 'astrocare', 'chatledger']
+export const featured = ['ignis', 'bloodcare', 'internshipjp', 'clarifile', 'flavourwave', 'clickwise', 'astrocare', 'chatledger']
 
 // Fields (paths are relative to /public):
 //   tagline       one sentence for cards; problem / solution: one or two sentences each
@@ -33,6 +33,9 @@ export const featured = ['bloodcare', 'internshipjp', 'clarifile', 'ignis', 'fla
 //   limitation    optional note shown beside the links (e.g. a live demo with a broken feature)
 //   links         only real URLs; leave '' to hide a link
 //   status        optional development status, shown on cards and in details (e.g. 'In development')
+//   flagship      true on the one lead project: a quiet gold mark on its card and a label in its details
+//   demo          optional featured moment in the details: { title, steps: [[lead, text]], image, alt,
+//                 technical (shown behind a disclosure), cta, href }
 //   suite         id of the suite an app belongs to (see `suites`)
 const shots = (id, n) => Array.from({ length: n }, (_, i) => `projects/${id}/${i + 1}.jpg`)
 
@@ -95,6 +98,7 @@ export const projects = [
     glyph: 'flame',
     title: 'IGNIS',
     category: 'Hackathon projects',
+    flagship: true,
     year: 2026,
     icon: 'projects/ignis/icon.png',
     image: 'projects/ignis/1.jpg',
@@ -115,6 +119,20 @@ export const projects = [
       'Team lead: the matching engine, API and data contracts, deployment and merges, directing an AI coding assistant and reviewing every change.',
     context:
       'NASA Space Apps Challenge 2026 (Flame in Freefall), with team AstroFlare. Groq and Gemini only parse the scenario and narrate retrieved evidence; they never rank the matches.',
+    demo: {
+      title: 'A claim the record contradicts is withheld',
+      steps: [
+        ['The claim:', 'BASS run GMT96-T8 ran at 10 cm/s airflow.'],
+        ['The record:', 'its verified card, quoting the NASA report, says 5 cm/s.'],
+        ['The result:', 'IGNIS withholds the claim and shows the source row instead of passing it on.'],
+      ],
+      image: 'projects/ignis/4.jpg',
+      alt: 'IGNIS 60-second case: the claim that GMT96-T8 ran at 10 cm/s is marked WITHHELD; the cited card says 5 cm/s, with the source table row highlighted.',
+      technical:
+        'The check is deterministic: the server compares each value in a claim with the value on the verified card it cites, and withholds any claim that does not match. Every Brief passes the same check before it is shown. No AI decides the result: the language models only turn a typed scenario into fields the user confirms and narrate the retrieved evidence.',
+      cta: 'Try it in the 60-second case',
+      href: 'https://ignis-nasa-2026.vercel.app/case',
+    },
     stack: ['React 18', 'TypeScript', 'Vite', 'Tailwind CSS 4', 'Supabase (PostgreSQL)', 'Zod', 'Vercel Functions', 'Groq', 'Gemini'],
     links: { demo: 'https://ignis-nasa-2026.vercel.app', github: 'https://github.com/Harry-Pyae/IGNIS-NASA-2026' },
   },
@@ -173,6 +191,7 @@ export const projects = [
   {
     id: 'astrocare',
     glyph: 'pulse',
+    kind: 'Hackathon practice round',
     title: 'AstroCare AI',
     category: 'More hackathon projects',
     year: 2026,

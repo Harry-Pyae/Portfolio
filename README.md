@@ -17,7 +17,7 @@ npm run check     # project view geometry: no overlaps through a full rotation a
 | What | Where |
 | --- | --- |
 | Name, title, intro, About paragraphs, milestones, skills (core, general, currently exploring), interests (Beyond the Code), contact lede and links, portrait | `src/content/profile.js` |
-| Projects, suites, their groups and order, which seven entries appear in the hero spiral, and the engineering story | `src/content/projects.js` |
+| Projects, suites, their groups and order, which entries appear in the hero spiral, and the engineering story | `src/content/projects.js` |
 | Soundtrack: the two tracks, their volumes, the crossfade, and each project's excerpt (start, end, fades, volume) | `src/content/audioCues.js` (method in `notes/soundtrack.md`) |
 | Carousel speed, orbit width, depth, trunk shape (radius, turns, strands), halo strength, hover zoom | `src/content/motion.js` |
 | Colours and fonts (Inter for headings and body, system monospace for small metadata; control and card radii) | semantic tokens at the top of `src/style.css` (`--accent`, `--glow-trunk`, `--glow-branch`, `--glow-spark`, `--glow-pale`) |
@@ -26,7 +26,7 @@ npm run check     # project view geometry: no overlaps through a full rotation a
 - **Contact:** fill `href` (`mailto:` or `https://`) and `text`. Entries without an `href` are hidden. There is deliberately no contact form.
 - **Projects** (`src/content/projects.js`):
   - `categories`: the groups in display order (Recent projects, Hackathon projects, More hackathon projects, Earlier work, then In development and Where it began). Groups without `section` are branches of the project tree; `section: 'explorations'` and `section: 'roots'` place a group in its own part of the page. `lead: true` gives a group's cards slightly more emphasis and `quiet: true` a smaller, calmer branch; `label` is the default kind of project shown on hero cards and in the project view (a project's own `kind` overrides it).
-  - `featured`: the project or suite ids shown in the hero spiral, in order (seven by default). Every project is also on the page, in the order of the `projects` array within each group.
+  - `featured`: the project or suite ids shown in the hero spiral, in order. Every project is also on the page, in the order of the `projects` array within each group.
   - `suites`: a suite (ClariFile) groups related apps; it is not a project itself. `apps` lists its app ids, `status` its development status, `integration` how the apps relate as currently planned. Its card opens an overview that leads to each app; an app names its suite with `suite`.
   - `story`: the "Getting pagination right" engineering story (`year`, `label`, `title`, `teaser`, short `parts`, an illustrative `code` sample). With `project: null` it is a fixed card in About whose full text opens in an overlay; set `project` to an id to show it inside that project instead.
   - Each project: `tagline` (the one sentence on cards), `problem` and `solution` (one or two sentences each), `highlights` (a few verified features), `contribution` (only where documented; leave `null` to hide the section), `context` (team, scope or time constraints when known, or the project's place in your journey), `stack`, `year`, `links` (`demo`, `github`; leave `''` to hide), `image` (cover and video poster), `gallery` (screenshots), `icon` (optional logo), `video` (walkthrough reel) and `status` (optional development status, shown on cards and in details).

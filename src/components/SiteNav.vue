@@ -10,8 +10,10 @@ const links = [
 ]
 
 // Active section: whichever section crosses a thin band just above the middle of the viewport.
-// Subsections count toward their parent link (no nav item each); the footer counts as Contact.
-const parentOf = { explorations: 'projects', beginnings: 'contact' }
+// Subsections count toward their parent link (no nav item each): In development and the Roots hold
+// projects, so they count as Projects; the footer counts as Contact. The band tracks the sections
+// themselves, so one leaving never clears another that shares its link.
+const parentOf = { explorations: 'projects', beginnings: 'projects', footer: 'contact' }
 const active = ref(null)
 const inBand = new Set()
 let io
@@ -21,10 +23,11 @@ onMounted(() => {
   io = new IntersectionObserver(
     (entries) => {
       for (const e of entries) {
-        const id = parentOf[e.target.id] ?? (e.target.id || 'contact')
-        e.isIntersecting ? inBand.add(id) : inBand.delete(id)
+        const key = e.target.id || 'footer'
+        e.isIntersecting ? inBand.add(key) : inBand.delete(key)
       }
-      active.value = links.map((l) => l.id).filter((id) => inBand.has(id)).pop() ?? null
+      const linked = new Set([...inBand].map((k) => parentOf[k] ?? k))
+      active.value = links.map((l) => l.id).filter((id) => linked.has(id)).pop() ?? null
     },
     { rootMargin: '-40% 0px -55% 0px' },
   )

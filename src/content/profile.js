@@ -49,7 +49,8 @@ export const profile = {
         { by: 'UNESCO', name: 'Youth Hackathon 2026', file: 'certificates/unesco-youth-hackathon-2026.jpg' },
         { by: 'JICA', name: 'MJC Job-Matching Hackathon, December 2023', ...cleaned('jica-mjc-job-matching-hackathon') },
       ],
-      projects: ['ignis', 'flavourwave', 'clickwise', 'astrocare', 'chatledger'],
+      // each certificate's event project, in the same order as the badges (AstroCare was a practice round)
+      projects: ['ignis', 'chatledger', 'clickwise', 'flavourwave'],
     },
     { title: 'Development offers', text: 'Received multiple development offers.' },
   ],
