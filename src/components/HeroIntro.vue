@@ -149,10 +149,6 @@ import { profile } from '../content/profile.js'
   margin-top: 36px;
 }
 @media (max-width: 860px) {
-  /* five stack items fit one line on a 390px phone with a slightly tighter gap */
-  .stack {
-    column-gap: 16px;
-  }
   .portrait {
     width: 124px;
     height: 124px;
