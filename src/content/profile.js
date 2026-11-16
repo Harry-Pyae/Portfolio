@@ -56,7 +56,7 @@ export const profile = {
 
   skills: {
     core: [
-      { group: 'Frontend', items: ['Vue.js', 'JavaScript', 'HTML5', 'CSS3', 'Axios'] },
+      { group: 'Frontend', items: ['Vue.js', 'React', 'JavaScript', 'HTML5', 'CSS3', 'Axios'] },
       { group: 'Backend & environment', items: ['Laravel', 'PHP', 'XAMPP', 'MySQL'] },
     ],
     general: ['Tailwind CSS', 'Bootstrap', 'Docker', 'Java'],
@@ -64,7 +64,6 @@ export const profile = {
     exploring: [
       { name: 'Python', note: 'Building two offline desktop apps with it.', projects: ['classifile', 'summarease'] },
       { name: 'PostgreSQL', note: 'Through Supabase, for accounts, history, saved orders and a row-level-secured catalog.', projects: ['ignis', 'clickwise', 'chatledger'] },
-      { name: 'React', note: 'Front ends for a team project and three hackathon builds.', projects: ['internshipjp', 'ignis', 'chatledger', 'astrocare'] },
       { name: 'Next.js', note: 'Front ends for two hackathon projects.', projects: ['clickwise', 'flavourwave'] },
       { name: 'Spring Boot', note: 'The REST API and Flyway migrations behind a team project.', projects: ['internshipjp'] },
     ],
