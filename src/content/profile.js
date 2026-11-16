@@ -7,8 +7,8 @@ export const profile = {
   monogram: 'P',
   title: 'IT Student · Junior Full-Stack Developer',
   intro:
-    'I build web applications with Vue.js on the front end and Laravel and PHP behind it, from my own projects to hackathon prototypes.',
-  focusStack: ['Vue.js', 'Laravel', 'PHP', 'MySQL'],
+    'I build web applications with Vue.js and React on the front end and Laravel and PHP behind it, from my own projects to hackathon prototypes.',
+  focusStack: ['Vue.js', 'React', 'Laravel', 'PHP', 'MySQL'],
 
   // A short film of this portfolio, linked after the hero's two buttons. null hides it.
   film: { href: 'https://youtu.be/qzsSEy04Rj0', label: 'Watch the tour' },
@@ -18,7 +18,7 @@ export const profile = {
 
   // The About narrative, first person, one short paragraph per entry.
   about: [
-    'I’m an IT student and junior full-stack developer, working mostly in Vue.js, Laravel, PHP and MySQL.',
+    'I’m an IT student and junior full-stack developer, working mostly in Vue.js, React, Laravel, PHP and MySQL.',
     'I like knowing how things work, so I build features from scratch, and I use AI tools to move faster without skipping the understanding.',
     'Right now that means my own apps, hackathon prototypes, and two document tools in the ClariFile suite.',
   ],
