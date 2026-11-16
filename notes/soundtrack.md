@@ -44,8 +44,9 @@ Novelty peaks (section changes) at 25, 53, 61 and 129 s.
 4. Boundaries were then snapped to the nearest upward zero crossing (±6 ms).
 5. Each seam was rendered (last 2 s + first 2 s) and measured. The spectral jump at the splice is compared with the same moment played straight through, and with the sample step and the level step. SummarEase's own window (104.8–127.2 s) had the worst seam (+3.1 dB step, spectral jump z 1.07 against −0.01 straight-through). It now reuses ClassiFile's region instead.
 6. Volume per cue = 10^((−14.5 − excerpt RMS) / 20), capped at 1. Output levels: the main track plays at 0.29 (≈ −23.7 LUFS);
-   every excerpt plays through the inspect level, 0.25, so a project's music sits about 4 dB under the page music
-   (≈ −26.8 to −30.0 LUFS). Opening a project lowers the music; closing it restores the page level through the crossfade.
+   every excerpt plays through the inspect level, 0.17: about 7 dB under the page music on the meter. The excerpts are
+   the busy part of a lively track and the page track is calm, so by ear they need that much less to sound level (equal
+   meter readings, and later 4 dB under, both still sounded too loud). Opening a project and closing it crossfade between the two.
 
 ## Cues
 
