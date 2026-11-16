@@ -66,6 +66,7 @@ export const profile = {
       { name: 'PostgreSQL', note: 'Through Supabase, for accounts, history, saved orders and a row-level-secured catalog.', projects: ['ignis', 'clickwise', 'chatledger'] },
       { name: 'React', note: 'Front ends for a team project and three hackathon builds.', projects: ['internshipjp', 'ignis', 'chatledger', 'astrocare'] },
       { name: 'Next.js', note: 'Front ends for two hackathon projects.', projects: ['clickwise', 'flavourwave'] },
+      { name: 'Spring Boot', note: 'The REST API and Flyway migrations behind a team project.', projects: ['internshipjp'] },
     ],
   },
 
