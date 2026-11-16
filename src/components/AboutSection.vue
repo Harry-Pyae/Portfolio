@@ -135,7 +135,11 @@ const { classes, reveal } = useSection(root)
             <span class="sc-year">Certificate</span>
             <h3 id="cert-dlg-title" class="cd-title">{{ cert.by }} · {{ cert.name }}</h3>
             <img class="cd-img" :src="cert.file" :alt="`${cert.by} ${cert.name} certificate, awarded to ${profile.name}`" />
-            <a class="sc-more" :href="cert.file" target="_blank" rel="noopener">Open full size</a>
+            <p v-if="cert.photo" class="cd-note">A copy cleaned up with AI from a photo of the paper certificate.</p>
+            <span class="cd-links">
+              <a class="sc-more" :href="cert.file" target="_blank" rel="noopener">Open full size</a>
+              <a v-if="cert.photo" class="sc-more" :href="cert.photo" target="_blank" rel="noopener">View the original photo</a>
+            </span>
           </div>
         </dialog>
       </div>
@@ -507,9 +511,19 @@ button.ms-badge {
 .cd-img {
   display: block;
   max-width: 100%;
-  max-height: calc(100dvh - 210px);
+  max-height: calc(100dvh - 276px);
   margin: 0 auto 16px;
   border-radius: 6px;
+}
+.sd-inner .cd-note {
+  margin: -6px 0 10px;
+  color: var(--ink-3);
+  font-size: 13px;
+}
+.cd-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
 }
 .sd-title {
   margin: 6px 0 4px;

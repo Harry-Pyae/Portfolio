@@ -1,3 +1,6 @@
+// A certificate shown as a cleaned-up copy, with the photo of the paper original beside it.
+const cleaned = (id) => ({ file: `certificates/${id}.jpg`, photo: `certificates/${id}-photo.jpg` })
+
 // Everything personal lives here. Edit freely; the layout adapts.
 export const profile = {
   name: 'Harry',
@@ -18,17 +21,22 @@ export const profile = {
     'Right now that means my own apps, hackathon prototypes, and two document tools in the ClariFile suite.',
   ],
 
-  // Milestones near About. `badges`: issuer + certificate (`file`: its image in /public, opened from the badge);
+  // Milestones near About. `badges`: issuer + certificate (`file`: its image in /public, opened from the badge;
+  // `photo`: a photo of the paper original when `file` is a cleaned-up copy, disclosed and linked in the viewer);
   // `projects` links to project ids (opens their details).
   milestones: [
     {
       title: 'Certified full-stack web developer',
-      badges: [{ by: 'CodeLab', name: 'Full-Stack Web Developer' }],
+      badges: [
+        { by: 'CodeLab', name: 'Laravel + Vue JS Full Stack, 2023', ...cleaned('codelab-laravel-vue-full-stack') },
+        { by: 'CodeLab', name: 'Fullstack Developer, 2023', ...cleaned('codelab-fullstack-developer') },
+        { by: 'CodeLab', name: 'Professional Web Design, 2022', ...cleaned('codelab-professional-web-design') },
+      ],
     },
     {
       title: 'IT Passport',
       text: 'IT fundamentals, management and strategy.',
-      badges: [{ by: 'ITPEC', name: 'IT Passport (IP)' }],
+      badges: [{ by: 'ITPEC', name: 'IT Passport (IP)', ...cleaned('itpec-it-passport') }],
     },
     {
       title: 'Hackathons',
@@ -37,7 +45,7 @@ export const profile = {
         { by: 'NASA', name: 'Space Apps Challenge 2026', file: 'certificates/nasa-space-apps-2026.jpg' },
         { by: 'Cursor', name: 'AI Hackathon Myanmar 2026', file: 'certificates/cursor-ai-hackathon-myanmar-2026.jpg' },
         { by: 'UNESCO', name: 'Youth Hackathon 2026', file: 'certificates/unesco-youth-hackathon-2026.jpg' },
-        { by: 'JICA', name: 'MJC hackathon, December 2023' },
+        { by: 'JICA', name: 'MJC Job-Matching Hackathon, December 2023', ...cleaned('jica-mjc-job-matching-hackathon') },
       ],
       projects: ['ignis', 'flavourwave', 'clickwise', 'astrocare', 'chatledger'],
     },
