@@ -3,3 +3,7 @@ dist
 
 # Source copies of the soundtrack (the site uses public/audio/)
 /*.mp3
+
+# agent skills: local tooling, not part of the site
+.claude/
+.agents/

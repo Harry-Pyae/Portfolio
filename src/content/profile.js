@@ -18,7 +18,8 @@ export const profile = {
     'Right now that means my own apps, hackathon prototypes, and two document tools in the ClariFile suite.',
   ],
 
-  // Milestones near About. `badges`: issuer + certificate; `projects` links to project ids (opens their details).
+  // Milestones near About. `badges`: issuer + certificate (`file`: its image in /public, opened from the badge);
+  // `projects` links to project ids (opens their details).
   milestones: [
     {
       title: 'Certified full-stack web developer',
@@ -33,8 +34,8 @@ export const profile = {
       title: 'Hackathons',
       text: 'Building under a deadline, again and again.',
       badges: [
-        { by: 'NASA', name: 'Space Apps Challenge 2026' },
-        { by: 'Cursor', name: 'AI Hackathon Myanmar 2026' },
+        { by: 'NASA', name: 'Space Apps Challenge 2026', file: 'certificates/nasa-space-apps-2026.jpg' },
+        { by: 'Cursor', name: 'AI Hackathon Myanmar 2026', file: 'certificates/cursor-ai-hackathon-myanmar-2026.jpg' },
         { by: 'UNESCO', name: 'Youth Hackathon 2026' },
         { by: 'JICA', name: 'MJC hackathon, December 2023' },
       ],

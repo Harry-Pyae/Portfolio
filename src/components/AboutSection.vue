@@ -11,6 +11,12 @@ const byId = (id) => projects.find((p) => p.id === id)
 
 const root = ref(null)
 const storyDlg = ref(null)
+const certDlg = ref(null)
+const cert = ref(null) // the badge whose certificate is open
+const openCert = (b) => {
+  cert.value = b
+  certDlg.value.showModal()
+}
 const { classes, reveal } = useSection(root)
 </script>
 
@@ -60,15 +66,24 @@ const { classes, reveal } = useSection(root)
             <li v-for="m in profile.milestones" :key="m.title">
               <span class="ms-name">{{ m.title }}</span>
               <span v-if="m.text" class="ms-text">{{ m.text }}</span>
-              <!-- Certificates are facts, not controls: no button styling, no hover. -->
+              <!-- Certificates are facts, not controls: no button styling. A badge with its certificate on file
+                   opens it, marked only by an underline. -->
               <span v-if="m.badges" class="ms-badges">
-                <span v-for="b in m.badges" :key="b.by + b.name" class="ms-badge">
+                <component
+                  :is="b.file ? 'button' : 'span'"
+                  v-for="b in m.badges"
+                  :key="b.by + b.name"
+                  :type="b.file ? 'button' : undefined"
+                  class="ms-badge"
+                  :class="{ 'has-cert': b.file }"
+                  @click="b.file && openCert(b)"
+                >
                   <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
                     <circle cx="8" cy="6" r="4" fill="none" stroke="currentColor" stroke-width="1.3" />
                     <path d="M5.6 9.3L4.8 14l3.2-1.6 3.2 1.6-.8-4.7" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" />
                   </svg>
-                  <span><strong>{{ b.by }}</strong> {{ b.name }}</span>
-                </span>
+                  <span><strong>{{ b.by }}</strong> {{ b.name }}<span v-if="b.file" class="sr-only">, view the certificate</span></span>
+                </component>
               </span>
               <span v-if="m.projects" class="ms-links">
                 <button v-for="id in m.projects" :key="id" type="button" class="ms-link" @click="showProject(byId(id))">
@@ -107,6 +122,20 @@ const { classes, reveal } = useSection(root)
             <button v-if="byId(story.project)" type="button" class="sc-more sd-project" @click="storyDlg.close(), showProject(byId(story.project))">
               View {{ byId(story.project).title }}
             </button>
+          </div>
+        </dialog>
+        <dialog ref="certDlg" class="story-dlg cert-dlg" aria-labelledby="cert-dlg-title" @click="(e) => e.target === certDlg && certDlg.close()">
+          <div v-if="cert" class="sd-inner">
+            <button type="button" class="sd-close" autofocus @click="certDlg.close()">
+              <span class="sr-only">Close the certificate</span>
+              <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+                <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            </button>
+            <span class="sc-year">Certificate</span>
+            <h3 id="cert-dlg-title" class="cd-title">{{ cert.by }} · {{ cert.name }}</h3>
+            <img class="cd-img" :src="cert.file" :alt="`${cert.by} ${cert.name} certificate, awarded to ${profile.name}`" />
+            <a class="sc-more" :href="cert.file" target="_blank" rel="noopener">Open full size</a>
           </div>
         </dialog>
       </div>
@@ -333,6 +362,30 @@ const { classes, reveal } = useSection(root)
   color: var(--ink);
   font-weight: 600;
 }
+button.ms-badge {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+.has-cert > span {
+  text-decoration: underline dotted color-mix(in srgb, var(--ink-3) 70%, transparent);
+  text-underline-offset: 4px;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .has-cert:hover > span {
+    color: var(--ink);
+    text-decoration-color: var(--accent);
+  }
+}
+.has-cert:focus-visible > span {
+  color: var(--ink);
+  text-decoration-color: var(--accent);
+}
 
 /* ---------- engineering story ---------- */
 .story-card {
@@ -440,6 +493,23 @@ const { classes, reveal } = useSection(root)
   background: var(--surface);
   color: var(--ink);
   cursor: pointer;
+}
+/* Hugs the certificate: on short screens the image is height-capped, so a fixed width would leave bare sides. */
+.cert-dlg {
+  width: fit-content;
+  max-width: min(960px, calc(100% - 32px));
+}
+.cd-title {
+  margin: 6px 56px 16px 0;
+  font-size: clamp(18px, 2.4vw, 22px);
+}
+/* The whole certificate stays in view: capped by the viewport height, never cropped. */
+.cd-img {
+  display: block;
+  max-width: 100%;
+  max-height: calc(100dvh - 210px);
+  margin: 0 auto 16px;
+  border-radius: 6px;
 }
 .sd-title {
   margin: 6px 0 4px;
