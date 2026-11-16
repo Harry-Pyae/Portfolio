@@ -31,13 +31,14 @@ export const profile = {
     },
     {
       title: 'Hackathons',
-      text: 'Building under a deadline, again and again. Next up: IGNIS, for an upcoming NASA hackathon.',
+      text: 'Building under a deadline, again and again.',
       badges: [
-        { by: 'Cursor', name: 'Myanmar AI Hackathon 2026' },
+        { by: 'NASA', name: 'Space Apps Challenge 2026' },
+        { by: 'Cursor', name: 'AI Hackathon Myanmar 2026' },
         { by: 'UNESCO', name: 'Youth Hackathon 2026' },
         { by: 'JICA', name: 'MJC hackathon, December 2023' },
       ],
-      projects: ['flavourwave', 'clickwise', 'astrocare', 'chatledger'],
+      projects: ['ignis', 'flavourwave', 'clickwise', 'astrocare', 'chatledger'],
     },
     { title: 'Development offers', text: 'Received multiple development offers.' },
   ],
@@ -51,8 +52,8 @@ export const profile = {
     // Technologies I'm currently deepening. `note` says how I'm using it; `projects` links where it shows up.
     exploring: [
       { name: 'Python', note: 'Building two offline desktop apps with it.', projects: ['classifile', 'summarease'] },
-      { name: 'PostgreSQL', note: 'Through Supabase, for accounts, history and saved orders.', projects: ['clickwise', 'chatledger'] },
-      { name: 'React', note: 'Front ends for a team project and two hackathon builds.', projects: ['internshipjp', 'chatledger', 'astrocare'] },
+      { name: 'PostgreSQL', note: 'Through Supabase, for accounts, history, saved orders and a row-level-secured catalog.', projects: ['ignis', 'clickwise', 'chatledger'] },
+      { name: 'React', note: 'Front ends for a team project and three hackathon builds.', projects: ['internshipjp', 'ignis', 'chatledger', 'astrocare'] },
       { name: 'Next.js', note: 'Front ends for two hackathon projects.', projects: ['clickwise', 'flavourwave'] },
     ],
   },

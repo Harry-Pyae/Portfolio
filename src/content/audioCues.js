@@ -41,6 +41,8 @@ export const cues = {
   flavourwave: { start: 82.409, end: 127.21, fadeIn: 2.6, fadeOut: 2.6, volume: 0.56 },
   // Full section, middle window (32 s).
   clickwise: { start: 68.009, end: 100.01, fadeIn: 2.6, fadeOut: 2.6, volume: 0.54 },
+  // Same window as ClickWise: the other major hackathon build of 2026.
+  ignis: { start: 68.009, end: 100.01, fadeIn: 2.6, fadeOut: 2.6, volume: 0.54 },
   // Lighter rhythmic build (26 s) for the smaller hackathon builds; best seam on the whole track.
   astrocare: { start: 28.01, end: 53.61, fadeIn: 2.6, fadeOut: 2.6, volume: 0.83 },
   // Build into the breath before the full section (26 s).

@@ -98,6 +98,16 @@ export const RemotionRoot: React.FC = () => (
       defaultProps={{ title: 'FlavourWave', meta: 'Major hackathon · 2023', logo: 'logos/flavourwave.png', shots: ['shots/fw-1.jpg', 'shots/fw-2.jpg', 'shots/fw-4.jpg', 'shots/fw-5.jpg'] }}
     />
     <Composition
+      id="ignis"
+      component={ProjectReel}
+      calculateMetadata={loadFrames}
+      width={1280}
+      height={720}
+      fps={30}
+      durationInFrames={REEL_FRAMES}
+      defaultProps={{ title: 'IGNIS', meta: 'NASA Space Apps · 2026', logo: 'logos/ignis.png', rec: { dir: 'hq/ignis' } }}
+    />
+    <Composition
       id="astrocare"
       component={ProjectReel}
       calculateMetadata={loadFrames}

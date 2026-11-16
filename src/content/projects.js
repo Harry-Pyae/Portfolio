@@ -17,7 +17,7 @@ export const categories = [
 ]
 
 // Projects (or suites) shown in the hero spiral, in carousel order. Every project is also on the page.
-export const featured = ['bloodcare', 'internshipjp', 'clarifile', 'flavourwave', 'clickwise', 'astrocare', 'chatledger']
+export const featured = ['bloodcare', 'internshipjp', 'clarifile', 'ignis', 'flavourwave', 'clickwise', 'astrocare', 'chatledger']
 
 // Fields (paths are relative to /public):
 //   tagline       one sentence for cards; problem / solution: one or two sentences each
@@ -89,6 +89,34 @@ export const projects = [
     context: 'Four-person team project for CST-6108 at the University of Information Technology.',
     stack: ['React 19', 'Spring Boot 3.5', 'Java 24', 'MariaDB', 'Flyway', 'Bootstrap 5'],
     links: { demo: '', github: 'https://github.com/Harry-Pyae/InternshipJP' },
+  },
+  {
+    id: 'ignis',
+    glyph: 'flame',
+    title: 'IGNIS',
+    category: 'Hackathon projects',
+    year: 2026,
+    icon: 'projects/ignis/icon.png',
+    image: 'projects/ignis/1.jpg',
+    gallery: shots('ignis', 4),
+    video: 'projects/ignis/reel.mp4',
+    tagline: 'Matches a spacecraft fire scenario to verified NASA microgravity experiments, and refuses to guess.',
+    problem:
+      'Fire behaves differently in microgravity, and the evidence is spread across decades of NASA reports. Mission planners need what was actually observed, and an honest line where the evidence stops.',
+    solution:
+      'Describe a scenario in mission terms and IGNIS retrieves the closest verified NASA runs, explains what they observed in a Brief whose every claim is checked against its source, and marks where the catalog has no matching evidence.',
+    highlights: [
+      ['Human-verified catalog', '31 runs from 8 NASA campaigns, each with a verbatim source quote and a named reviewer; drafts stay private through row-level security.'],
+      ['Checked claims', 'the server validates every AI-written claim against its cited record and withholds any that disagree.'],
+      ['Evidence Map and Gap Radar', 'runs plotted by oxygen and airflow, with untested regions marked rather than guessed.'],
+      ['Open dataset', 'JSON and CSV export, and tests that compare every published value with its NASA source.'],
+    ],
+    contribution:
+      'Team lead: the matching engine, API and data contracts, deployment and merges, directing an AI coding assistant and reviewing every change.',
+    context:
+      'NASA Space Apps Challenge 2026 (Flame in Freefall), with team AstroFlare. Groq and Gemini only parse the scenario and narrate retrieved evidence; they never rank the matches.',
+    stack: ['React 18', 'TypeScript', 'Vite', 'Tailwind CSS 4', 'Supabase (PostgreSQL)', 'Zod', 'Vercel Functions', 'Groq', 'Gemini'],
+    links: { demo: 'https://ignis-nasa-2026.vercel.app', github: 'https://github.com/Harry-Pyae/IGNIS-NASA-2026' },
   },
   {
     id: 'flavourwave',
