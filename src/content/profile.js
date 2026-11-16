@@ -13,9 +13,8 @@ export const profile = {
   // A short film of this portfolio, linked after the hero's two buttons. null hides it.
   film: { href: 'https://youtu.be/qzsSEy04Rj0', label: 'Watch the tour' },
 
-  // Drop a photo in /public (e.g. public/harry.jpg) and set portrait: 'harry.jpg'.
-  // null shows the monogram placeholder.
-  portrait: null,
+  // Square photo in /public/profile (shown in a circle in the hero and About). null shows the monogram.
+  portrait: 'profile/pyae-sone-htut.jpg',
 
   // The About narrative, first person, one short paragraph per entry.
   about: [
