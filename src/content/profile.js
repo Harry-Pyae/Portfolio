@@ -10,6 +10,9 @@ export const profile = {
     'I build web applications with Vue.js on the front end and Laravel and PHP behind it, from my own projects to hackathon prototypes.',
   focusStack: ['Vue.js', 'Laravel', 'PHP', 'MySQL'],
 
+  // A short film of this portfolio, linked beside the portrait in the hero. null hides it.
+  film: { href: 'https://youtu.be/qzsSEy04Rj0', label: 'Watch the 1-minute tour' },
+
   // Drop a photo in /public (e.g. public/harry.jpg) and set portrait: 'harry.jpg'.
   // null shows the monogram placeholder.
   portrait: null,

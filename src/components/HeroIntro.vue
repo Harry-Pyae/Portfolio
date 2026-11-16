@@ -4,11 +4,20 @@ import { profile } from '../content/profile.js'
 
 <template>
   <div class="intro">
-    <div class="portrait">
-      <img v-if="profile.portrait" :src="profile.portrait" :alt="`Portrait of ${profile.name}`" width="148" height="148" />
-      <span v-else class="placeholder" role="img" :aria-label="`Portrait placeholder for ${profile.name}`">
-        {{ profile.monogram }}
-      </span>
+    <div class="id-row">
+      <div class="portrait">
+        <img v-if="profile.portrait" :src="profile.portrait" :alt="`Portrait of ${profile.name}`" width="148" height="148" />
+        <span v-else class="placeholder" role="img" :aria-label="`Portrait placeholder for ${profile.name}`">
+          {{ profile.monogram }}
+        </span>
+      </div>
+      <!-- the film of this portfolio: a quiet link beside the portrait, above the fold at every size -->
+      <a v-if="profile.film" class="film" :href="profile.film.href" target="_blank" rel="noopener">
+        <span class="play" aria-hidden="true">
+          <svg viewBox="0 0 12 12" width="11" height="11"><path d="M3.5 2.2v7.6L9.8 6z" fill="currentColor" /></svg>
+        </span>
+        <span>{{ profile.film.label }}<span class="sr-only"> on YouTube (opens in a new tab)</span></span>
+      </a>
     </div>
     <h1 id="hero-name" class="name">{{ profile.name }}</h1>
     <p class="title">{{ profile.title }}</p>
@@ -35,10 +44,17 @@ import { profile } from '../content/profile.js'
   min-width: 0;
   padding: clamp(24px, 4vh, 48px) 0;
 }
+.id-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 24px;
+  margin-bottom: 32px;
+}
 .portrait {
+  flex: none;
   width: 136px;
   height: 136px;
-  margin-bottom: 32px;
   padding: 4px;
   border: 1px solid var(--line-strong);
   border-radius: 50%;
@@ -99,6 +115,46 @@ import { profile } from '../content/profile.js'
   background: var(--accent);
   vertical-align: 2px;
 }
+/* Secondary to the buttons below: text and a small ring, no button chrome. */
+.film {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  color: var(--ink-2);
+  font: 500 15px/1.3 var(--font-body);
+  text-decoration: none;
+  transition:
+    color 0.2s ease,
+    transform 0.16s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.play {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  padding-left: 2px; /* optical centre of the triangle */
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--accent);
+  transition: border-color 0.2s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .film:hover {
+    color: var(--ink);
+  }
+  .film:hover .play {
+    border-color: color-mix(in srgb, var(--accent) 70%, transparent);
+  }
+}
+.film:focus-visible {
+  color: var(--ink);
+}
+.film:active {
+  transform: scale(0.97);
+}
 .actions {
   display: flex;
   flex-wrap: wrap;
@@ -106,10 +162,12 @@ import { profile } from '../content/profile.js'
   margin-top: 36px;
 }
 @media (max-width: 860px) {
+  .id-row {
+    margin-bottom: 24px;
+  }
   .portrait {
     width: 108px;
     height: 108px;
-    margin-bottom: 24px;
   }
   .placeholder {
     font-size: 40px;
