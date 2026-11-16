@@ -1,4 +1,4 @@
-# Harry · Portfolio
+# Pyae Sone Htut · Portfolio
 
 Live: **https://harry-portfolio-tau.vercel.app/** (Vercel; every push to `main` deploys it)
 

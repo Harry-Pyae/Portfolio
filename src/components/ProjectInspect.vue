@@ -963,7 +963,7 @@ watch(compact, (c) => !c && nextTick(() => (measure(), kick())))
               </div>
             </dl>
 
-            <!-- right after the problem and solution: what Harry did -->
+            <!-- right after the problem and solution: what the author did -->
             <section v-if="shown.contribution" class="contribution" aria-labelledby="contribution-title">
               <h3 id="contribution-title" class="sub">{{ profile.name }}’s contribution</h3>
               <p>{{ shown.contribution }}</p>
@@ -1946,7 +1946,7 @@ dd {
   color: var(--ink);
   font-weight: 600;
 }
-/* what Harry did, straight after the problem and solution: set apart by a gold rule, not a card */
+/* what the author did, straight after the problem and solution: set apart by a gold rule, not a card */
 .contribution {
   margin-top: 22px;
   padding: 2px 0 2px 16px;

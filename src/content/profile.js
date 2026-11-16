@@ -3,8 +3,8 @@ const cleaned = (id) => ({ file: `certificates/${id}.jpg`, photo: `certificates/
 
 // Everything personal lives here. Edit freely; the layout adapts.
 export const profile = {
-  name: 'Harry',
-  monogram: 'H',
+  name: 'Pyae Sone Htut',
+  monogram: 'P',
   title: 'IT Student · Junior Full-Stack Developer',
   intro:
     'I build web applications with Vue.js on the front end and Laravel and PHP behind it, from my own projects to hackathon prototypes.',

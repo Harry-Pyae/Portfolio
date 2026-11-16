@@ -62,7 +62,8 @@ import { profile } from '../content/profile.js'
 }
 .name {
   color: var(--ink);
-  font: 700 clamp(60px, 7.6vw, 104px) / 1 var(--font-head);
+  /* sized so the full three-word name stays on one line in the hero column at every width */
+  font: 700 clamp(40px, 4.9vw, 68px) / 1.05 var(--font-head);
   letter-spacing: -0.045em;
 }
 .title {
