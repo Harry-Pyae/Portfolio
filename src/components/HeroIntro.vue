@@ -4,20 +4,11 @@ import { profile } from '../content/profile.js'
 
 <template>
   <div class="intro">
-    <div class="id-row">
-      <div class="portrait">
-        <img v-if="profile.portrait" :src="profile.portrait" :alt="`Portrait of ${profile.name}`" width="148" height="148" />
-        <span v-else class="placeholder" role="img" :aria-label="`Portrait placeholder for ${profile.name}`">
-          {{ profile.monogram }}
-        </span>
-      </div>
-      <!-- the film of this portfolio: a quiet link beside the portrait, above the fold at every size -->
-      <a v-if="profile.film" class="film" :href="profile.film.href" target="_blank" rel="noopener">
-        <span class="play" aria-hidden="true">
-          <svg viewBox="0 0 12 12" width="11" height="11"><path d="M3.5 2.2v7.6L9.8 6z" fill="currentColor" /></svg>
-        </span>
-        <span>{{ profile.film.label }}<span class="sr-only"> on YouTube (opens in a new tab)</span></span>
-      </a>
+    <div class="portrait">
+      <img v-if="profile.portrait" :src="profile.portrait" :alt="`Portrait of ${profile.name}`" width="148" height="148" />
+      <span v-else class="placeholder" role="img" :aria-label="`Portrait placeholder for ${profile.name}`">
+        {{ profile.monogram }}
+      </span>
     </div>
     <h1 id="hero-name" class="name">{{ profile.name }}</h1>
     <p class="title">{{ profile.title }}</p>
@@ -33,6 +24,11 @@ import { profile } from '../content/profile.js'
         </svg>
       </a>
       <a class="btn" href="#contact">Get in Touch</a>
+      <!-- the film of this portfolio: a third, quieter action, styled like the site's other text links -->
+      <a v-if="profile.film" class="film" :href="profile.film.href" target="_blank" rel="noopener">
+        <svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M3 1.8v8.4L10.2 6z" fill="currentColor" /></svg>
+        <span class="film-label">{{ profile.film.label }}</span><span class="sr-only">: a 1-minute video on YouTube (opens in a new tab)</span>
+      </a>
     </div>
   </div>
 </template>
@@ -44,17 +40,10 @@ import { profile } from '../content/profile.js'
   min-width: 0;
   padding: clamp(24px, 4vh, 48px) 0;
 }
-.id-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 16px 24px;
-  margin-bottom: 32px;
-}
 .portrait {
-  flex: none;
-  width: 136px;
-  height: 136px;
+  width: 160px;
+  height: 160px;
+  margin-bottom: 32px;
   padding: 4px;
   border: 1px solid var(--line-strong);
   border-radius: 50%;
@@ -74,7 +63,7 @@ import { profile } from '../content/profile.js'
 .placeholder {
   background: var(--surface-2);
   color: var(--accent);
-  font: 700 52px/1 var(--font-head);
+  font: 700 60px/1 var(--font-head);
 }
 .name {
   color: var(--ink);
@@ -115,38 +104,35 @@ import { profile } from '../content/profile.js'
   background: var(--accent);
   vertical-align: 2px;
 }
-/* Secondary to the buttons below: text and a small ring, no button chrome. */
+/* The third action: no button chrome, the same quiet underline as the site's other text links. */
 .film {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  min-height: 44px;
+  gap: 8px;
+  min-height: 44px; /* tap height; no side padding, so it fits beside the buttons at 1280 */
   color: var(--ink-2);
-  font: 500 15px/1.3 var(--font-body);
+  font: 500 15px/1 var(--font-body);
   text-decoration: none;
   transition:
     color 0.2s ease,
     transform 0.16s cubic-bezier(0.23, 1, 0.32, 1);
 }
-.play {
-  display: grid;
-  place-items: center;
+.film svg {
   flex: none;
-  width: 36px;
-  height: 36px;
-  padding-left: 2px; /* optical centre of the triangle */
-  border: 1px solid var(--line-strong);
-  border-radius: 50%;
-  background: var(--surface);
   color: var(--accent);
-  transition: border-color 0.2s ease;
+}
+.film-label {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--ink-3) 45%, transparent);
+  text-underline-offset: 5px;
+  transition: text-decoration-color 0.2s ease;
 }
 @media (hover: hover) and (pointer: fine) {
   .film:hover {
     color: var(--ink);
   }
-  .film:hover .play {
-    border-color: color-mix(in srgb, var(--accent) 70%, transparent);
+  .film:hover .film-label {
+    text-decoration-color: var(--accent);
   }
 }
 .film:focus-visible {
@@ -158,19 +144,18 @@ import { profile } from '../content/profile.js'
 .actions {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 12px;
   margin-top: 36px;
 }
 @media (max-width: 860px) {
-  .id-row {
+  .portrait {
+    width: 124px;
+    height: 124px;
     margin-bottom: 24px;
   }
-  .portrait {
-    width: 108px;
-    height: 108px;
-  }
   .placeholder {
-    font-size: 40px;
+    font-size: 46px;
   }
 }
 </style>

@@ -27,15 +27,30 @@ const { classes, reveal } = useSection(root)
       <div class="identity rv" style="--d: 0">
         <div class="frame">
           <div class="frame-art" aria-hidden="true">
-            <svg class="rings" viewBox="0 0 300 300">
-              <ellipse class="ring" cx="150" cy="150" rx="138" ry="138" />
-              <circle class="dot spark" cx="274" cy="180" r="3" />
+            <!-- Two orbits turning in opposite directions, each its own element so the compositor turns it
+                 without repainting. Each ring's colour shifts around its loop (a gradient that turns with it). -->
+            <svg class="rings orbit-outer anim" viewBox="0 0 300 300">
+              <defs>
+                <linearGradient id="about-orbit-a" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" style="stop-color: var(--glow-trunk); stop-opacity: 0.75" />
+                  <stop offset="0.55" style="stop-color: var(--glow-branch); stop-opacity: 0.32" />
+                  <stop offset="1" style="stop-color: var(--glow-trunk); stop-opacity: 0.55" />
+                </linearGradient>
+              </defs>
+              <circle class="ring" cx="150" cy="150" r="140" />
+              <circle class="dot cyan" cx="150" cy="10" r="3.5" />
+              <circle class="dot green" cx="18.4" cy="102.1" r="2.6" />
             </svg>
-            <!-- rotating ring is its own element, so the compositor turns it without repainting -->
-            <svg class="rings spin anim" viewBox="0 0 300 300">
-              <ellipse class="ring dashed" cx="150" cy="150" rx="122" ry="122" />
-              <circle class="dot cyan" cx="150" cy="28" r="3.5" />
-              <circle class="dot green" cx="44" cy="211" r="3" />
+            <svg class="rings orbit-inner anim" viewBox="0 0 300 300">
+              <defs>
+                <linearGradient id="about-orbit-b" x1="1" y1="0" x2="0" y2="1">
+                  <stop offset="0" style="stop-color: var(--glow-spark); stop-opacity: 0.55" />
+                  <stop offset="0.5" style="stop-color: var(--glow-pale); stop-opacity: 0.24" />
+                  <stop offset="1" style="stop-color: var(--glow-spark); stop-opacity: 0.4" />
+                </linearGradient>
+              </defs>
+              <circle class="ring dashed" cx="150" cy="150" r="114" />
+              <circle class="dot spark" cx="237.3" cy="223.3" r="3" />
             </svg>
           </div>
           <span class="tree-port" data-port="about-identity" aria-hidden="true"></span>
@@ -172,7 +187,7 @@ const { classes, reveal } = useSection(root)
 .frame {
   position: relative;
   --port-x: 100%; /* the identity port faces the trunk lane */
-  width: min(100%, 300px);
+  width: min(100%, 330px);
   aspect-ratio: 1;
   display: grid;
   place-items: center;
@@ -189,16 +204,27 @@ const { classes, reveal } = useSection(root)
 }
 .ring {
   fill: none;
-  stroke: color-mix(in srgb, var(--glow-trunk) 35%, transparent);
-  stroke-width: 1;
+  stroke-width: 1.1;
+}
+.orbit-outer .ring {
+  stroke: url(#about-orbit-a);
+}
+.orbit-inner .ring {
+  stroke: url(#about-orbit-b);
 }
 .dashed {
-  stroke: color-mix(in srgb, var(--glow-branch) 40%, transparent);
   stroke-dasharray: 2 7;
 }
-.spin {
+/* Constant motion: linear, slow, opposite directions so they read as two orbits rather than one spinner. */
+.orbit-outer,
+.orbit-inner {
   will-change: transform;
-  animation: spin 90s linear infinite;
+}
+.orbit-outer {
+  animation: spin 80s linear infinite;
+}
+.orbit-inner {
+  animation: spin 56s linear infinite reverse;
 }
 @keyframes spin {
   to {
@@ -216,7 +242,7 @@ const { classes, reveal } = useSection(root)
 }
 .avatar {
   position: relative;
-  width: 58%;
+  width: 64%;
   aspect-ratio: 1;
   padding: 6px;
   border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
@@ -236,7 +262,7 @@ const { classes, reveal } = useSection(root)
 .monogram {
   background: var(--surface-2);
   color: var(--accent);
-  font: 700 clamp(56px, 7vw, 76px) / 1 var(--font-head);
+  font: 700 clamp(62px, 7.8vw, 86px) / 1 var(--font-head);
   letter-spacing: -0.04em;
 }
 .id-name {
@@ -566,7 +592,7 @@ button.ms-badge {
     grid-template-columns: minmax(0, 1fr);
   }
   .frame {
-    width: min(70%, 240px);
+    width: min(76%, 270px);
   }
   .lane {
     display: none;
